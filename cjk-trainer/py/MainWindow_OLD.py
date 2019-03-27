@@ -12,6 +12,7 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 from py.utilities.KeyPressEater import KeyPressEater
 from py.importDeck import *
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
 
@@ -68,17 +69,15 @@ class Ui_MainWindow(object):
         self.tabWidget.setDocumentMode(False)
         self.tabWidget.setTabBarAutoHide(False)
         self.tabWidget.setObjectName("tabWidget")
-
-
-
-
-
         self.vocabTab = QtWidgets.QWidget()
         self.vocabTab.setObjectName("vocabTab")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.vocabTab)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout()
         self.verticalLayout_5.setObjectName("verticalLayout_5")
+
+        self.listWidget.setDragEnabled(False) #Added
+
         self.listWidget = QtWidgets.QListWidget(self.vocabTab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -88,6 +87,11 @@ class Ui_MainWindow(object):
         self.listWidget.setMovement(QtWidgets.QListView.Free)
         self.listWidget.setResizeMode(QtWidgets.QListView.Adjust)
         self.listWidget.setObjectName("listWidget")
+        self.listWidget.setDragEnabled(False) #Added
+        mouseHandler = KeyPressEater(self.listWidget)
+        self.listWidget.installEventFilter(mouseHandler)
+
+
         self.verticalLayout_5.addWidget(self.listWidget)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
@@ -99,7 +103,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.pushButton_wordList_edit, 0, 1, 1, 1)
         self.pushButton_wordList_study = QtWidgets.QPushButton(self.vocabTab)
         self.pushButton_wordList_study.setObjectName("pushButton_wordList_study")
-
+        #self.pushButton_wordList_study.connect
 
 
 

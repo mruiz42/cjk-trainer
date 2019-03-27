@@ -23,7 +23,7 @@ def importCSV(file_path):
     #outFile = open(outFile_Path + ".txt")
 
 
-'''This function will return a list of VocabWord objects'''
+'''This function will return a list of '''
 def importDialogHelper(line_list):
     '''This function will return a list of VocabWord objects'''
     # determine the format of input
@@ -33,3 +33,5 @@ def importDialogHelper(line_list):
         word_split = line_list[i].split(',')
         word_list.append(word_split)
     return word_list
+
+#def

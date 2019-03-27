@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
 
         self.ui.setupUi(self)
-        self.ui.pushButton_wordList_edit.clicked.connect(self.openImportDialog)
+        self.ui.pushButton_wordList_add.clicked.connect(self.openImportDialog)
 
         self.show()
 
@@ -32,47 +32,38 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
 
-
-
-
-
-
     win.show()
-
     db = QSqlDatabase.addDatabase("QSQLITE", connectionName="prim_conn")
     db.setDatabaseName("../data/vocab.db")
     db.open()
 
-    tableModel = QSqlTableModel()
-    queryModel = QSqlQueryModel()
+    conn = sqlite3.connect('../data/vocab.db')
+    result = conn.execute('Select * FROM asd2')
+    win.ui.wordList.setRowCount(0)
+    win.ui.wordList.setColumnCount(6)
+    for row_number, row_data in enumerate(result):
+        win.ui.wordList.insertRow(row_number)
+        for column_number, data in enumerate(row_data):
+            print(data)
+            win.ui.wordList.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
-    # db.exec_(query='CREATE TABLE allChineseVocab('
-    #                       'CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,'
-    #                       'HANZI CHAR UNIQUE,'
-    #                       'PINYIN CHAR,'
-    #                       'DEFINITION CHAR,'
-    #                       'STARRED INTEGER,'
-    #                       'ATTEMPTED INTEGER,'
-    #                       'CORRECT INTEGER);')
 
-    print(queryModel.lastError())
 
-    queryModel.setQuery('Select * FROM allChineseVocab', db)
-    projectView = QTableView()
-    projectView = win.ui.tableView
 
-    projectView.setModel(queryModel)
-    projectView.setColumnWidth(2, 300)
-    projectView.show()
-
-    vocabTableList = db.tables()
     # Generate list of tables for listWidget
+    vocabTableList = db.tables()
     print(vocabTableList)
-    listWidget = win.ui.listWidget
+    listWidget = win.ui.deckList
     for i in vocabTableList:
         if i != 'sqlite_sequence':
             listWidget.addItem(i)
-
     listWidget.show()
+
+
+
+
+
+
+
     db.close()
     sys.exit(app.exec_())

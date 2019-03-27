@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Wen Vocab Trainer v0.1</string>
+   <string>cjk_trainer 0.2</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -100,7 +100,53 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QListWidget" name="listWidget">
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <spacer name="horizontalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Minimum</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_deckList">
+                <property name="text">
+                 <string>Deck List</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Minimum</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QListWidget" name="deckList">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -118,16 +164,16 @@
             <item>
              <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="1">
-               <widget class="QPushButton" name="pushButton_wordList_edit">
+               <widget class="QPushButton" name="pushButton_wordList_add">
                 <property name="text">
-                 <string>Edit</string>
+                 <string>Add</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="2">
                <widget class="QPushButton" name="pushButton_wordList_study">
                 <property name="text">
-                 <string>Study</string>
+                 <string>Select</string>
                 </property>
                </widget>
               </item>
@@ -136,26 +182,70 @@
            </layout>
           </item>
           <item>
-           <widget class="QTableView" name="tableView">
-            <property name="editTriggers">
-             <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <property name="textElideMode">
-             <enum>Qt::ElideRight</enum>
-            </property>
-            <property name="sortingEnabled">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="deckName">
+                <property name="text">
+                 <string>null</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="wordList">
+              <property name="editTriggers">
+               <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="textElideMode">
+               <enum>Qt::ElideRight</enum>
+              </property>
+              <property name="sortingEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -198,7 +288,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="label">
+               <widget class="QLabel" name="flashWord">
                 <property name="font">
                  <font>
                   <pointsize>24</pointsize>
@@ -249,7 +339,7 @@
                <enum>QLayout::SetDefaultConstraint</enum>
               </property>
               <item>
-               <widget class="QPushButton" name="pushButton_6">
+               <widget class="QPushButton" name="pushButton_nextWord">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -278,7 +368,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox_3">
+               <widget class="QCheckBox" name="checkBox_autoPlay">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -332,7 +422,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="labelVocab">
+               <widget class="QLabel" name="typingWord">
                 <property name="font">
                  <font>
                   <family>Noto Sans CJK JP</family>
@@ -382,7 +472,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QLineEdit" name="lineEditAnswer">
+               <widget class="QLineEdit" name="lineEdit_answer">
                 <property name="font">
                  <font>
                   <family>Noto Sans CJK JP</family>
@@ -397,7 +487,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButtonEnter">
+               <widget class="QPushButton" name="pushButton_dontKnow">
                 <property name="text">
                  <string>Don't know</string>
                 </property>
@@ -421,7 +511,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="labelNumCorrect">
+               <widget class="QLabel" name="label_fractionCorrect">
                 <property name="text">
                  <string>0/0</string>
                 </property>
@@ -441,7 +531,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButtonSkip">
+               <widget class="QPushButton" name="pushButton_notSure">
                 <property name="text">
                  <string>Not sure</string>
                 </property>
@@ -599,13 +689,6 @@
           <string>Settings</string>
          </attribute>
         </widget>
-       </widget>
-      </item>
-      <item>
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
        </widget>
       </item>
      </layout>
