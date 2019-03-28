@@ -18,16 +18,16 @@ class MainWindow(QMainWindow):
         self.cardNum = 0
         self.ui.setupUi(self)
         self.ui.progressBar.reset()
-        self.ui.pushButton_dontKnow.clicked.connect(self.checkAnswer)
-        self.ui.pushButton_notSure.clicked.connect(self.nextWord)
-        self.ui.pushButton_notSure.hide()
+        self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
+        self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
+        self.ui.pushButton_notSure_Skip.hide()
         self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
         self.ui.pushButton_wordList_add.clicked.connect(self.openImportDialog)
         self.ui.pushButton_wordList_select.clicked.connect(self.loadStudySet)
         self.show()
 
     def setTextEnter(self):
-        win.ui.pushButton_dontKnow.setText("Enter")
+        win.ui.pushButton_enter.setText("Enter")
 
     def loadStudySet(self):
         db = sqlite3.connect('../data/vocab.db')
@@ -38,12 +38,12 @@ class MainWindow(QMainWindow):
         self.studySet = result
         win.ui.progressBar.reset()
         win.ui.progressBar.setRange(0, len(self.studySet)+1)
-        win.ui.typingWord.setText(self.studySet[self.cardNum][1])
+        win.ui.label_typingWord.setText(self.studySet[self.cardNum][1])
 
 
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()
-        answerList = self.studySet[self.cardNum][2].split(";")
+        answerList = self.studySet[self.cardNum][3].split(";")
         print("You entered: " + textValue + " $? " + ", ".join(answerList))
         if textValue in answerList:
             print("Correct!")
@@ -55,23 +55,25 @@ class MainWindow(QMainWindow):
             #percent = self.calcPercentageCorrect()
             #win.ui.label_fractionCorrect.setText("%" + str(percent))
 
-            win.ui.typingWord.setText("Correct!\n " + ",".join(answerList))
-            win.ui.pushButton_dontKnow.setText("Continue")
+            win.ui.label_typingWord.setText("Correct!\n " + ",".join(answerList))
+            win.ui.pushButton_enter.setText("Continue")
             win.ui.lineEdit_answer.setPlaceholderText("Press Enter to continue")
             win.ui.lineEdit_answer.setDisabled(True)
-            win.ui.pushButton_dontKnow.clicked.disconnect()
-            win.ui.pushButton_dontKnow.clicked.connect(self.nextWord)
+            win.ui.pushButton_enter.clicked.disconnect()
+            win.ui.pushButton_enter.clicked.connect(self.nextWord)
         else:
             #self.studySet[self.cardNum][5] += 1
             #percent = self.calcPercentageCorrect()
             #self.ui.labelNumCorrect.setText("%" + str(percent))
             print("Incorrect!")
             print("Card number: " + str(self.cardNum))
-            win.ui.pushButton_dontKnow.setText("Enter")
-            win.ui.pushButton_notSure.show()
+            win.ui.pushButton_enter.setText("Enter")
+            win.ui.pushButton_notSure_Skip.show()
             win.ui.lineEdit_answer.clear()
-            win.ui.typingWord.setText("Oops! Correct answer is: \n" + str(answerList[self.cardnum]))
-            win.ui.pushButton_notSure.setText("I was right")
+            win.ui.label_typingWord.setText("Oops! Correct answer is: \n" + self.studySet[self.cardNum][3])
+            win.ui.pushButton_notSure_Skip.setText("I was right")
+            win.ui.pushButton_notSure_Skip.clicked.disconnect()
+            win.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
             win.ui.lineEdit_answer.setPlaceholderText("Enter the correct answer")
 
 
@@ -85,14 +87,14 @@ class MainWindow(QMainWindow):
         else:
             self.cardNum += 1
             win.ui.lineEdit_answer.setEnabled(True)
-            win.ui.pushButton_notSure.hide()
+            win.ui.pushButton_notSure_Skip.hide()
             win.ui.lineEdit_answer.setFocus()
             win.ui.lineEdit_answer.clear()
             win.ui.lineEdit_answer.setPlaceholderText("Enter your answer")
-            win.ui.pushButton_dontKnow.setText("Don't Know")
-            win.ui.typingWord.setText(self.studySet[self.cardNum][1])
-            #win.ui.pushButton_dontKnow.disconnect()
-            win.ui.pushButton_dontKnow.clicked.connect(self.checkAnswer)
+            win.ui.pushButton_enter.setText("Don't Know")
+            win.ui.label_typingWord.setText(self.studySet[self.cardNum][1])
+            win.ui.pushButton_enter.clicked.disconnect()
+            win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
 
 
     def openImportDialog(self):

@@ -72,7 +72,7 @@
          <enum>QTabWidget::West</enum>
         </property>
         <property name="currentIndex">
-         <number>6</number>
+         <number>0</number>
         </property>
         <property name="iconSize">
          <size>
@@ -288,7 +288,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="flashWord">
+               <widget class="QLabel" name="label_flashWord">
                 <property name="font">
                  <font>
                   <pointsize>24</pointsize>
@@ -422,7 +422,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="typingWord">
+               <widget class="QLabel" name="label_typingWord">
                 <property name="font">
                  <font>
                   <family>Noto Sans CJK JP</family>
@@ -487,9 +487,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_dontKnow">
+               <widget class="QPushButton" name="pushButton_enter">
                 <property name="text">
-                 <string>Don't know</string>
+                 <string>Enter</string>
                 </property>
                 <property name="autoDefault">
                  <bool>false</bool>
@@ -531,7 +531,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_notSure">
+               <widget class="QPushButton" name="pushButton_notSure_Skip">
                 <property name="text">
                  <string>Not sure</string>
                 </property>
@@ -582,7 +582,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="label_quizWord">
                 <property name="font">
                  <font>
                   <pointsize>24</pointsize>
@@ -635,14 +635,14 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_9">
                 <item>
-                 <widget class="QPushButton" name="pushButton_1">
+                 <widget class="QPushButton" name="pushButton_quizChoice1">
                   <property name="text">
                    <string>Word1</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_2">
+                 <widget class="QPushButton" name="pushButton_quizChoice2">
                   <property name="text">
                    <string>Word2</string>
                   </property>
@@ -653,14 +653,14 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_10">
                 <item>
-                 <widget class="QPushButton" name="pushButton_3">
+                 <widget class="QPushButton" name="pushButton_quizChoice3">
                   <property name="text">
                    <string>Word3</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_4">
+                 <widget class="QPushButton" name="pushButton_quizChoice4">
                   <property name="text">
                    <string>Word4</string>
                   </property>
@@ -704,27 +704,24 @@
      <height>30</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <addaction name="actionOpen_2"/>
+    <addaction name="actionOpen"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="menu_help">
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionUser_Guide"/>
+    <addaction name="actionUserGuide"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+    <addaction name="actionDonate"/>
    </widget>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>Abo&amp;ut</string>
-    </property>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuHelp"/>
-   <addaction name="menuAbout"/>
+   <addaction name="menu_file"/>
+   <addaction name="menu_help"/>
   </widget>
   <action name="actionFrom_Template">
    <property name="text">
@@ -736,7 +733,7 @@
     <string>&amp;Quit</string>
    </property>
   </action>
-  <action name="actionOpen_2">
+  <action name="actionOpen">
    <property name="text">
     <string>&amp;Open</string>
    </property>
@@ -761,12 +758,39 @@
     <string>How to play</string>
    </property>
   </action>
-  <action name="actionUser_Guide">
+  <action name="actionUserGuide">
    <property name="text">
     <string>&amp;User Guide</string>
    </property>
   </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionDonate">
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>lineEdit_answer</sender>
+   <signal>returnPressed()</signal>
+   <receiver>pushButton_enter</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>641</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>898</x>
+     <y>641</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

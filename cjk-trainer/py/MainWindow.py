@@ -3,11 +3,10 @@
 # Form implementation generated from reading ui file 'MainWindow.ui',
 # licensing of 'MainWindow.ui' applies.
 #
-# Created: Wed Mar 27 22:41:39 2019
+# Created: Thu Mar 28 02:53:55 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
-
 
 from py.utilities.KeyPressEater import KeyPressEater
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -15,20 +14,18 @@ from py.importDeck import *
 import sqlite3
 
 
-class Ui_MainWindow(object):
 
+
+
+class Ui_MainWindow(object):
     # def getListSelection(self):
     #     model = self.deckList.model()
     #     string = model.index(0)
     #     print(string.toString)
 
-    def __init__(self):
-        self.indexOfCurrentDeck = 0
-        self.nameOfCurrentDeck = ""
-
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
-        if index == self.indexOfCurrentDeck or index == False: #I guess sometimes its false :S
+        if index == self.indexOfCurrentDeck or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
             self.indexOfCurrentDeck = index
@@ -47,6 +44,10 @@ class Ui_MainWindow(object):
                 for column_number, data in enumerate(row_data):
                     self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             conn.close()
+
+    def __init__(self):
+        self.indexOfCurrentDeck = 0
+        self.nameOfCurrentDeck = ""
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -79,6 +80,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+
         # ADDED KEYPRESS EATER TAB BAR
         tabBar = QtWidgets.QTabBar()
         self.tabWidget.setTabBar(tabBar)
@@ -178,12 +180,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem5)
-        self.flashWord = QtWidgets.QLabel(self.tab_flashcards)
+        self.label_flashWord = QtWidgets.QLabel(self.tab_flashcards)
         font = QtGui.QFont()
         font.setPointSize(24)
-        self.flashWord.setFont(font)
-        self.flashWord.setObjectName("flashWord")
-        self.horizontalLayout_2.addWidget(self.flashWord)
+        self.label_flashWord.setFont(font)
+        self.label_flashWord.setObjectName("label_flashWord")
+        self.horizontalLayout_2.addWidget(self.label_flashWord)
         spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem6)
         self.verticalLayout_6.addLayout(self.horizontalLayout_2)
@@ -226,13 +228,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem10)
-        self.typingWord = QtWidgets.QLabel(self.tab_typing)
+        self.label_typingWord = QtWidgets.QLabel(self.tab_typing)
         font = QtGui.QFont()
         font.setFamily("Noto Sans CJK JP")
         font.setPointSize(24)
-        self.typingWord.setFont(font)
-        self.typingWord.setObjectName("typingWord")
-        self.horizontalLayout_5.addWidget(self.typingWord)
+        self.label_typingWord.setFont(font)
+        self.label_typingWord.setObjectName("label_typingWord")
+        self.horizontalLayout_5.addWidget(self.label_typingWord)
         spacerItem11 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem11)
         self.verticalLayout_7.addLayout(self.horizontalLayout_5)
@@ -252,11 +254,11 @@ class Ui_MainWindow(object):
         self.lineEdit_answer.setText("")
         self.lineEdit_answer.setObjectName("lineEdit_answer")
         self.horizontalLayout_6.addWidget(self.lineEdit_answer)
-        self.pushButton_dontKnow = QtWidgets.QPushButton(self.tab_typing)
-        self.pushButton_dontKnow.setAutoDefault(False)
-        self.pushButton_dontKnow.setDefault(True)
-        self.pushButton_dontKnow.setObjectName("pushButton_dontKnow")
-        self.horizontalLayout_6.addWidget(self.pushButton_dontKnow)
+        self.pushButton_enter = QtWidgets.QPushButton(self.tab_typing)
+        self.pushButton_enter.setAutoDefault(False)
+        self.pushButton_enter.setDefault(True)
+        self.pushButton_enter.setObjectName("pushButton_enter")
+        self.horizontalLayout_6.addWidget(self.pushButton_enter)
         self.verticalLayout_7.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
@@ -269,9 +271,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.label_fractionCorrect)
         spacerItem13 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_7.addItem(spacerItem13)
-        self.pushButton_notSure = QtWidgets.QPushButton(self.tab_typing)
-        self.pushButton_notSure.setObjectName("pushButton_notSure")
-        self.horizontalLayout_7.addWidget(self.pushButton_notSure)
+        self.pushButton_notSure_Skip = QtWidgets.QPushButton(self.tab_typing)
+        self.pushButton_notSure_Skip.setObjectName("pushButton_notSure_Skip")
+        self.horizontalLayout_7.addWidget(self.pushButton_notSure_Skip)
         self.verticalLayout_7.addLayout(self.horizontalLayout_7)
         self.verticalLayout_4.addLayout(self.verticalLayout_7)
         self.tabWidget.addTab(self.tab_typing, "")
@@ -287,12 +289,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         spacerItem15 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem15)
-        self.label_2 = QtWidgets.QLabel(self.tab_quiz)
+        self.label_quizWord = QtWidgets.QLabel(self.tab_quiz)
         font = QtGui.QFont()
         font.setPointSize(24)
-        self.label_2.setFont(font)
-        self.label_2.setObjectName("label_2")
-        self.horizontalLayout_8.addWidget(self.label_2)
+        self.label_quizWord.setFont(font)
+        self.label_quizWord.setObjectName("label_quizWord")
+        self.horizontalLayout_8.addWidget(self.label_quizWord)
         spacerItem16 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem16)
         self.verticalLayout_8.addLayout(self.horizontalLayout_8)
@@ -304,21 +306,21 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         self.verticalLayout_9 = QtWidgets.QVBoxLayout()
         self.verticalLayout_9.setObjectName("verticalLayout_9")
-        self.pushButton_1 = QtWidgets.QPushButton(self.tab_quiz)
-        self.pushButton_1.setObjectName("pushButton_1")
-        self.verticalLayout_9.addWidget(self.pushButton_1)
-        self.pushButton_2 = QtWidgets.QPushButton(self.tab_quiz)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.verticalLayout_9.addWidget(self.pushButton_2)
+        self.pushButton_quizChoice1 = QtWidgets.QPushButton(self.tab_quiz)
+        self.pushButton_quizChoice1.setObjectName("pushButton_quizChoice1")
+        self.verticalLayout_9.addWidget(self.pushButton_quizChoice1)
+        self.pushButton_quizChoice2 = QtWidgets.QPushButton(self.tab_quiz)
+        self.pushButton_quizChoice2.setObjectName("pushButton_quizChoice2")
+        self.verticalLayout_9.addWidget(self.pushButton_quizChoice2)
         self.horizontalLayout_9.addLayout(self.verticalLayout_9)
         self.verticalLayout_10 = QtWidgets.QVBoxLayout()
         self.verticalLayout_10.setObjectName("verticalLayout_10")
-        self.pushButton_3 = QtWidgets.QPushButton(self.tab_quiz)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.verticalLayout_10.addWidget(self.pushButton_3)
-        self.pushButton_4 = QtWidgets.QPushButton(self.tab_quiz)
-        self.pushButton_4.setObjectName("pushButton_4")
-        self.verticalLayout_10.addWidget(self.pushButton_4)
+        self.pushButton_quizChoice3 = QtWidgets.QPushButton(self.tab_quiz)
+        self.pushButton_quizChoice3.setObjectName("pushButton_quizChoice3")
+        self.verticalLayout_10.addWidget(self.pushButton_quizChoice3)
+        self.pushButton_quizChoice4 = QtWidgets.QPushButton(self.tab_quiz)
+        self.pushButton_quizChoice4.setObjectName("pushButton_quizChoice4")
+        self.verticalLayout_10.addWidget(self.pushButton_quizChoice4)
         self.horizontalLayout_9.addLayout(self.verticalLayout_10)
         self.verticalLayout_8.addLayout(self.horizontalLayout_9)
         self.verticalLayout_11.addLayout(self.verticalLayout_8)
@@ -326,31 +328,29 @@ class Ui_MainWindow(object):
         self.tab_tones = QtWidgets.QWidget()
         self.tab_tones.setObjectName("tab_tones")
         self.tabWidget.addTab(self.tab_tones, "")
-        self.tab_4 = QtWidgets.QWidget()
-        self.tab_4.setObjectName("tab_4")
-        self.tabWidget.addTab(self.tab_4, "")
-        self.tab_5 = QtWidgets.QWidget()
-        self.tab_5.setObjectName("tab_5")
-        self.tabWidget.addTab(self.tab_5, "")
+        self.tab_statistics = QtWidgets.QWidget()
+        self.tab_statistics.setObjectName("tab_statistics")
+        self.tabWidget.addTab(self.tab_statistics, "")
+        self.tab_settings = QtWidgets.QWidget()
+        self.tab_settings.setObjectName("tab_settings")
+        self.tabWidget.addTab(self.tab_settings, "")
         self.verticalLayout_2.addWidget(self.tabWidget)
         self.verticalLayout.addLayout(self.verticalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 960, 30))
         self.menubar.setObjectName("menubar")
-        self.menuFile = QtWidgets.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
-        self.menuHelp = QtWidgets.QMenu(self.menubar)
-        self.menuHelp.setObjectName("menuHelp")
-        self.menuAbout = QtWidgets.QMenu(self.menubar)
-        self.menuAbout.setObjectName("menuAbout")
+        self.menu_file = QtWidgets.QMenu(self.menubar)
+        self.menu_file.setObjectName("menu_file")
+        self.menu_help = QtWidgets.QMenu(self.menubar)
+        self.menu_help.setObjectName("menu_help")
         MainWindow.setMenuBar(self.menubar)
         self.actionFrom_Template = QtWidgets.QAction(MainWindow)
         self.actionFrom_Template.setObjectName("actionFrom_Template")
         self.actionQuit = QtWidgets.QAction(MainWindow)
         self.actionQuit.setObjectName("actionQuit")
-        self.actionOpen_2 = QtWidgets.QAction(MainWindow)
-        self.actionOpen_2.setObjectName("actionOpen_2")
+        self.actionOpen = QtWidgets.QAction(MainWindow)
+        self.actionOpen.setObjectName("actionOpen")
         self.actionTemplate_Data = QtWidgets.QAction(MainWindow)
         self.actionTemplate_Data.setObjectName("actionTemplate_Data")
         self.actionUser_Data = QtWidgets.QAction(MainWindow)
@@ -359,17 +359,24 @@ class Ui_MainWindow(object):
         self.actionImport_Data.setObjectName("actionImport_Data")
         self.actionHow_to_play = QtWidgets.QAction(MainWindow)
         self.actionHow_to_play.setObjectName("actionHow_to_play")
-        self.actionUser_Guide = QtWidgets.QAction(MainWindow)
-        self.actionUser_Guide.setObjectName("actionUser_Guide")
-        self.menuFile.addAction(self.actionOpen_2)
-        self.menuFile.addAction(self.actionQuit)
-        self.menuHelp.addAction(self.actionUser_Guide)
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuHelp.menuAction())
-        self.menubar.addAction(self.menuAbout.menuAction())
+        self.actionUserGuide = QtWidgets.QAction(MainWindow)
+        self.actionUserGuide.setObjectName("actionUserGuide")
+        self.actionAbout = QtWidgets.QAction(MainWindow)
+        self.actionAbout.setObjectName("actionAbout")
+        self.actionDonate = QtWidgets.QAction(MainWindow)
+        self.actionDonate.setObjectName("actionDonate")
+        self.menu_file.addAction(self.actionOpen)
+        self.menu_file.addAction(self.actionQuit)
+        self.menu_help.addAction(self.actionUserGuide)
+        self.menu_help.addSeparator()
+        self.menu_help.addAction(self.actionAbout)
+        self.menu_help.addAction(self.actionDonate)
+        self.menubar.addAction(self.menu_file.menuAction())
+        self.menubar.addAction(self.menu_help.menuAction())
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
+        QtCore.QObject.connect(self.lineEdit_answer, QtCore.SIGNAL("returnPressed()"), self.pushButton_enter.click)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -381,41 +388,42 @@ class Ui_MainWindow(object):
         self.wordTable.setSortingEnabled(True)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_wordTable),
                                   QtWidgets.QApplication.translate("MainWindow", "Word List", None, -1))
-        self.flashWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
+        self.label_flashWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
         self.pushButton_nextWord.setText(QtWidgets.QApplication.translate("MainWindow", "Next Word", None, -1))
         self.checkBox_autoPlay.setText(QtWidgets.QApplication.translate("MainWindow", "Autoplay", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_flashcards),
                                   QtWidgets.QApplication.translate("MainWindow", "Flashcards", None, -1))
-        self.typingWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
+        self.label_typingWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
         self.lineEdit_answer.setPlaceholderText(
             QtWidgets.QApplication.translate("MainWindow", "Enter your answer", None, -1))
-        self.pushButton_dontKnow.setText(QtWidgets.QApplication.translate("MainWindow", "Don\'t know", None, -1))
+        self.pushButton_enter.setText(QtWidgets.QApplication.translate("MainWindow", "Enter", None, -1))
         self.label_fractionCorrect.setText(QtWidgets.QApplication.translate("MainWindow", "0/0", None, -1))
-        self.pushButton_notSure.setText(QtWidgets.QApplication.translate("MainWindow", "Not sure", None, -1))
+        self.pushButton_notSure_Skip.setText(QtWidgets.QApplication.translate("MainWindow", "Not sure", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_typing),
                                   QtWidgets.QApplication.translate("MainWindow", "Typing", None, -1))
-        self.label_2.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
-        self.pushButton_1.setText(QtWidgets.QApplication.translate("MainWindow", "Word1", None, -1))
-        self.pushButton_2.setText(QtWidgets.QApplication.translate("MainWindow", "Word2", None, -1))
-        self.pushButton_3.setText(QtWidgets.QApplication.translate("MainWindow", "Word3", None, -1))
-        self.pushButton_4.setText(QtWidgets.QApplication.translate("MainWindow", "Word4", None, -1))
+        self.label_quizWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
+        self.pushButton_quizChoice1.setText(QtWidgets.QApplication.translate("MainWindow", "Word1", None, -1))
+        self.pushButton_quizChoice2.setText(QtWidgets.QApplication.translate("MainWindow", "Word2", None, -1))
+        self.pushButton_quizChoice3.setText(QtWidgets.QApplication.translate("MainWindow", "Word3", None, -1))
+        self.pushButton_quizChoice4.setText(QtWidgets.QApplication.translate("MainWindow", "Word4", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_quiz),
                                   QtWidgets.QApplication.translate("MainWindow", "Quiz", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_tones),
                                   QtWidgets.QApplication.translate("MainWindow", "Tones", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_statistics),
                                   QtWidgets.QApplication.translate("MainWindow", "Statistics", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5),
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_settings),
                                   QtWidgets.QApplication.translate("MainWindow", "Settings", None, -1))
-        self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "Fi&le", None, -1))
-        self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "&Help", None, -1))
-        self.menuAbout.setTitle(QtWidgets.QApplication.translate("MainWindow", "Abo&ut", None, -1))
+        self.menu_file.setTitle(QtWidgets.QApplication.translate("MainWindow", "Fi&le", None, -1))
+        self.menu_help.setTitle(QtWidgets.QApplication.translate("MainWindow", "&Help", None, -1))
         self.actionFrom_Template.setText(QtWidgets.QApplication.translate("MainWindow", "From Template...", None, -1))
         self.actionQuit.setText(QtWidgets.QApplication.translate("MainWindow", "&Quit", None, -1))
-        self.actionOpen_2.setText(QtWidgets.QApplication.translate("MainWindow", "&Open", None, -1))
+        self.actionOpen.setText(QtWidgets.QApplication.translate("MainWindow", "&Open", None, -1))
         self.actionTemplate_Data.setText(QtWidgets.QApplication.translate("MainWindow", "&Template Data", None, -1))
         self.actionUser_Data.setText(QtWidgets.QApplication.translate("MainWindow", "&User Data", None, -1))
         self.actionImport_Data.setText(QtWidgets.QApplication.translate("MainWindow", "&Import Data", None, -1))
         self.actionHow_to_play.setText(QtWidgets.QApplication.translate("MainWindow", "How to play", None, -1))
-        self.actionUser_Guide.setText(QtWidgets.QApplication.translate("MainWindow", "&User Guide", None, -1))
+        self.actionUserGuide.setText(QtWidgets.QApplication.translate("MainWindow", "&User Guide", None, -1))
+        self.actionAbout.setText(QtWidgets.QApplication.translate("MainWindow", "About", None, -1))
+        self.actionDonate.setText(QtWidgets.QApplication.translate("MainWindow", "Donate", None, -1))
 
