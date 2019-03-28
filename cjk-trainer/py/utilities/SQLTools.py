@@ -40,8 +40,8 @@ class SqlTools():
         command = ("CREATE TABLE IF NOT EXISTS " + str(table_name) +
                    "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
                    "VOCABULARY CHAR,"
-                   "ROMANIZATION CHAR,"
                    "DEFINITION CHAR,"
+                   "ROMANIZATION CHAR,"
                    "STARRED INT,"
                    "ATTEMPTED INT,"
                    "CORRECT INT"

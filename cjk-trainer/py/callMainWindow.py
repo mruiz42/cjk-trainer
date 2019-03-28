@@ -4,6 +4,7 @@ from PySide2.QtSql import QSqlQueryModel, QSqlDatabase, QSqlTableModel
 from py.MainWindow import *
 from py.callImportDeck import *
 from py.utilities.SQLTools import *
+from py.VocabWord import *
 #Developer notes:
 # TODO 01) Manage user interation with vocabulary data
 # TODO 02) Allow user to right click tables in QTableView
@@ -13,6 +14,7 @@ from py.utilities.SQLTools import *
 # TODO 05) SAVE STUDY SET DATA BACK TO THE SAME DATABASE TABLE
 # TODO 06) ADD OPTION FOR SHUFFLE AND SWAP DEFINITION/PRONUNCIATION/VOCABULARY FOR Q/A
 # TODO 07) CHECK IF THERES A BETTER WAY TO DISABLE TABS
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -32,6 +34,12 @@ class MainWindow(QMainWindow):
         self.ui.tab_quiz.setEnabled(False)
         self.show()
 
+
+
+    def calcPercentageCorrect(self):
+        return (self.studySet[self.cardNum].timesCorrect/self.studySet[self.cardNum].timesAttempted) * 100
+
+
     def setTextEnter(self):
         win.ui.pushButton_enter.setText("Enter")
 
@@ -39,32 +47,34 @@ class MainWindow(QMainWindow):
         db = sqlite3.connect('../data/vocab.db')
         c = db.execute('SELECT * FROM {}'.format(win.ui.nameOfCurrentDeck))
         result = c.fetchall()
+
+        #We have a tuple, now lets make a list of VocabWord objects
+
         db.close()
-        print(result)
-        self.studySet = result
+        self.studySet = [VocabWord(*t) for t in result]
+        print(self.studyset)
         win.ui.progressBar.reset()
         win.ui.progressBar.setRange(0, len(self.studySet)+1)
-        win.ui.label_typingWord.setText(self.studySet[self.cardNum][1])
+        win.ui.label_typingWord.setText(self.studySet[self.cardNum].vocabulary)
         self.ui.tab_flashcards.setEnabled(True)
         self.ui.tab_typing.setEnabled(True)
         self.ui.tab_quiz.setEnabled(True)
 
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()
-        answerList = self.studySet[self.cardNum][3].split(";")
+        answerList = self.studySet[self.cardNum].definition.split(";")
         print("You entered: " + textValue + " $? " + ", ".join(answerList))
         if textValue in answerList:
             print("Correct!")
             win.ui.lineEdit_answer.clear()
 
-
-
             #I'm using a TUPLE cx
-            #self.studySet[self.cardNum][5] += 1
-            #self.studySet[self.cardNum][6] += 1
 
-            #percent = self.calcPercentageCorrect()
-            #win.ui.label_fractionCorrect.setText("%" + str(percent))
+            self.studySet[self.cardNum].timesCorrect += 1
+            self.studySet[self.cardNum].timesAttempted += 1
+
+            percent = self.calcPercentageCorrect()
+            win.ui.label_fractionCorrect.setText("%" + str(percent))
 
             win.ui.label_typingWord.setText("Correct!\n " + ",".join(answerList))
             win.ui.pushButton_enter.setText("Continue")
@@ -73,20 +83,19 @@ class MainWindow(QMainWindow):
             win.ui.pushButton_enter.clicked.disconnect()
             win.ui.pushButton_enter.clicked.connect(self.nextWord)
         else:
-            #self.studySet[self.cardNum][5] += 1
-            #percent = self.calcPercentageCorrect()
-            #self.ui.labelNumCorrect.setText("%" + str(percent))
+            self.studySet[self.cardNum].timesAttempted += 1
+            percent = self.calcPercentageCorrect()
+            self.ui.label_fractionCorrect.setText("%" + str(percent))
             print("Incorrect!")
             print("Card number: " + str(self.cardNum))
             win.ui.pushButton_enter.setText("Enter")
             win.ui.pushButton_notSure_Skip.show()
             win.ui.lineEdit_answer.clear()
-            win.ui.label_typingWord.setText("Oops! Correct answer is: \n" + self.studySet[self.cardNum][3])
+            win.ui.label_typingWord.setText("Oops! Correct answer is: \n" + self.studySet[self.cardNum].definition)
             win.ui.pushButton_notSure_Skip.setText("I was right")
             win.ui.pushButton_notSure_Skip.clicked.disconnect()
             win.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
             win.ui.lineEdit_answer.setPlaceholderText("Enter the correct answer")
-
 
 
     def nextWord(self):
@@ -103,10 +112,9 @@ class MainWindow(QMainWindow):
             win.ui.lineEdit_answer.clear()
             win.ui.lineEdit_answer.setPlaceholderText("Enter your answer")
             win.ui.pushButton_enter.setText("Don't Know")
-            win.ui.label_typingWord.setText(self.studySet[self.cardNum][1])
+            win.ui.label_typingWord.setText(self.studySet[self.cardNum].vocabulary)
             win.ui.pushButton_enter.clicked.disconnect()
             win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
-
 
     def openImportDialog(self):
         self.w = ImportDeck()
@@ -133,13 +141,14 @@ if __name__ == "__main__":
     for i in vocabTableList:
         if i != 'sqlite_sequence':
             listWidget.addItem(i)
+
     listWidget.show()
     db.close()
 
     win.ui.nameOfCurrentDeck = listWidget.item(0).data(0)
     print(win.ui.nameOfCurrentDeck)
     dbname = win.ui.nameOfCurrentDeck
-    conn = sqlite3.connect('../data/vocab.db')
+    conn = sqlite3.connect("../data/vocab.db")
     c = conn.execute('SELECT * FROM {}'.format(dbname))
     result = c.fetchall()
     conn.close()
