@@ -32,7 +32,7 @@ class Ui_importDialog(object):
         self.pushButton_Import.setObjectName("pushButton_Import")
 
         self.pushButton_Import.clicked.connect(self.accepted)  # ADD
-        # self.pushButton_Cancel.clicked.connect(importDialog.reject) #ADD
+        self.pushButton_Cancel.clicked.connect(importDialog.reject) #ADD
 
         self.horizontalLayout.addWidget(self.pushButton_Import)
         self.pushButton_Cancel = QtWidgets.QPushButton(importDialog)
@@ -70,3 +70,4 @@ class Ui_importDialog(object):
         db.openDatabase('../data/vocab.db')
         db.createTable(table_name)
         db.insertVocabWordList(table_name, word_list)
+        db.closeDatabase()

@@ -134,7 +134,7 @@ class SqlTools():
         print("Finished importing", self.db.total_changes, "entries.")
 
     if __name__ == "__main__":
-        from SQLTools import SqlTools
+        from ..utilities.SQLTools import SqlTools
         sys.path.insert(0, '/home/michael/PycharmProjects/cjk-trainer-master/cjk-trainer')
         tk = SqlTools()
         #tk.CSVtoSQLFile("Vocab", "outputSQL.db", "nihao3")
