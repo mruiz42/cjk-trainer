@@ -45,6 +45,7 @@ class Ui_MainWindow(object):
                     self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             conn.close()
 
+
     def __init__(self):
         self.indexOfCurrentDeck = 0
         self.nameOfCurrentDeck = ""

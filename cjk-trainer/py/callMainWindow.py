@@ -9,7 +9,10 @@ from py.utilities.SQLTools import *
 # TODO 02) Allow user to right click tables in QTableView
 # TODO SEPARATE "BUILT IN TABLES" (NON MODIFYABLE) & "USER DEFINED TABLES" (MODIFYABLE)
 # TODO 03) RCLICK = MODIFY TABLE, DELETE TABLE
-
+# TODO 04) MANAGE BUILT IN DATA STRUCTURE TO STORE STUDY SET DATA
+# TODO 05) SAVE STUDY SET DATA BACK TO THE SAME DATABASE TABLE
+# TODO 06) ADD OPTION FOR SHUFFLE AND SWAP DEFINITION/PRONUNCIATION/VOCABULARY FOR Q/A
+# TODO 07) CHECK IF THERES A BETTER WAY TO DISABLE TABS
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -24,6 +27,9 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
         self.ui.pushButton_wordList_add.clicked.connect(self.openImportDialog)
         self.ui.pushButton_wordList_select.clicked.connect(self.loadStudySet)
+        self.ui.tab_flashcards.setEnabled(False)
+        self.ui.tab_typing.setEnabled(False)
+        self.ui.tab_quiz.setEnabled(False)
         self.show()
 
     def setTextEnter(self):
@@ -39,7 +45,9 @@ class MainWindow(QMainWindow):
         win.ui.progressBar.reset()
         win.ui.progressBar.setRange(0, len(self.studySet)+1)
         win.ui.label_typingWord.setText(self.studySet[self.cardNum][1])
-
+        self.ui.tab_flashcards.setEnabled(True)
+        self.ui.tab_typing.setEnabled(True)
+        self.ui.tab_quiz.setEnabled(True)
 
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()
@@ -49,6 +57,9 @@ class MainWindow(QMainWindow):
             print("Correct!")
             win.ui.lineEdit_answer.clear()
 
+
+
+            #I'm using a TUPLE cx
             #self.studySet[self.cardNum][5] += 1
             #self.studySet[self.cardNum][6] += 1
 
