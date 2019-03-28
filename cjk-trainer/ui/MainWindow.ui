@@ -72,7 +72,7 @@
          <enum>QTabWidget::West</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>6</number>
         </property>
         <property name="iconSize">
          <size>
@@ -92,7 +92,7 @@
         <property name="tabBarAutoHide">
          <bool>false</bool>
         </property>
-        <widget class="QWidget" name="vocabTab">
+        <widget class="QWidget" name="tab_wordTable">
          <attribute name="title">
           <string>Word List</string>
          </attribute>
@@ -171,7 +171,7 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QPushButton" name="pushButton_wordList_study">
+               <widget class="QPushButton" name="pushButton_wordList_select">
                 <property name="text">
                  <string>Select</string>
                 </property>
@@ -201,7 +201,7 @@
               <item>
                <widget class="QLabel" name="deckName">
                 <property name="text">
-                 <string>null</string>
+                 <string>Selected Deck: </string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -224,7 +224,7 @@
              </layout>
             </item>
             <item>
-             <widget class="QTableWidget" name="wordList">
+             <widget class="QTableWidget" name="wordTable">
               <property name="editTriggers">
                <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
               </property>
@@ -249,7 +249,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="Flashcards">
+        <widget class="QWidget" name="tab_flashcards">
          <attribute name="title">
           <string>Flashcards</string>
          </attribute>
@@ -386,7 +386,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab">
+        <widget class="QWidget" name="tab_typing">
          <attribute name="title">
           <string>Typing</string>
          </attribute>
@@ -543,7 +543,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="tab_quiz">
          <attribute name="title">
           <string>Quiz</string>
          </attribute>
@@ -674,17 +674,17 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_3">
+        <widget class="QWidget" name="tab_tones">
          <attribute name="title">
           <string>Tones</string>
          </attribute>
         </widget>
-        <widget class="QWidget" name="tab_4">
+        <widget class="QWidget" name="tab_statistics">
          <attribute name="title">
           <string>Statistics</string>
          </attribute>
         </widget>
-        <widget class="QWidget" name="tab_5">
+        <widget class="QWidget" name="tab_settings">
          <attribute name="title">
           <string>Settings</string>
          </attribute>
