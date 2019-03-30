@@ -21,10 +21,15 @@ class SqlTools():
         #print("something")
         self.db.close()
 
-
-    def insertVocabWordList(self, table_name, vocabword_list):
-        self.db.executemany('INSERT INTO ' +table_name + ' VALUES (null,?,?,?,0,0,0)', vocabword_list)
+    def insertVocabWordList(self, table_name, headers, vocabword_list):
+        header_string = '(' + ','.join(headers + ['ATTEMPTED', 'CORRECT', 'STARRED']) + ')'
+        placeholders = '(' + ','.join(['?' for header in headers] + ['0', '0', '0']) + ')'
+        command = 'INSERT INTO ' + table_name + header_string + ' VALUES ' + placeholders
+        print(command)
+        # (null,?,?,?,0,0,0)
+        self.db.executemany(command, vocabword_list)
         self.db.commit()
+
 
     def createTable(self, table_name):
         #c = self.db.cursor()
@@ -41,11 +46,10 @@ class SqlTools():
                    "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
                    "VOCABULARY CHAR,"
                    "DEFINITION CHAR,"
-                   "ROMANIZATION CHAR,"
-                   "STARRED INT,"
+                   "PRONUNCIATION CHAR,"
                    "ATTEMPTED INT,"
-                   "CORRECT INT"
-                   ");")
+                   "CORRECT INT,"
+                   "STARRED INT);")
 
         # Extend table to include
         self.db.execute(command)

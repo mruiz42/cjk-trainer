@@ -1,13 +1,13 @@
 class VocabWord:
 
-    def __init__(self, cn, v, d, p="", starred=False, tc = 0, tm = 0):
+    def __init__(self, cn, v, d, p="", isStarred=False, ta = 0, tc = 0):
         self.cardNum = cn
         self.vocabulary = v
         self.definition = d
         self.pronunciation = p
+        self.isStarred = isStarred
+        self.timesAttempted = ta
         self.timesCorrect = tc
-        self.timesAttempted = tm
-        self.isStarred = False
 
     def __str__(self):
-        return self.vocabulary + "," + self.definition + self.pronunciation + str(self.timescorrect) + str(self.timesattempted) + str(self.isStarred)
+        return self.vocabulary + "," + self.definition + self.pronunciation + str(self.timesCorrect) + str(self.timesAttempted)

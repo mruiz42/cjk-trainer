@@ -31,13 +31,18 @@ class Ui_importDialog(object):
         self.pushButton_Import = QtWidgets.QPushButton(importDialog)
         self.pushButton_Import.setObjectName("pushButton_Import")
 
-        self.pushButton_Import.clicked.connect(self.accepted)  # ADD
-        self.pushButton_Cancel.clicked.connect(importDialog.reject) #ADD
 
         self.horizontalLayout.addWidget(self.pushButton_Import)
         self.pushButton_Cancel = QtWidgets.QPushButton(importDialog)
         self.pushButton_Cancel.setObjectName("pushButton_Cancel")
         self.horizontalLayout.addWidget(self.pushButton_Cancel)
+
+        self.pushButton_Import.clicked.connect(self.accepted)  # ADD
+        self.pushButton_Cancel.clicked.connect(importDialog.reject) #ADD
+
+
+
+
         self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(importDialog)
@@ -48,7 +53,7 @@ class Ui_importDialog(object):
         self.lineEdit.setPlaceholderText(
             QtWidgets.QApplication.translate("importDialog", "New Flashcard Deck", None, -1))
         self.plainTextEdit.setPlainText(
-            QtWidgets.QApplication.translate("importDialog", "<VOCABULARY><ROMANIZATION><DEFINITION>\n"
+            QtWidgets.QApplication.translate("importDialog", "<VOCABULARY><PRONUNCIATION><DEFINITION>\n"
                                                              "", None, -1))
         self.plainTextEdit.setPlaceholderText(
             QtWidgets.QApplication.translate("importDialog", "Default Format = <VOCABULARY><ROMANIZATION><DEFINITION> ",
@@ -62,12 +67,12 @@ class Ui_importDialog(object):
     def accepted(self):
         table_name = self.lineEdit.text()
         vocab_list = self.plainTextEdit.toPlainText().splitlines()
-        word_list = importDialogHelper(vocab_list)
+        headers, word_list = importDialogHelper(vocab_list)
         for i in word_list:
             print(i)
         print(table_name)
         db = SqlTools()
         db.openDatabase('../data/vocab.db')
         db.createTable(table_name)
-        db.insertVocabWordList(table_name, word_list)
+        db.insertVocabWordList(table_name, headers, word_list)
         db.closeDatabase()

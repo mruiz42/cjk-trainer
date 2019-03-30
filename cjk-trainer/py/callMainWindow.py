@@ -20,8 +20,10 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.studySet = []
+        self.summaryIndexList = []
         self.cardNum = 0
         self.ui.setupUi(self)
+        self.ui.tabWidget.currentChanged.connect(self.ui.tab_changed)
         self.ui.progressBar.reset()
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
@@ -52,7 +54,12 @@ class MainWindow(QMainWindow):
 
         db.close()
         self.studySet = [VocabWord(*t) for t in result]
-        print(self.studyset)
+
+        for i in range(10, len(self.studySet),10):
+            self.summaryIndexList.append(i)
+            #print(i)
+
+        print(self.studySet)
         win.ui.progressBar.reset()
         win.ui.progressBar.setRange(0, len(self.studySet)+1)
         win.ui.label_typingWord.setText(self.studySet[self.cardNum].vocabulary)
@@ -64,11 +71,11 @@ class MainWindow(QMainWindow):
         textValue = win.ui.lineEdit_answer.text()
         answerList = self.studySet[self.cardNum].definition.split(";")
         print("You entered: " + textValue + " $? " + ", ".join(answerList))
+        print(self.studySet[self.cardNum])
+
         if textValue in answerList:
             print("Correct!")
             win.ui.lineEdit_answer.clear()
-
-            #I'm using a TUPLE cx
 
             self.studySet[self.cardNum].timesCorrect += 1
             self.studySet[self.cardNum].timesAttempted += 1
@@ -104,6 +111,8 @@ class MainWindow(QMainWindow):
         print(self.cardNum, len(self.studySet))
         if self.cardNum == len(self.studySet):
             print("END GAME")
+        elif self.cardNum in self.summaryIndexList:
+            print("fuq")
         else:
             self.cardNum += 1
             win.ui.lineEdit_answer.setEnabled(True)

@@ -28,10 +28,13 @@ def importDialogHelper(line_list):
     '''This function will return a list of VocabWord objects'''
     # determine the format of input
     # i[0]
+    headers = line_list[0].strip('<').strip('>').split('><')
     word_list = []
-    for i in range(1, len(line_list)):
-        word_split = line_list[i].split(',')
+    for i in line_list[1:]:
+        word_split = i.split(',')
+        if i.lstrip()[0] == '#':
+            pass
         word_list.append(word_split)
-    return word_list
+    return headers, word_list
 
 #def
