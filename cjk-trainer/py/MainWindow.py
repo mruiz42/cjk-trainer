@@ -56,6 +56,7 @@ class Ui_MainWindow(object):
         self.buttonBox_wordList.setEnabled(False)
 
     def revertTable(self):
+        # self.wordTable.setSortingEnabled(False)
         print("reverting changes")
         self.wordTable.setRowCount(0)
         self.wordTable.clearContents()
@@ -67,18 +68,22 @@ class Ui_MainWindow(object):
             print("Row number: ", row_number)
             self.wordTable.insertRow(row_number)
             for column_number, data in enumerate(row_data):
-                print("Row data: ", row_data)
-                self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                print("Row data: ", row_data[column_number])
+                if column_number == 0:
+                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(data))
+                else:
+                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
         conn.close()
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
+
 
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
-            self.wordTable.setSortingEnabled(False)
+            #self.wordTable.setSortingEnabled(False)
             self.indexOfCurrentTable = index
             self.nameOfCurrentTable = index.data()
             self.wordTable.setRowCount(0)
@@ -90,8 +95,13 @@ class Ui_MainWindow(object):
             result = conn.execute('SELECT * FROM {}'.format(index.data()))
             for row_number, row_data in enumerate(result):
                 self.wordTable.insertRow(row_number)
+                print("Row number: ", row_number)
                 for column_number, data in enumerate(row_data):
-                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    print("Row data: ", row_data[column_number])
+                    if column_number == 0:
+                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(int(data)))
+                    else:
+                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             conn.close()
             self.wordTable.blockSignals(False)# Prevent a bug where cell changes would occur on table loading
 
