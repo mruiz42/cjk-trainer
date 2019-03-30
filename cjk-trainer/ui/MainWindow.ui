@@ -217,6 +217,44 @@
                 </property>
                </spacer>
               </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_searchQuery">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="placeholderText">
+                 <string>Search for a word</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_search">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>64</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Search</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
@@ -257,9 +295,10 @@
                <number>1</number>
               </property>
               <property name="columnCount">
-               <number>6</number>
+               <number>7</number>
               </property>
               <row/>
+              <column/>
               <column/>
               <column/>
               <column/>
@@ -274,7 +313,7 @@
                <bool>false</bool>
               </property>
               <property name="standardButtons">
-               <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+               <set>QDialogButtonBox::Cancel|QDialogButtonBox::Reset|QDialogButtonBox::Save</set>
               </property>
               <property name="centerButtons">
                <bool>false</bool>
