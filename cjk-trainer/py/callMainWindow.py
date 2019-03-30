@@ -150,6 +150,9 @@ if __name__ == "__main__":
     # Add to SQLTools so we have a local db and cur object to call from main without making a mess in main
     # Call this function to update the list of decks
     vocabTableList = db.tables()
+    if vocabTableList == 0:
+        print("Empty table.. Creating a starting point..")
+
     print(vocabTableList)
     listWidget = win.ui.deckList
     for i in vocabTableList:

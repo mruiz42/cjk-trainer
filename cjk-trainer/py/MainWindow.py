@@ -84,6 +84,7 @@ class Ui_MainWindow(object):
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
 
+    #def requestAddButtonContextMenu(self, position):
 
 
     #TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
@@ -298,11 +299,15 @@ class Ui_MainWindow(object):
         self.toolButton_add.setObjectName("toolButton_add")
 
         #Added - menu
+
+        self.toolButton_add.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         addMenu = QtWidgets.QMenu("addMenu", self.toolButton_add)
         newDeckTable = addMenu.addAction("Add new deck")
         importCSVAction = addMenu.addAction("Import CSV")
+        self.toolButton_add.setMenu(addMenu)
         self.toolButton_add.clicked.connect(self.addNewTable)
 
+        #action = addMenu.exec_()
 
 
         self.gridLayout.addWidget(self.toolButton_add, 0, 0, 1, 1)
