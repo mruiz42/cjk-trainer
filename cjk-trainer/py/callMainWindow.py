@@ -34,6 +34,8 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
+
+
         self.show()
 
 
@@ -47,7 +49,7 @@ class MainWindow(QMainWindow):
 
     def loadStudySet(self):
         db = sqlite3.connect('../data/vocab.db')
-        c = db.execute('SELECT * FROM {}'.format(win.ui.nameOfCurrentDeck))
+        c = db.execute('SELECT * FROM {}'.format(win.ui.nameOfCurrentTable))
         result = c.fetchall()
 
         #We have a tuple, now lets make a list of VocabWord objects
@@ -66,6 +68,8 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(True)
         self.ui.tab_typing.setEnabled(True)
         self.ui.tab_quiz.setEnabled(True)
+        self.ui.wordTable.itemChanged.connect(win.ui.enableSave)
+
 
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()
@@ -154,9 +158,9 @@ if __name__ == "__main__":
     listWidget.show()
     db.close()
 
-    win.ui.nameOfCurrentDeck = listWidget.item(0).data(0)
-    print(win.ui.nameOfCurrentDeck)
-    dbname = win.ui.nameOfCurrentDeck
+    win.ui.nameOfCurrentTable = listWidget.item(0).data(0)
+    print(win.ui.nameOfCurrentTable)
+    dbname = win.ui.nameOfCurrentTable
     conn = sqlite3.connect("../data/vocab.db")
     c = conn.execute('SELECT * FROM {}'.format(dbname))
     result = c.fetchall()

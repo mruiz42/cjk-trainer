@@ -15,6 +15,15 @@ import sqlite3
 
 
 class Ui_MainWindow(object):
+
+
+    def __init__(self):
+        self.indexOfModifiedCellsList = []
+        self.indexOfCurrentTable = 0
+        self.nameOfCurrentTable = ""
+
+
+
     # def getListSelection(self):
     #     model = self.deckList.model()
     #     string = model.index(0)
@@ -24,37 +33,59 @@ class Ui_MainWindow(object):
         print("tab changed?")
         pass
 
+
+    def enableSave(self):
+        ''' This function will enable the buttonBox_wordList features to enable table modification'''
+        self.buttonBox_wordList.setEnabled(True)
+        if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedCellsList:
+            self.indexOfModifiedCellsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
+        print ("Modified index:", self.wordTable.row(self.wordTable.selectedItems()[0]))
+
+
+    def saveTable(self):
+        print("save table")
+        conn = sqlite3.connect('../data/vocab.db')
+
+
+        conn.close()
+
+    def revertTable(self):
+        print("reverting changes")
+        self.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+        conn = sqlite3.connect('../data/vocab.db')
+        result = conn.execute('SELECT * FROM {}'.format(self.nameOfCurrentTable))
+        for row_number, row_data in enumerate(result):
+            self.wordTable.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        conn.close()
+        self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        self.buttonBox_wordList.setEnabled(False)
+
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
-        if index == self.indexOfCurrentDeck or index == False:  # I guess sometimes its false :S
+        if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
-            self.indexOfCurrentDeck = index
-            self.nameOfCurrentDeck = index.data()
+            self.indexOfCurrentTable = index
+            self.nameOfCurrentTable = index.data()
             self.wordTable.setRowCount(0)
             self.wordTable.clearContents()
-
             self.wordTable.reset()
+            self.wordTable.blockSignals(True)   # Prevent a bug where cell changes would occur on table loading
             self.label_deckName.setText("Selected Deck: {}".format(index.data()))
             conn = sqlite3.connect('../data/vocab.db')
             result = conn.execute('SELECT * FROM {}'.format(index.data()))
-            self.wordTable.setRowCount(0)
-            self.wordTable.setColumnCount(
-                6)  # This number should be fixed. In header file, try to fix widths. Columns will be static
             for row_number, row_data in enumerate(result):
                 self.wordTable.insertRow(row_number)
                 for column_number, data in enumerate(row_data):
                     self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             conn.close()
-            # Added Header Labels
-            self.wordTable.setHorizontalHeaderLabels(
-                ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
-            self.wordTable.setColumnHidden(0, True)
-            self.wordTable.setColumnWidth(2, 300)
-            self.wordTable.setColumnWidth(3, 191)
-    def __init__(self):
-        self.indexOfCurrentDeck = 0
-        self.nameOfCurrentDeck = ""
+            self.wordTable.blockSignals(False)# Prevent a bug where cell changes would occur on table loading
+
+        self.wordTable.itemChanged.connect(self.enableSave)
+        self.buttonBox_wordList.setEnabled(False)
+
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -174,26 +205,40 @@ class Ui_MainWindow(object):
         self.wordTable.setTextElideMode(QtCore.Qt.ElideRight)
         self.wordTable.setShowGrid(True)
         self.wordTable.setGridStyle(QtCore.Qt.DotLine)
-        self.wordTable.setRowCount(1)
-        self.wordTable.setColumnCount(5)
         self.wordTable.setObjectName("wordTable")
 
 
         #I changed this stuff to initialize to standard size
         self.wordTable.setColumnCount(7)
         self.wordTable.setRowCount(1)
-
+        # Added Header Labels
+        self.wordTable.setHorizontalHeaderLabels(
+            ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
         self.wordTable.setColumnHidden(0, True)
-        self.wordTable.setColumnWidth(2, 300)
-        self.wordTable.setColumnWidth(3, 191)
+        self.wordTable.setColumnWidth(1, 210)
+        self.wordTable.setColumnWidth(2, 210)
+        self.wordTable.setColumnWidth(3, 200)
+
 
 
         self.verticalLayout_12.addWidget(self.wordTable)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)
+
+        self.buttonBox_wordList.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Save)
+
+        # Added Modified - be careful
         self.buttonBox_wordList.setEnabled(False)
-        self.buttonBox_wordList.setStandardButtons(QtWidgets.QDialogButtonBox.Discard | QtWidgets.QDialogButtonBox.Save)
+        self.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
+
         self.buttonBox_wordList.setCenterButtons(False)
         self.buttonBox_wordList.setObjectName("buttonBox_wordList")
+        # Added buttonBox_wordList bindings
+        self.buttonBox_wordList.accepted.connect(self.saveTable)
+        self.buttonBox_wordList.rejected.connect(self.revertTable)
+
+
+
+
         self.verticalLayout_12.addWidget(self.buttonBox_wordList)
         self.horizontalLayout_3.addLayout(self.verticalLayout_12)
         self.tabWidget.addTab(self.tab_wordTable, "")

@@ -172,17 +172,17 @@
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout">
-              <item row="0" column="1">
-               <widget class="QPushButton" name="pushButton_wordList_add">
-                <property name="text">
-                 <string>Add</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="2">
                <widget class="QPushButton" name="pushButton_wordList_select">
                 <property name="text">
                  <string>Select</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="pushButton_wordList_add">
+                <property name="text">
+                 <string>Add</string>
                 </property>
                </widget>
               </item>
@@ -257,9 +257,10 @@
                <number>1</number>
               </property>
               <property name="columnCount">
-               <number>5</number>
+               <number>6</number>
               </property>
               <row/>
+              <column/>
               <column/>
               <column/>
               <column/>
@@ -273,7 +274,7 @@
                <bool>false</bool>
               </property>
               <property name="standardButtons">
-               <set>QDialogButtonBox::Discard|QDialogButtonBox::Save</set>
+               <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
               </property>
               <property name="centerButtons">
                <bool>false</bool>
