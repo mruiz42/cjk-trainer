@@ -55,6 +55,15 @@ class Ui_MainWindow(object):
             self.checkUserTableEdit(rowData)
             print("UPDATING TABLE DATA!", rowData)
 
+            command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
+                                                            "ATTEMPTED=?, CORRECT=?, STARRED=? " \
+                                                            " WHERE CARDNUM= " + str(rowData.pop(0))
+            print(command)
+            conn.execute(command, rowData)
+            conn.commit()
+
+
+
 
         conn.close()
         self.indexOfModifiedRowsList.clear()
@@ -132,7 +141,7 @@ class Ui_MainWindow(object):
                 print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
                 row[4] = 0
                 row[5] = 0
-                row[i] = 0
+                #row[i] = 0
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
