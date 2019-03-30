@@ -84,21 +84,56 @@ class Ui_MainWindow(object):
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
 
-    # def customMenuRequested(self, event):
-    def customMenuRequested(self, position):
 
+
+    #TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
+    # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
+    # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
+    # THE CORRECT CARD NUM
+    def requestWordTableContextMenu(self, position):
         print("CUSTOME MENU REQ")
-        contextMenu = QtWidgets.QMenu("String")
-        contextMenu.addAction("Insert Row")
-        contextMenu.addAction("Update Row")
-        contextMenu.addAction("Delete Row")
-
-        # newAction = contextMenu.addAction("new action")
-        # action = contextMenu.exec_(self.mapToGlobal(event.pos()))
+        contextMenu = QtWidgets.QMenu("contextMenu")
+        insertAction = contextMenu.addAction("Insert Row")
+        updateAction = contextMenu.addAction("Update Row")
+        deleteAction = contextMenu.addAction("Delete Row")
         action = contextMenu.exec_(self.wordTable.mapToGlobal(position))
+        if action == insertAction:
+            self.insertTableRow()
+        elif action == updateAction:
+            self.updateTableRow()
+        elif action == deleteAction:
+            self.dropTable()
 
+    def requestDeckViewContextMenu(self, position):
+        print("CUSTOME MENU REQ")
+        contextMenuDeckView = QtWidgets.QMenu("contextMenu")
+        addAction = contextMenuDeckView.addAction("Add Table")
+        deleteAction = contextMenuDeckView.addAction("Delete Table")
+        action = contextMenuDeckView.exec_(self.deckList.mapToGlobal(position))
+        if action == addAction:
+            print("Creating a new deck..")
+            self.addNewTable()
+        elif action == deleteAction:
+            print("Deleting selected deck..")
+            print("Are you sure you want to do this?")
+            self.dropTable()
 
+    def insertTableRow(self):
+        print("Inserting row..")
+        # To complete, this must be able to GUESS which is the correct cardNum
+        self.wordTable.setRowCount(self.wordTable.rowCount() + 1)
 
+    def updateTableRow(self):
+        print("Updating row..")
+
+    def deleteTableRow(self):
+        print("Deleting row..")
+
+    def addNewTable(self):
+        print("adding new table")
+    def dropTable(self):
+        print("Deleting deck..")
+        self.on_clicked(self.deckList.selectedIndexes()[0])
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
@@ -129,6 +164,8 @@ class Ui_MainWindow(object):
         self.wordTable.itemChanged.connect(self.enableSave)
         self.buttonBox_wordList.setEnabled(False)
 
+
+
     def checkUserTableEdit(self, row):
         '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
         try:
@@ -149,7 +186,6 @@ class Ui_MainWindow(object):
                 row[5] = 0
                 # row[i] = 0
 
-
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(960, 720)
@@ -160,7 +196,8 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMaximumSize(QtCore.QSize(960, 720))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../../../../.designer/icons/appicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # Added path
+        icon.addPixmap(QtGui.QPixmap("../ico/appicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
@@ -234,6 +271,7 @@ class Ui_MainWindow(object):
         # Added - Prevent user from dragging list view objs
         self.deckList.setDragEnabled(False)
         self.deckList.clicked.connect(self.on_clicked)
+        self.deckList.customContextMenuRequested.connect(self.requestDeckViewContextMenu)
 
 
         self.verticalLayout_5.addWidget(self.deckList)
@@ -260,11 +298,10 @@ class Ui_MainWindow(object):
         self.toolButton_add.setObjectName("toolButton_add")
 
         #Added - menu
-        addMenu = QtWidgets.QMenu("Table add", self.toolButton_add)
-        addMenu.addAction("Create new deck")
-        addMenu.addAction("Import CSV")
-        self.toolButton_add.setMenu(addMenu)
-
+        addMenu = QtWidgets.QMenu("addMenu", self.toolButton_add)
+        newDeckTable = addMenu.addAction("Add new deck")
+        importCSVAction = addMenu.addAction("Import CSV")
+        self.toolButton_add.clicked.connect(self.addNewTable)
 
 
 
@@ -331,7 +368,7 @@ class Ui_MainWindow(object):
         self.wordTable.setColumnWidth(1, 210)
         self.wordTable.setColumnWidth(2, 210)
         self.wordTable.setColumnWidth(3, 200)
-        self.wordTable.customContextMenuRequested.connect(self.customMenuRequested)
+        self.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
 
 
 
