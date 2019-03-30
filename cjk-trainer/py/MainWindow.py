@@ -84,6 +84,21 @@ class Ui_MainWindow(object):
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
 
+    # def customMenuRequested(self, event):
+    def customMenuRequested(self, position):
+
+        print("CUSTOME MENU REQ")
+        contextMenu = QtWidgets.QMenu("String")
+        contextMenu.addAction("Insert Row")
+        contextMenu.addAction("Update Row")
+        contextMenu.addAction("Delete Row")
+
+        # newAction = contextMenu.addAction("new action")
+        # action = contextMenu.exec_(self.mapToGlobal(event.pos()))
+        action = contextMenu.exec_(self.wordTable.mapToGlobal(position))
+
+
+
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
@@ -95,6 +110,7 @@ class Ui_MainWindow(object):
             self.wordTable.setRowCount(0)
             self.wordTable.clearContents()
             self.wordTable.reset()
+
             self.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
             self.label_deckName.setText("Selected Deck: {}".format(index.data()))
             conn = sqlite3.connect('../data/vocab.db')
@@ -249,6 +265,9 @@ class Ui_MainWindow(object):
         addMenu.addAction("Import CSV")
         self.toolButton_add.setMenu(addMenu)
 
+
+
+
         self.gridLayout.addWidget(self.toolButton_add, 0, 0, 1, 1)
         self.verticalLayout_5.addLayout(self.gridLayout)
         self.horizontalLayout_3.addLayout(self.verticalLayout_5)
@@ -312,6 +331,9 @@ class Ui_MainWindow(object):
         self.wordTable.setColumnWidth(1, 210)
         self.wordTable.setColumnWidth(2, 210)
         self.wordTable.setColumnWidth(3, 200)
+        self.wordTable.customContextMenuRequested.connect(self.customMenuRequested)
+
+
 
         self.verticalLayout_12.addWidget(self.wordTable)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)
