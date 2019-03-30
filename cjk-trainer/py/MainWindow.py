@@ -11,7 +11,7 @@
 
 from py.utilities.KeyPressEater import KeyPressEater
 from PySide2 import QtCore, QtGui, QtWidgets
-from py.ImportDeck import *
+from py.callImportDeck import *
 import sqlite3
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -84,8 +84,6 @@ class Ui_MainWindow(object):
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
 
-    #def requestAddButtonContextMenu(self, position):
-
 
     #TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
@@ -135,6 +133,13 @@ class Ui_MainWindow(object):
     def dropTable(self):
         print("Deleting deck..")
         self.on_clicked(self.deckList.selectedIndexes()[0])
+
+    def openImportCSVDialogue(self):
+        print("open impirt csv dialge")
+        self.w = ImportDeck()
+        self.w.show()
+
+
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
@@ -285,6 +290,9 @@ class Ui_MainWindow(object):
         # Added - Connect
         self.pushButton_wordList_select.clicked.connect(self.on_clicked)
 
+
+
+
         self.gridLayout.addWidget(self.pushButton_wordList_select, 0, 1, 1, 1)
         self.toolButton_add = QtWidgets.QToolButton(self.tab_wordTable)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -298,16 +306,15 @@ class Ui_MainWindow(object):
         self.toolButton_add.setArrowType(QtCore.Qt.NoArrow)
         self.toolButton_add.setObjectName("toolButton_add")
 
-        #Added - menu
-
+        #Added - toolButton menu
         self.toolButton_add.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         addMenu = QtWidgets.QMenu("addMenu", self.toolButton_add)
-        newDeckTable = addMenu.addAction("Add new deck")
+        newListTableAction = addMenu.addAction("Add new deck")
         importCSVAction = addMenu.addAction("Import CSV")
         self.toolButton_add.setMenu(addMenu)
         self.toolButton_add.clicked.connect(self.addNewTable)
-
-        #action = addMenu.exec_()
+        newListTableAction.triggered.connect(self.addNewTable)
+        importCSVAction.triggered.connect(self.openImportCSVDialogue)
 
 
         self.gridLayout.addWidget(self.toolButton_add, 0, 0, 1, 1)
