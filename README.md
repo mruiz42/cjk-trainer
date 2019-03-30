@@ -1,10 +1,7 @@
 # CJK-Trainer
 A program geared towards native English speakers to facilitate CJK language vocabulary building. 
 
-![alt text](https://i.imgur.com/mSwAeDi.png)
-# Version 0.02 alpha! 2019-09-02
-Release Notes
-Currently developing sql queries and database functions (2019-09-02)
+![alt text](https://i.imgur.com/WlsklX7.png)
 
 
 Previously based on PyQt5, transitioned to PySide2 as it is now the officially supported python binding for the  qt framework.
