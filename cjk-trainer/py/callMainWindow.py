@@ -25,11 +25,12 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.tabWidget.currentChanged.connect(self.ui.tab_changed)
         self.ui.progressBar.reset()
+
+
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
         self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
-        self.ui.pushButton_wordList_add.clicked.connect(self.openImportDialog)
         self.ui.pushButton_wordList_select.clicked.connect(self.loadStudySet)
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
