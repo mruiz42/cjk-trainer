@@ -38,6 +38,7 @@ class Ui_MainWindow(object):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
         self.buttonBox_wordList.setEnabled(True)
         if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedRowsList:
+
             self.indexOfModifiedRowsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
         print ("Modified index:", self.wordTable.row(self.wordTable.selectedItems()[0]))
 
@@ -45,18 +46,23 @@ class Ui_MainWindow(object):
     def saveTable(self):
         print("save table")
         conn = sqlite3.connect('../data/vocab.db')
-        rowData = []
         for i in self.indexOfModifiedRowsList:
-            print(i)
+            rowData = []
+            print("Updating table at card Num:", i + 1) # cardnum is one ahead of actual index?
             for j in range(0, self.wordTable.columnCount()):
                 print(j, "Table data", self.wordTable.item(i, j).text())
+                rowData.append(self.wordTable.item(i, j).text())
+            self.checkUserTableEdit(rowData)
+            print("UPDATING TABLE DATA!", rowData)
+
 
         conn.close()
         self.indexOfModifiedRowsList.clear()
         self.buttonBox_wordList.setEnabled(False)
 
+
     def revertTable(self):
-        # self.wordTable.setSortingEnabled(False)
+        self.wordTable.setSortingEnabled(False)
         print("reverting changes")
         self.wordTable.setRowCount(0)
         self.wordTable.clearContents()
@@ -70,7 +76,7 @@ class Ui_MainWindow(object):
             for column_number, data in enumerate(row_data):
                 print("Row data: ", row_data[column_number])
                 if column_number == 0:
-                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(data))
+                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                 else:
                     self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
         conn.close()
@@ -83,7 +89,7 @@ class Ui_MainWindow(object):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
-            #self.wordTable.setSortingEnabled(False)
+            self.wordTable.setSortingEnabled(False)
             self.indexOfCurrentTable = index
             self.nameOfCurrentTable = index.data()
             self.wordTable.setRowCount(0)
@@ -99,15 +105,34 @@ class Ui_MainWindow(object):
                 for column_number, data in enumerate(row_data):
                     print("Row data: ", row_data[column_number])
                     if column_number == 0:
-                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(int(data)))
+                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                     else:
                         self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             conn.close()
             self.wordTable.blockSignals(False)# Prevent a bug where cell changes would occur on table loading
-
         self.wordTable.itemChanged.connect(self.enableSave)
         self.buttonBox_wordList.setEnabled(False)
 
+
+    def checkUserTableEdit(self, row):
+        '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
+        try:
+            row[0] =int(row[0])
+        except ValueError:
+            print("FATAL ERROR, PRIMARY KEY HAS BEEN EDITED!")
+            return False
+        if row[6] != 0 and row[6]!= 1:
+            print("Resetting isStarred to 0")
+            row[6] = 0
+        indexesToConvert = [4, 5, 6]
+        for i in indexesToConvert:
+            try:
+                row[i] = int(row[i])
+            except ValueError:
+                print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
+                row[4] = 0
+                row[5] = 0
+                row[i] = 0
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -236,7 +261,7 @@ class Ui_MainWindow(object):
         # Added Header Labels
         self.wordTable.setHorizontalHeaderLabels(
             ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
-        #self.wordTable.setColumnHidden(0, True)
+        self.wordTable.setColumnHidden(0, True)
         self.wordTable.setColumnWidth(1, 210)
         self.wordTable.setColumnWidth(2, 210)
         self.wordTable.setColumnWidth(3, 200)
@@ -504,7 +529,7 @@ class Ui_MainWindow(object):
         self.pushButton_wordList_add.setText(QtWidgets.QApplication.translate("MainWindow", "Add", None, -1))
         self.pushButton_wordList_select.setText(QtWidgets.QApplication.translate("MainWindow", "Select", None, -1))
         self.label_deckName.setText(QtWidgets.QApplication.translate("MainWindow", "Selected Deck: ", None, -1))
-        self.wordTable.setSortingEnabled(True)
+        self.wordTable.setSortingEnabled(False)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_wordTable),
                                   QtWidgets.QApplication.translate("MainWindow", "Word List", None, -1))
         self.label_typingWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
@@ -547,4 +572,3 @@ class Ui_MainWindow(object):
         self.actionUserGuide.setText(QtWidgets.QApplication.translate("MainWindow", "&User Guide", None, -1))
         self.actionAbout.setText(QtWidgets.QApplication.translate("MainWindow", "About", None, -1))
         self.actionDonate.setText(QtWidgets.QApplication.translate("MainWindow", "Donate", None, -1))
-

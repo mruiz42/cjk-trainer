@@ -313,7 +313,7 @@
                <bool>false</bool>
               </property>
               <property name="standardButtons">
-               <set>QDialogButtonBox::Cancel|QDialogButtonBox::Reset|QDialogButtonBox::Save</set>
+               <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
               </property>
               <property name="centerButtons">
                <bool>false</bool>
