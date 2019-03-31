@@ -133,10 +133,10 @@ class Ui_MainWindow(object):
         # To complete, this must be able to GUESS which is the correct cardNum
         self.wordTable.insertRow(self.wordTable.rowCount())
 
-        for i in range (1, 6):
+        for i in range (4, 7):
             newItem = QtWidgets.QTableWidgetItem()
             newItem.setText("0")
-            self.wordTable.setItem(self.wordTable.rowCount(), i, newItem)
+            self.wordTable.setItem(self.wordTable.rowCount() -1, i, newItem)
             print(newItem.text())
 
 
