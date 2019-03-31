@@ -15,7 +15,8 @@ from py.callImportDeck import *
 import sqlite3
 from PySide2 import QtCore, QtGui, QtWidgets
 
-
+#TODO CHECK IF THE USER IS INPUTTING BLANK TABLE FIELDS
+#TODO CAN USE SETCELLWIDGET TO INCLUDE A CHECKBOX FOR STARRED -- CUSTOM ICON?
 class Ui_MainWindow(object):
 
 
@@ -43,14 +44,25 @@ class Ui_MainWindow(object):
     def saveTable(self):
         print("save table")
         conn = sqlite3.connect('../data/vocab.db')
+
+        # chekc for empty fields before input
+        for i in self.indexOfModifiedRowsList:
+            for j in range(0, self.wordTable.columnCount()):
+                try:
+                    print(j, "Table data", self.wordTable.item(i, j).text())
+                except AttributeError:
+                    print("ValueError: removing index: ", self.indexOfModifiedRowsList.pop(i), " from edit queue")
+                    break
+
         for i in self.indexOfModifiedRowsList:
             rowData = []
-            print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
+
             for j in range(0, self.wordTable.columnCount()):
                 print(j, "Table data", self.wordTable.item(i, j).text())
                 rowData.append(self.wordTable.item(i, j).text())
             self.checkUserTableEdit(rowData)
             print("UPDATING TABLE DATA!", rowData)
+            print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
 
             command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
                                                             "ATTEMPTED=?, CORRECT=?, STARRED=? " \
@@ -119,11 +131,27 @@ class Ui_MainWindow(object):
     def insertTableRow(self):
         print("Inserting row..")
         # To complete, this must be able to GUESS which is the correct cardNum
-        self.wordTable.setRowCount(self.wordTable.rowCount() + 1)
+        self.wordTable.insertRow(self.wordTable.rowCount())
+
+        for i in range (1, 6):
+            newItem = QtWidgets.QTableWidgetItem()
+            newItem.setText("0")
+            self.wordTable.setItem(self.wordTable.rowCount(), i, newItem)
+            print(newItem.text())
+
+
+
 
     def autoInsertTableRow(self):
+        #TODO USING TAB SHIFT TO GO BACKWARDS MAKES YOU GO EDIT THE 3 NUMERICAAL FIELDS.
+        # MAYBE DISABLE THESE 3 DURING EDITING??
         '''This function will insert a new row when the user switches off of the last tab'''
         print(self.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", self.wordTable.rowCount(), self.wordTable.columnCount())
+
+
+        # if self.wordTable.currentRow() == self.wordTable.rowCount() and self.wordTable.currentColumn() == 0:
+        #     self.wordTable.setCurrentCell(self.wordTable.currentRow(), 0)
+        #     self.wordTable.editItem(self.wordTable.currentItem())
 
         # Check if we are on the pronun col, if so, hop to the next row
         if self.wordTable.currentIndex().column() == 3:
@@ -131,8 +159,9 @@ class Ui_MainWindow(object):
             # However, if the next row doesn't exist, we must first create it
             if self.wordTable.currentIndex().row() == self.wordTable.rowCount() - 1:
                 self.insertTableRow()
+
             self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
-        self.wordTable.editItem(self.wordTable.currentItem())
+            #self.wordTable.editItem(self.wordTable.currentItem())
 
 
 
