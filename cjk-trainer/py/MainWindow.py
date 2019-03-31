@@ -21,8 +21,9 @@ class Ui_MainWindow(object):
 
 
     def __init__(self):
-        self.indexOfModifiedRowsList = []
-        self.indexOfDeletedRowsList = []
+        self.indexOfAddedRowsSet = set()
+        self.indexOfModifiedRowsSet = set()
+        self.indexOfDeletedRowsSet = set()
         self.indexOfCurrentTable = 0
         self.nameOfCurrentTable = ""
 
@@ -35,34 +36,48 @@ class Ui_MainWindow(object):
         print("tab changed?")
         pass
 
+
+    # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
         self.buttonBox_wordList.setEnabled(True)
-        if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedRowsList:
-            self.indexOfModifiedRowsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
-        print("Modified index:", self.wordTable.row(self.wordTable.selectedItems()[0]))
+        # if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedRowsList:
+        #     self.indexOfModifiedRowsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
+        if self.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
+            self.indexOfModifiedRowsSet.add(self.wordTable.currentRow())
+        print("Modified index:", self.wordTable.currentRow())
 
     def saveTable(self):
         print("save table")
         conn = sqlite3.connect('../data/vocab.db')
 
-        indices = []
+        newModifyIndices = set()
+
+        print(self.indexOfModifiedRowsSet, self.indexOfAddedRowsSet)
+        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
+        print(self.indexOfModifiedRowsSet, self.indexOfAddedRowsSet)
+
 
         # chekc for empty fields before input
-        for i in self.indexOfModifiedRowsList:
-            print(i, "in", self.indexOfModifiedRowsList)
+        for i in self.indexOfModifiedRowsSet:
+            print(i, "in", self.indexOfModifiedRowsSet)
             try:
                 for j in range(0, self.wordTable.columnCount()):
                     print(j, " Table data '", self.wordTable.item(i, j).text(), "'", sep='')
 
-                indices.append(i)
+                newModifyIndices.add(i)
 
             except (AttributeError, ValueError):
                 print("ValueError: removing index: ", i, " from edit queue")
 
-        self.indexOfModifiedRowsList = indices
+        self.indexOfModifiedRowsSet = newModifyIndices
 
-        for i in self.indexOfModifiedRowsList:
+
+
+
+
+
+        for i in self.indexOfModifiedRowsSet:
             rowData = []
 
             for j in range(0, self.wordTable.columnCount()):
@@ -79,7 +94,11 @@ class Ui_MainWindow(object):
             conn.execute(command, rowData)
             conn.commit()
         conn.close()
-        self.indexOfModifiedRowsList.clear()
+
+
+
+
+        self.indexOfModifiedRowsSet.clear()
         self.buttonBox_wordList.setEnabled(False)
 
 
@@ -105,7 +124,7 @@ class Ui_MainWindow(object):
         conn.close()
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
-    #TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
+    # TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
     # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
     # THE CORRECT CARD NUM
@@ -139,9 +158,12 @@ class Ui_MainWindow(object):
             self.dropTable()
 
     def insertTableRow(self):
-        print("Inserting row..")
         # To complete, this must be able to GUESS which is the correct cardNum
+        # UNLESS, AUTOINCREMENT gives us a primary key automagically, we'll see
         self.wordTable.insertRow(self.wordTable.rowCount())
+        # We can assume that since we add it to the end, the index of the inserted row will be at the end
+        self.indexOfAddedRowsSet.add(self.wordTable.currentRow())
+        print("Inserting row..", self.wordTable.rowCount())
         for i in range (0, 7):
             newItem = QtWidgets.QTableWidgetItem()
             self.wordTable.setItem(self.wordTable.rowCount() - 1, i, newItem)
