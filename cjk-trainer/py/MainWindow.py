@@ -83,8 +83,6 @@ class Ui_MainWindow(object):
         conn.close()
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
-
-
     #TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
     # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
@@ -105,6 +103,7 @@ class Ui_MainWindow(object):
 
     def requestDeckViewContextMenu(self, position):
         print("CUSTOME MENU REQ")
+        self.on_clicked(self.deckList.currentIndex())
         contextMenuDeckView = QtWidgets.QMenu("contextMenu")
         addAction = contextMenuDeckView.addAction("Add Table")
         deleteAction = contextMenuDeckView.addAction("Delete Table")
@@ -122,6 +121,23 @@ class Ui_MainWindow(object):
         # To complete, this must be able to GUESS which is the correct cardNum
         self.wordTable.setRowCount(self.wordTable.rowCount() + 1)
 
+    def autoInsertTableRow(self):
+        '''This function will insert a new row when the user switches off of the last tab'''
+        print(self.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", self.wordTable.rowCount(), self.wordTable.columnCount())
+
+        # Check if we are on the pronun col, if so, hop to the next row
+        if self.wordTable.currentIndex().column() == 3:
+            print ("Last column")
+            # However, if the next row doesn't exist, we must first create it
+            if self.wordTable.currentIndex().row() == self.wordTable.rowCount() - 1:
+                self.insertTableRow()
+            self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
+        self.wordTable.editItem(self.wordTable.currentItem())
+
+
+
+            #self.wordTable.selectColumn(self.wordTable.currentRow())
+
     def updateTableRow(self):
         print("Updating row..")
 
@@ -132,7 +148,6 @@ class Ui_MainWindow(object):
         print("adding new table")
     def dropTable(self):
         print("Deleting deck..")
-        self.on_clicked(self.deckList.selectedIndexes()[0])
 
     def openImportCSVDialogue(self):
         print("open impirt csv dialge")
@@ -291,8 +306,6 @@ class Ui_MainWindow(object):
         self.pushButton_wordList_select.clicked.connect(self.on_clicked)
 
 
-
-
         self.gridLayout.addWidget(self.pushButton_wordList_select, 0, 1, 1, 1)
         self.toolButton_add = QtWidgets.QToolButton(self.tab_wordTable)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -382,7 +395,8 @@ class Ui_MainWindow(object):
         self.wordTable.setColumnWidth(3, 200)
         self.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
 
-
+        #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
+        self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
 
         self.verticalLayout_12.addWidget(self.wordTable)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)
