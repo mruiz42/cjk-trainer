@@ -1,4 +1,4 @@
-# CJK-
+# CJK-Trainer
 A program geared towards native English speakers to facilitate language vocabulary building. However, I want this to be as modular as possible, so that any language can be studied using this software.
 
 ![alt text](https://i.imgur.com/WlsklX7.png)
