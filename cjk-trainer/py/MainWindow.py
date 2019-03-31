@@ -49,40 +49,40 @@ class Ui_MainWindow(object):
 
     def saveTable(self):
         print("save table")
+
+
+
+        # # chekc for empty fields before input
+        # newModifyIndices = set()
+        # for i in self.indexOfModifiedRowsSet:
+        #     print(i, "in", self.indexOfModifiedRowsSet)
+        #     try:
+        #         for j in range(0, self.wordTable.columnCount()):
+        #             print(j, " Table data '", self.wordTable.item(i, j).text(), "'", sep='')
+        #
+        #         newModifyIndices.add(i)
+        #
+        #     except (AttributeError, ValueError):
+        #         print("ValueError: removing index: ", i, " from edit queue")
+        #
+        # self.indexOfModifiedRowsSet = newModifyIndices
+
+
+
+
+        print("SENDING MODIFIED ENTRIES TO DATABASE")
         conn = sqlite3.connect('../data/vocab.db')
-
-        newModifyIndices = set()
-
-        print(self.indexOfModifiedRowsSet, self.indexOfAddedRowsSet)
-        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
-        print(self.indexOfModifiedRowsSet, self.indexOfAddedRowsSet)
-
-
-        # chekc for empty fields before input
-        for i in self.indexOfModifiedRowsSet:
-            print(i, "in", self.indexOfModifiedRowsSet)
-            try:
-                for j in range(0, self.wordTable.columnCount()):
-                    print(j, " Table data '", self.wordTable.item(i, j).text(), "'", sep='')
-
-                newModifyIndices.add(i)
-
-            except (AttributeError, ValueError):
-                print("ValueError: removing index: ", i, " from edit queue")
-
-        self.indexOfModifiedRowsSet = newModifyIndices
-
-
-
-
-
-
         for i in self.indexOfModifiedRowsSet:
             rowData = []
-
             for j in range(0, self.wordTable.columnCount()):
                 print(j, "Table data", self.wordTable.item(i, j).text())
                 rowData.append(self.wordTable.item(i, j).text())
+
+        if rowData[0] or rowData[1] or rowData[2] == "":
+            print(rowData)
+            print("Empty critical slot found, refusing insert into table") ### WTF? it shouldnt hit this condition tho
+
+        else:
             self.checkUserTableEdit(rowData)
             print("UPDATING TABLE DATA!", rowData)
             print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
@@ -95,9 +95,42 @@ class Ui_MainWindow(object):
             conn.commit()
         conn.close()
 
+        # Check if last row has valid data
+        try:
+            print(self.wordTable.item(self.wordTable.rowCount(), 1).text())
+        except (AttributeError, ValueError):
+            print("garbage data in last row")
+            try:
+                self.indexOfAddedRowsSet.remove(self.wordTable.rowCount())
+            except KeyError:
+                print("last row seems good")
 
+        conn = sqlite3.connect('../data/vocab.db')
+        for i in self.indexOfAddedRowsSet:
+            print("SENDING INSERTED TABLES INTO DATABASE")
+            rowData = []
+            print(i)
+            for j in range(0, self.wordTable.columnCount()):
+                print(j, "Table data", self.wordTable.item(i, j).text())
+                rowData.append(self.wordTable.item(i, j).text())
 
+            print(rowData)
+            if rowData[1] or rowData[2] == '':
+                continue
+                print("Empty critical slot found, refusing insert into table")
+            else:
+                self.checkUserTableEdit(rowData)
+                print("INSERTING TABLE DATA!", rowData)
+                print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
 
+                command = "INSERT INTO " + self.nameOfCurrentTable + " (VOCABULARY, DEFINITION, PRONUNCIATION" \
+                                                                     "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
+                print(command)
+                conn.execute(command, rowData)
+                conn.commit()
+        conn.close()
+
+        self.indexOfAddedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
         self.buttonBox_wordList.setEnabled(False)
 
@@ -162,7 +195,7 @@ class Ui_MainWindow(object):
         # UNLESS, AUTOINCREMENT gives us a primary key automagically, we'll see
         self.wordTable.insertRow(self.wordTable.rowCount())
         # We can assume that since we add it to the end, the index of the inserted row will be at the end
-        self.indexOfAddedRowsSet.add(self.wordTable.currentRow())
+        self.indexOfAddedRowsSet.add(self.wordTable.rowCount())
         print("Inserting row..", self.wordTable.rowCount())
         for i in range (0, 7):
             newItem = QtWidgets.QTableWidgetItem()
