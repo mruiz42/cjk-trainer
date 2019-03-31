@@ -22,6 +22,7 @@ class Ui_MainWindow(object):
 
     def __init__(self):
         self.indexOfModifiedRowsList = []
+        self.indexOfDeletedRowsList = []
         self.indexOfCurrentTable = 0
         self.nameOfCurrentTable = ""
 
@@ -45,14 +46,21 @@ class Ui_MainWindow(object):
         print("save table")
         conn = sqlite3.connect('../data/vocab.db')
 
+        indices = []
+
         # chekc for empty fields before input
         for i in self.indexOfModifiedRowsList:
-            for j in range(0, self.wordTable.columnCount()):
-                try:
-                    print(j, "Table data", self.wordTable.item(i, j).text())
-                except AttributeError:
-                    print("ValueError: removing index: ", self.indexOfModifiedRowsList.pop(i), " from edit queue")
-                    break
+            print(i, "in", self.indexOfModifiedRowsList)
+            try:
+                for j in range(0, self.wordTable.columnCount()):
+                    print(j, " Table data '", self.wordTable.item(i, j).text(), "'", sep='')
+
+                indices.append(i)
+
+            except (AttributeError, ValueError):
+                print("ValueError: removing index: ", i, " from edit queue")
+
+        self.indexOfModifiedRowsList = indices
 
         for i in self.indexOfModifiedRowsList:
             rowData = []
@@ -73,6 +81,8 @@ class Ui_MainWindow(object):
         conn.close()
         self.indexOfModifiedRowsList.clear()
         self.buttonBox_wordList.setEnabled(False)
+
+
 
     def revertTable(self):
         self.wordTable.setSortingEnabled(False)
@@ -111,7 +121,7 @@ class Ui_MainWindow(object):
         elif action == updateAction:
             self.updateTableRow()
         elif action == deleteAction:
-            self.dropTable()
+            self.deleteTableRow()
 
     def requestDeckViewContextMenu(self, position):
         print("CUSTOME MENU REQ")
@@ -132,11 +142,11 @@ class Ui_MainWindow(object):
         print("Inserting row..")
         # To complete, this must be able to GUESS which is the correct cardNum
         self.wordTable.insertRow(self.wordTable.rowCount())
-
-        for i in range (4, 7):
+        for i in range (0, 7):
             newItem = QtWidgets.QTableWidgetItem()
-            newItem.setText("0")
-            self.wordTable.setItem(self.wordTable.rowCount() -1, i, newItem)
+            self.wordTable.setItem(self.wordTable.rowCount() - 1, i, newItem)
+            if i > 3:
+                newItem.setText("0")
             print(newItem.text())
 
 
@@ -148,35 +158,37 @@ class Ui_MainWindow(object):
         '''This function will insert a new row when the user switches off of the last tab'''
         print(self.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", self.wordTable.rowCount(), self.wordTable.columnCount())
 
-
-        # if self.wordTable.currentRow() == self.wordTable.rowCount() and self.wordTable.currentColumn() == 0:
-        #     self.wordTable.setCurrentCell(self.wordTable.currentRow(), 0)
-        #     self.wordTable.editItem(self.wordTable.currentItem())
-
         # Check if we are on the pronun col, if so, hop to the next row
         if self.wordTable.currentIndex().column() == 3:
             print ("Last column")
             # However, if the next row doesn't exist, we must first create it
             if self.wordTable.currentIndex().row() == self.wordTable.rowCount() - 1:
                 self.insertTableRow()
-
             self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
+
             #self.wordTable.editItem(self.wordTable.currentItem())
 
+        #fix going backwards bug
+        #TODO unexpected behavior here~~~~
+        # need a way to send us back to the first or third column, but this has an intermediary step (at isstarred)
 
+        # elif self.wordTable.currentIndex().column() == 6:
+        #     print(self.wordTable.currentIndex().column())
+        #     self.wordTable.setCurrentCell(self.wordTable.currentRow(), 2)
+        #     self.wordTable.selectColumn(self.wordTable.currentRow())
 
-            #self.wordTable.selectColumn(self.wordTable.currentRow())
 
     def updateTableRow(self):
         print("Updating row..")
 
     def deleteTableRow(self):
         print("Deleting row..")
-
+        self.wordTable.removeRow(self.wordTable.currentRow())
+        self.buttonBox_wordList.setEnabled(True)
     def addNewTable(self):
         print("adding new table")
     def dropTable(self):
-        print("Deleting deck..")
+        print("Deleting table..")
 
     def openImportCSVDialogue(self):
         print("open impirt csv dialge")
@@ -421,7 +433,7 @@ class Ui_MainWindow(object):
         self.wordTable.setColumnHidden(0, True)
         self.wordTable.setColumnWidth(1, 210)
         self.wordTable.setColumnWidth(2, 210)
-        self.wordTable.setColumnWidth(3, 200)
+        self.wordTable.setColumnWidth(3, 186)
         self.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
 
         #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
