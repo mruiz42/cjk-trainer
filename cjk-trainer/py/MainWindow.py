@@ -122,24 +122,17 @@ class Ui_MainWindow(object):
 
 
 
-        new = sorted(self.indexOfDeletedRowsSet)
-        self.indexOfDeletedRowsSet = new
+        # new = sorted(self.indexOfDeletedRowsSet)
+        # self.indexOfDeletedRowsSet = new
 
         print(self.indexOfDeletedRowsSet)
         if len(self.indexOfDeletedRowsSet) != 0:
             conn = sqlite3.connect('../data/vocab.db')
             # Now we must remove the rows user does not want anymore
+            # Try to delete the item from the table by primary key
             for i in self.indexOfDeletedRowsSet:
-                rowData = []
-                for j in range(0, self.wordTable.columnCount()):
-                    #print(j, "Table data", self.wordTable.item(i, j).text())
-                    rowData.append(self.wordTable.item(i, j).text())
-                print(rowData)
-                # Try to delete the item from the table by primary key
-                command = "DELETE FROM " + self.nameOfCurrentTable + " WHERE CARDNUM = ?"
-                conn.execute(command, rowData[0])
-
-
+                command = "DELETE FROM " + self.nameOfCurrentTable + " WHERE CARDNUM = " + i
+                conn.execute(command)
                 conn.commit()
             conn.close()
 
@@ -258,7 +251,6 @@ class Ui_MainWindow(object):
         cardNumToDel = self.wordTable.item(self.wordTable.currentRow(), 0).text()
 
         self.indexOfDeletedRowsSet.add(cardNumToDel)
-
         self.wordTable.removeRow(self.wordTable.currentRow())
         self.buttonBox_wordList.setEnabled(True)
         print(self.indexOfDeletedRowsSet)
