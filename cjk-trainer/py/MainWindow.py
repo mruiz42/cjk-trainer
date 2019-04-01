@@ -78,9 +78,11 @@ class Ui_MainWindow(object):
                 print(j, "Table data", self.wordTable.item(i, j).text())
                 rowData.append(self.wordTable.item(i, j).text())
 
-        if rowData[0] or rowData[1] or rowData[2] == "":
-            print(rowData)
-            print("Empty critical slot found, refusing insert into table") ### WTF? it shouldnt hit this condition tho
+
+        print(rowData)
+
+        if rowData[0] == "" or rowData[1] == "" or rowData[2] == "":
+            print("Empty critical slot found, refusing update into table") ### WTF? it shouldnt hit this condition tho
 
         else:
             self.checkUserTableEdit(rowData)
@@ -114,20 +116,19 @@ class Ui_MainWindow(object):
                 print(j, "Table data", self.wordTable.item(i, j).text())
                 rowData.append(self.wordTable.item(i, j).text())
 
-            print(rowData)
-            if rowData[1] or rowData[2] == '':
-                continue
-                print("Empty critical slot found, refusing insert into table")
-            else:
-                self.checkUserTableEdit(rowData)
-                print("INSERTING TABLE DATA!", rowData)
-                print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
+        print(i, j, rowData)
+        if rowData[1] == '' or rowData[2] == '':
+            print("Empty critical slot found, refusing insert into table")
+        else:
+            self.checkUserTableEdit(rowData)
+            print("INSERTING TABLE DATA!", rowData)
+            print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
 
-                command = "INSERT INTO " + self.nameOfCurrentTable + " (VOCABULARY, DEFINITION, PRONUNCIATION" \
-                                                                     "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
-                print(command)
-                conn.execute(command, rowData)
-                conn.commit()
+            command = "INSERT INTO " + self.nameOfCurrentTable + " (VOCABULARY, DEFINITION, PRONUNCIATION" \
+                                                                 "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
+            print(command)
+            conn.execute(command, rowData)
+            conn.commit()
         conn.close()
 
         self.indexOfAddedRowsSet.clear()
