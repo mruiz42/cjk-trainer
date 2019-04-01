@@ -50,26 +50,9 @@ class Ui_MainWindow(object):
     def saveTable(self):
         print("save table")
 
-
-
-        # # chekc for empty fields before input
-        # newModifyIndices = set()
-        # for i in self.indexOfModifiedRowsSet:
-        #     print(i, "in", self.indexOfModifiedRowsSet)
-        #     try:
-        #         for j in range(0, self.wordTable.columnCount()):
-        #             print(j, " Table data '", self.wordTable.item(i, j).text(), "'", sep='')
-        #
-        #         newModifyIndices.add(i)
-        #
-        #     except (AttributeError, ValueError):
-        #         print("ValueError: removing index: ", i, " from edit queue")
-        #
-        # self.indexOfModifiedRowsSet = newModifyIndices
-
-        #self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedRowsSet
+        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedRowsSet
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
-        print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet)
+        print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet, "Del rows: ", self.indexOfDeletedRowsSet)
 
 
         if len(self.indexOfModifiedRowsSet) != 0:
@@ -90,7 +73,7 @@ class Ui_MainWindow(object):
                 else:
                     self.checkUserTableEdit(rowData)
                     print("UPDATING TABLE DATA!", rowData)
-                    print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
+                    print("Updating table at card Num:", i)
 
                     command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
                                                                     "ATTEMPTED=?, CORRECT=?, STARRED=? " \
@@ -98,7 +81,7 @@ class Ui_MainWindow(object):
                     print(command)
                     conn.execute(command, rowData)
                     conn.commit()
-                conn.close()
+            conn.close()
 
 
 
@@ -137,21 +120,28 @@ class Ui_MainWindow(object):
                     conn.commit()
             conn.close()
 
-        conn = sqlite3.connect('../data/vocab.db')
-
-        # Now we must remove the rows user does not want anymore
-        for i in self.indexOfDeletedRowsSet:
-            rowData = []
-            for j in range(0, self.wordTable.columnCount()):
-                print(j, "Table data", self.wordTable.item(i, j).text())
-                rowData.append(self.wordTable.item(i, j).text())
-            print(rowData)
-            # Try to delete the item from the table by primary key
-            command = "DELETE FROM " + self.nameOfCurrentTable + " WHERE CARDNUM = " + rowData[0]
 
 
-            conn.commit()
-        conn.close()
+        new = sorted(self.indexOfDeletedRowsSet)
+        self.indexOfDeletedRowsSet = new
+
+        print(self.indexOfDeletedRowsSet)
+        if len(self.indexOfDeletedRowsSet) != 0:
+            conn = sqlite3.connect('../data/vocab.db')
+            # Now we must remove the rows user does not want anymore
+            for i in self.indexOfDeletedRowsSet:
+                rowData = []
+                for j in range(0, self.wordTable.columnCount()):
+                    #print(j, "Table data", self.wordTable.item(i, j).text())
+                    rowData.append(self.wordTable.item(i, j).text())
+                print(rowData)
+                # Try to delete the item from the table by primary key
+                command = "DELETE FROM " + self.nameOfCurrentTable + " WHERE CARDNUM = ?"
+                conn.execute(command, rowData[0])
+
+
+                conn.commit()
+            conn.close()
 
         self.indexOfAddedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
@@ -245,9 +235,8 @@ class Ui_MainWindow(object):
             # However, if the next row doesn't exist, we must first create it
             if self.wordTable.currentIndex().row() == self.wordTable.rowCount() - 1:
                 self.insertTableRow()
-            self.wordTable.selectRow(self.wordTable.rowCount() -1)
-
-            #self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
+            #self.wordTable.selectRow(self.wordTable.rowCount() -1)
+            self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
             #self.wordTable.editItem(self.wordTable.currentItem())
 
         #fix going backwards bug
@@ -265,10 +254,14 @@ class Ui_MainWindow(object):
 
     def deleteTableRow(self):
         print("Deleting row: ", self.wordTable.currentRow())
-        self.indexOfDeletedRowsSet.add(self.wordTable.currentRow())
+
+        cardNumToDel = self.wordTable.item(self.wordTable.currentRow(), 0).text()
+
+        self.indexOfDeletedRowsSet.add(cardNumToDel)
+
         self.wordTable.removeRow(self.wordTable.currentRow())
         self.buttonBox_wordList.setEnabled(True)
-
+        print(self.indexOfDeletedRowsSet)
 
 
     def addNewTable(self):
@@ -287,6 +280,11 @@ class Ui_MainWindow(object):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
+            self.indexOfDeletedRowsSet.clear()
+            self.indexOfModifiedRowsSet.clear()
+            self.indexOfAddedRowsSet.clear()
+
+
             self.wordTable.setSortingEnabled(False)
             self.indexOfCurrentTable = index
             self.nameOfCurrentTable = index.data()
@@ -314,8 +312,12 @@ class Ui_MainWindow(object):
 
 
 
+
+
     def checkUserTableEdit(self, row):
         '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
+        # THIS LOGIC IS FLAWED UNLESS YOU CHECK FOR A LEN6 AND LEN7 LIST
+
         try:
             row[0] = int(row[0])
         except ValueError:
