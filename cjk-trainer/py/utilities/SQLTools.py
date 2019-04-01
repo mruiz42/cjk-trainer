@@ -103,6 +103,11 @@ class SqlTools():
     #     file.close()
     #     outfile.close()
 
+
+
+    # TODO
+    #  When I inserted into the table before, I had a typo where it had no comma after PRONUNCIATION in the query,
+    #  and it was complaining about 7 values being passed to the command because the hidden cardnum cell was still there
     def CSVtoSQLDatabase(self, csvfile, tablename):
         '''This function will parse a CSV line where format is as follows:
         vocabulary word,pronunciation,definition1;definition2;etc.

@@ -67,72 +67,95 @@ class Ui_MainWindow(object):
         #
         # self.indexOfModifiedRowsSet = newModifyIndices
 
+        #self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedRowsSet
+        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
+        print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet)
+
+
+        if len(self.indexOfModifiedRowsSet) != 0:
+            print("SENDING MODIFIED ENTRIES TO DATABASE")
+            conn = sqlite3.connect('../data/vocab.db')
+            for i in self.indexOfModifiedRowsSet:
+                rowData = []
+                for j in range(0, self.wordTable.columnCount()):
+                    print(j, "Table data", self.wordTable.item(i, j).text())
+                    rowData.append(self.wordTable.item(i, j).text())
+
+
+                print(rowData)
+
+                if rowData[0] == "" or rowData[1] == "" or rowData[2] == "":
+                    print("Empty critical slot found, refusing update into table") ### WTF? it shouldnt hit this condition tho
+
+                else:
+                    self.checkUserTableEdit(rowData)
+                    print("UPDATING TABLE DATA!", rowData)
+                    print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
+
+                    command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
+                                                                    "ATTEMPTED=?, CORRECT=?, STARRED=? " \
+                                                                    " WHERE CARDNUM= " + str(rowData.pop(0))
+                    print(command)
+                    conn.execute(command, rowData)
+                    conn.commit()
+                conn.close()
 
 
 
-        print("SENDING MODIFIED ENTRIES TO DATABASE")
-        conn = sqlite3.connect('../data/vocab.db')
-        for i in self.indexOfModifiedRowsSet:
-            rowData = []
-            for j in range(0, self.wordTable.columnCount()):
-                print(j, "Table data", self.wordTable.item(i, j).text())
-                rowData.append(self.wordTable.item(i, j).text())
-
-
-        print(rowData)
-
-        if rowData[0] == "" or rowData[1] == "" or rowData[2] == "":
-            print("Empty critical slot found, refusing update into table") ### WTF? it shouldnt hit this condition tho
-
-        else:
-            self.checkUserTableEdit(rowData)
-            print("UPDATING TABLE DATA!", rowData)
-            print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
-
-            command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
-                                                            "ATTEMPTED=?, CORRECT=?, STARRED=? " \
-                                                            " WHERE CARDNUM= " + str(rowData.pop(0))
-            print(command)
-            conn.execute(command, rowData)
-            conn.commit()
-        conn.close()
-
-        # Check if last row has valid data
-        try:
-            print(self.wordTable.item(self.wordTable.rowCount(), 1).text())
-        except (AttributeError, ValueError):
-            print("garbage data in last row")
+        if len(self.indexOfAddedRowsSet) != 0:
+            # Check if last row has valid data
             try:
-                self.indexOfAddedRowsSet.remove(self.wordTable.rowCount())
-            except KeyError:
-                print("last row seems good")
+                print(self.wordTable.item(self.wordTable.rowCount(), 1).text())
+            except (AttributeError, ValueError):
+                print("garbage data in last row")
+                try:
+                    self.indexOfAddedRowsSet.remove(self.wordTable.rowCount() -1)
+                except KeyError:
+                    print("last row seems good")
+
+            # Begin reading added rows
+            conn = sqlite3.connect('../data/vocab.db')
+            print("SENDING INSERTED ROWS INTO DATABASE")
+            for i in self.indexOfAddedRowsSet:
+                rowData = []
+                for j in range(1, self.wordTable.columnCount()):
+                    print(j, "Table data", self.wordTable.item(i, j).text())
+                    rowData.append(self.wordTable.item(i, j).text())
+
+                print(i, j, rowData)
+                if rowData[0] == '' or rowData[1] == '':
+                    print("Empty critical slot found, refusing insert into table")
+                else:
+                    self.checkUserTableEdit(rowData)
+                    print("INSERTING TABLE DATA!", rowData)
+                    print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
+
+                    command = "INSERT INTO " + self.nameOfCurrentTable + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
+                                                                         "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
+                    print(command)
+                    conn.execute(command, rowData)
+                    conn.commit()
+            conn.close()
 
         conn = sqlite3.connect('../data/vocab.db')
-        for i in self.indexOfAddedRowsSet:
-            print("SENDING INSERTED TABLES INTO DATABASE")
+
+        # Now we must remove the rows user does not want anymore
+        for i in self.indexOfDeletedRowsSet:
             rowData = []
-            print(i)
             for j in range(0, self.wordTable.columnCount()):
                 print(j, "Table data", self.wordTable.item(i, j).text())
                 rowData.append(self.wordTable.item(i, j).text())
+            print(rowData)
+            # Try to delete the item from the table by primary key
+            command = "DELETE FROM " + self.nameOfCurrentTable + " WHERE CARDNUM = " + rowData[0]
 
-        print(i, j, rowData)
-        if rowData[1] == '' or rowData[2] == '':
-            print("Empty critical slot found, refusing insert into table")
-        else:
-            self.checkUserTableEdit(rowData)
-            print("INSERTING TABLE DATA!", rowData)
-            print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
 
-            command = "INSERT INTO " + self.nameOfCurrentTable + " (VOCABULARY, DEFINITION, PRONUNCIATION" \
-                                                                 "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
-            print(command)
-            conn.execute(command, rowData)
             conn.commit()
         conn.close()
 
         self.indexOfAddedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
+        self.indexOfDeletedRowsSet.clear()
         self.buttonBox_wordList.setEnabled(False)
 
 
@@ -158,6 +181,8 @@ class Ui_MainWindow(object):
         conn.close()
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
+
+
     # TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
     # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
@@ -196,11 +221,11 @@ class Ui_MainWindow(object):
         # UNLESS, AUTOINCREMENT gives us a primary key automagically, we'll see
         self.wordTable.insertRow(self.wordTable.rowCount())
         # We can assume that since we add it to the end, the index of the inserted row will be at the end
-        self.indexOfAddedRowsSet.add(self.wordTable.rowCount())
-        print("Inserting row..", self.wordTable.rowCount())
+        self.indexOfAddedRowsSet.add(self.wordTable.rowCount()-1)
+        print("Inserting row..", self.wordTable.rowCount()-1)
         for i in range (0, 7):
             newItem = QtWidgets.QTableWidgetItem()
-            self.wordTable.setItem(self.wordTable.rowCount() - 1, i, newItem)
+            self.wordTable.setItem(self.wordTable.rowCount()-1, i, newItem)
             if i > 3:
                 newItem.setText("0")
             print(newItem.text())
@@ -220,8 +245,9 @@ class Ui_MainWindow(object):
             # However, if the next row doesn't exist, we must first create it
             if self.wordTable.currentIndex().row() == self.wordTable.rowCount() - 1:
                 self.insertTableRow()
-            self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
+            self.wordTable.selectRow(self.wordTable.rowCount() -1)
 
+            #self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
             #self.wordTable.editItem(self.wordTable.currentItem())
 
         #fix going backwards bug
@@ -238,9 +264,13 @@ class Ui_MainWindow(object):
         print("Updating row..")
 
     def deleteTableRow(self):
-        print("Deleting row..")
+        print("Deleting row: ", self.wordTable.currentRow())
+        self.indexOfDeletedRowsSet.add(self.wordTable.currentRow())
         self.wordTable.removeRow(self.wordTable.currentRow())
         self.buttonBox_wordList.setEnabled(True)
+
+
+
     def addNewTable(self):
         print("adding new table")
     def dropTable(self):
