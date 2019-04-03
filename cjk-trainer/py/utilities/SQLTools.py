@@ -1,26 +1,23 @@
 import sqlite3
-
 import sys
+DATABASE_PATH = '../data/vocab.db'
+
 class SqlTools():
+    ## TODO NEEDS INIT??
     def createDatabase(self):
         print("foo")
 
 
     def openDatabase(self, dbname):
-        #do something
-        #print("something")
-        #self.db = sqlite3.connect(dbname)
         #check if already open
         self.db = sqlite3.connect(dbname)
-        #print(self.db.open(dbname))
-
         self.cur = self.db.cursor()
         return self.cur
 
     def closeDatabase(self):
         #print("something")
         self.db.close()
-
+    #TODO ADD FIELDS/REARRANGE
     def insertVocabWordList(self, table_name, headers, vocabword_list):
         header_string = '(' + ','.join(headers + ['ATTEMPTED', 'CORRECT', 'STARRED']) + ')'
         placeholders = '(' + ','.join(['?' for header in headers] + ['0', '0', '0']) + ')'
@@ -30,7 +27,7 @@ class SqlTools():
         self.db.executemany(command, vocabword_list)
         self.db.commit()
 
-
+    #TODO FIND A WAY TO CREATE A UNIQUE/STANDARDIZED TABLE NAME SEPERATE FROM DECKNAME
     def createTable(self, table_name):
         #c = self.db.cursor()
         c = self.cur
@@ -44,12 +41,13 @@ class SqlTools():
         #     # SEARCH FOR TABLE NAME AND DONT RUN IF FOUND!
         command = ("CREATE TABLE IF NOT EXISTS " + str(table_name) +
                    "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
+                   "DECKNAME CHAR,"
+                   "STARRED INT,"
                    "VOCABULARY CHAR,"
                    "DEFINITION CHAR,"
                    "PRONUNCIATION CHAR,"
-                   "ATTEMPTED INT,"
                    "CORRECT INT,"
-                   "STARRED INT);")
+                   "ATTEMPTED INT);")
 
         # Extend table to include
         self.db.execute(command)
@@ -62,7 +60,7 @@ class SqlTools():
         self.db.commit()
 
 
-
+    #TODO MULTIPLE LANG SUPPORT
     def findVocab(self, hanzi):
         self.cur.execute("SELECT * FROM TEST WHERE HANZI = ?", (hanzi,))
         data= self.cur.fetchall()
@@ -79,11 +77,11 @@ class SqlTools():
     # TODO
     #  When I inserted into the table before, I had a typo where it had no comma after PRONUNCIATION in the query,
     #  and it was complaining about 7 values being passed to the command because the hidden cardnum cell was still there
+    # TODO CHANGE THIS FOR MULTIPLE LANG SUPPORT
     def CSVtoSQLDatabase(self, csvfile, tablename):
         '''This function will parse a CSV line where format is as follows:
         vocabulary word,pronunciation,definition1;definition2;etc.
-        (hanzi),(pinyin),(English defn.)
-        '''
+        (hanzi),(pinyin),(English defn.)'''
 
         hanzi = ""
         pinyin = ""

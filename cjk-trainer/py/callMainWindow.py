@@ -13,14 +13,15 @@ DATABASE_PATH = '../data/vocab.db'
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.indexOfAddedRowsSet = set()
-        self.indexOfModifiedRowsSet = set()
-        self.indexOfDeletedRowsSet = set()
-        self.indexOfCurrentTable = 0
-        self.nameOfCurrentTable = ""
-        self.studySet = []
-        self.summaryIndexList = []
-        self.cardNum = 0
+        self.indexOfAddedRowsSet = set()        # Index of queued row numbers to be added from wordTable
+        self.indexOfModifiedRowsSet = set()     # Index of queued row numbers to be modified from wordTable
+        self.indexOfDeletedRowsSet = set()      # Index of queued row numbers to be deleted from wordTable
+        self.indexOfCurrentTable = 0            # Index of current table in the deckList
+        self.nameOfCurrentTable = ""            # Name of current table_name for the SQL TableName
+        self.nameOfCurrentDeck = ""             # Name of current deck name as defined by the user
+        self.studySet = []                      # List of VocabWord objects that the user has selected
+        self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
+        self.cardNum = 0                        # Iterator for the studySet
 
         self.ui = Ui_MainWindow()
 
@@ -32,11 +33,8 @@ class MainWindow(QMainWindow):
 
         self.ui.setupUi(self)
 
-
-
         self.ui.tabWidget.currentChanged.connect(self.tab_changed)
         self.ui.progressBar.reset()
-
 
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
@@ -46,10 +44,6 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
-
-
-
-
 
         self.ui.wordTable.installEventFilter(self)
 
@@ -78,12 +72,10 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.setColumnWidth(2, 210)
         self.ui.wordTable.setColumnWidth(3, 186)
         self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
-
         #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
         #self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
-
         self.ui.buttonBox_wordList.setCenterButtons(False)
         self.ui.buttonBox_wordList.setObjectName("buttonBox_wordList")
         # Added buttonBox_wordList bindings
@@ -92,7 +84,6 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-
     def tab_changed(self):
         print("tab changed?")
 
@@ -100,12 +91,11 @@ class MainWindow(QMainWindow):
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
         self.ui.buttonBox_wordList.setEnabled(True)
-        # if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedRowsList:
-        #     self.indexOfModifiedRowsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
         if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
             self.indexOfModifiedRowsSet.add(self.wordTable.currentRow())
         print("Modified index:", self.wordTable.currentRow())
 
+    # TODO CHANGE LOGIC WHEN SQLTOOLS IS UPDATED
     def saveTable(self):
         print("save table")
 
@@ -176,11 +166,6 @@ class MainWindow(QMainWindow):
                     conn.commit()
             conn.close()
 
-
-
-        # new = sorted(self.indexOfDeletedRowsSet)
-        # self.indexOfDeletedRowsSet = new
-
         print(self.indexOfDeletedRowsSet)
         if len(self.indexOfDeletedRowsSet) != 0:
             conn = sqlite3.connect(DATABASE_PATH)
@@ -217,7 +202,6 @@ class MainWindow(QMainWindow):
         listWidget.show()
         db.close()
 
-
     def revertTable(self):
         self.ui.wordTable.setSortingEnabled(False)
         print("reverting changes")
@@ -244,9 +228,9 @@ class MainWindow(QMainWindow):
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
     # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
     # THE CORRECT CARD NUM
+
     ########### CONTEXT MENU STUFF ###############
     def requestWordTableContextMenu(self, position):
-        print("CUSTOME MENU REQ")
         contextMenu = QtWidgets.QMenu("contextMenu")
         insertAction = contextMenu.addAction("Insert Row")
         updateAction = contextMenu.addAction("Update Row")
@@ -319,8 +303,6 @@ class MainWindow(QMainWindow):
         self.w = ImportDeck(self)
         self.w.show()
 
-
-
     @QtCore.Slot(QtCore.QModelIndex)
     def on_clicked(self, index):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
@@ -355,10 +337,10 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
         self.ui.buttonBox_wordList.setEnabled(False)
-
     def checkUserTableEdit(self, row):
         '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
         # THIS LOGIC IS FLAWED UNLESS YOU CHECK FOR A LEN6 AND LEN7 LIST
+        # TODO CHANGE LOGIC HERE PROBABLY
 
         try:
             row[0] = int(row[0])
@@ -430,7 +412,6 @@ class MainWindow(QMainWindow):
         self.ui.tab_quiz.setEnabled(True)
         self.ui.wordTable.itemChanged.connect(win.ui.enableSave)
 
-
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()
         answerList = self.studySet[self.cardNum].definition.split(";")
@@ -468,7 +449,6 @@ class MainWindow(QMainWindow):
             win.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
             win.ui.lineEdit_answer.setPlaceholderText("Enter the correct answer")
 
-
     def nextWord(self):
         win.ui.progressBar.setValue(self.cardNum +1)
         win.ui.label_fractionCorrect.clear()
@@ -488,10 +468,6 @@ class MainWindow(QMainWindow):
             win.ui.label_typingWord.setText(self.studySet[self.cardNum].vocabulary)
             win.ui.pushButton_enter.clicked.disconnect()
             win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
-
-    # def openImportDialog(self):
-    #     self.w = ImportDeck()
-    #     self.w.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
