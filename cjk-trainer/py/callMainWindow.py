@@ -1,4 +1,6 @@
 import sys
+import PySide2.Qt
+
 from PySide2.QtWidgets import *
 from PySide2.QtSql import QSqlQueryModel, QSqlDatabase, QSqlTableModel
 from py.MainWindow import *
@@ -37,8 +39,32 @@ class MainWindow(QMainWindow):
         self.ui.tab_quiz.setEnabled(False)
 
 
+        self.ui.wordTable.installEventFilter(self)
+
+
         self.show()
 
+
+
+    def eventFilter(self, source, event):
+        #print("entered event filter ")
+        #print(event.type())
+        # If tab press signaled in wordTable widget
+        if (event.type() == QtCore.QEvent.KeyRelease and source == self.ui.wordTable):
+            if event.key() == QtCore.Qt.Key_Tab:
+                #print(self.ui.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", bself.wordTable.rowCount(), self.wordTable.columnCount()
+
+                if self.ui.wordTable.currentColumn() == 4:
+                    if self.ui.wordTable.currentIndex().row() == self.ui.wordTable.rowCount() - 1:
+                        self.ui.insertTableRow()
+                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 1)
+                    self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
+
+
+            #elif event.key() == QtCore.Qt.Key_Backtab:
+
+            return False
+        return super(MainWindow, self).eventFilter(source, event)
 
 
     def calcPercentageCorrect(self):

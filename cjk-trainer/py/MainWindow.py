@@ -220,7 +220,6 @@ class Ui_MainWindow(object):
         #TODO USING TAB SHIFT TO GO BACKWARDS MAKES YOU GO EDIT THE 3 NUMERICAAL FIELDS.
         # MAYBE DISABLE THESE 3 DURING EDITING??
         '''This function will insert a new row when the user switches off of the last tab'''
-        print(self.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", self.wordTable.rowCount(), self.wordTable.columnCount())
 
         # Check if we are on the pronun col, if so, hop to the next row
         if self.wordTable.currentIndex().column() == 3:
@@ -243,7 +242,9 @@ class Ui_MainWindow(object):
 
 
     def updateTableRow(self):
-        print("Updating row..")
+        print("Updating row..",self.wordTable.currentRow(), self.wordTable.currentColumn())
+        self.wordTable.setCurrentCell(self.wordTable.currentRow(), self.wordTable.currentColumn())
+        self.wordTable.editItem(self.wordTable.item(self.wordTable.currentRow(),self.wordTable.currentColumn()))
 
     def deleteTableRow(self):
         print("Deleting row: ", self.wordTable.currentRow())
@@ -265,6 +266,7 @@ class Ui_MainWindow(object):
         print("open impirt csv dialge")
         self.w = ImportDeck()
         self.w.show()
+
 
 
     @QtCore.Slot(QtCore.QModelIndex)
@@ -517,7 +519,7 @@ class Ui_MainWindow(object):
         self.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
 
         #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
-        self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
+        #self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
 
         self.verticalLayout_12.addWidget(self.wordTable)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)

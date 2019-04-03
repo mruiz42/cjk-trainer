@@ -12,6 +12,8 @@ class KeyPressEater(QObject):
             return QObject.eventFilter(self, obj, event)
         # print(event.type())
 
+
+
     def mousePressEvent(self, obj, event):
         if event.type() == QtCore.QtRightButton:
             print("hi")
