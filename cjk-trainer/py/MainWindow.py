@@ -214,33 +214,6 @@ class Ui_MainWindow(object):
             print(newItem.text())
 
 
-
-
-    def autoInsertTableRow(self):
-        #TODO USING TAB SHIFT TO GO BACKWARDS MAKES YOU GO EDIT THE 3 NUMERICAAL FIELDS.
-        # MAYBE DISABLE THESE 3 DURING EDITING??
-        '''This function will insert a new row when the user switches off of the last tab'''
-
-        # Check if we are on the pronun col, if so, hop to the next row
-        if self.wordTable.currentIndex().column() == 3:
-            print ("Last column")
-            # However, if the next row doesn't exist, we must first create it
-            if self.wordTable.currentIndex().row() == self.wordTable.rowCount() - 1:
-                self.insertTableRow()
-            #self.wordTable.selectRow(self.wordTable.rowCount() -1)
-            self.wordTable.setCurrentCell(self.wordTable.currentRow() + 1, 0)
-            #self.wordTable.editItem(self.wordTable.currentItem())
-
-        #fix going backwards bug
-        #TODO unexpected behavior here~~~~
-        # need a way to send us back to the first or third column, but this has an intermediary step (at isstarred)
-
-        # elif self.wordTable.currentIndex().column() == 6:
-        #     print(self.wordTable.currentIndex().column())
-        #     self.wordTable.setCurrentCell(self.wordTable.currentRow(), 2)
-        #     self.wordTable.selectColumn(self.wordTable.currentRow())
-
-
     def updateTableRow(self):
         print("Updating row..",self.wordTable.currentRow(), self.wordTable.currentColumn())
         self.wordTable.setCurrentCell(self.wordTable.currentRow(), self.wordTable.currentColumn())

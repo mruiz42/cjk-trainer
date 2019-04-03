@@ -61,7 +61,10 @@ class MainWindow(QMainWindow):
                     self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
 
 
-            #elif event.key() == QtCore.Qt.Key_Backtab:
+            elif event.key() == QtCore.Qt.Key_Backtab:
+                if self.ui.wordTable.currentColumn() == 6:
+                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), 3)
+                    self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
 
             return False
         return super(MainWindow, self).eventFilter(source, event)
