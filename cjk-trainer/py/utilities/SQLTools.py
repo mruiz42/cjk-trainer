@@ -54,7 +54,12 @@ class SqlTools():
         # Extend table to include
         self.db.execute(command)
         self.db.commit()
-        print("table created")
+        print("table ", table_name, " created!")
+
+    def dropTable(self,table_name):
+        command = ""
+
+
 
     def findVocab(self, hanzi):
         self.cur.execute("SELECT * FROM TEST WHERE HANZI = ?", (hanzi,))

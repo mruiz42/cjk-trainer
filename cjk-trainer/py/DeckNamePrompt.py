@@ -10,6 +10,8 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from py.MainWindow import *
+import sqlite3
+
 class Ui_DeckNamePromptDialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
@@ -44,4 +46,10 @@ class Ui_DeckNamePromptDialog(object):
 
 
     def accepted(self):
-        self.nameOfNewDeck = self.lineEdit.text()
+        table_name = self.lineEdit.text()
+        print("Creating table: ", table_name)
+        db = SqlTools()
+        db.openDatabase('../data/vocab.db')
+        db.createTable(table_name)
+        db.closeDatabase()
+        self.refreshTableList()

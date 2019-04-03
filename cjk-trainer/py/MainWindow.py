@@ -13,8 +13,10 @@ from py.utilities.KeyPressEater import KeyPressEater
 from py.callImportDeck import *
 from py.callConfirmDeleteTable import *
 from py.callDeckNamePrompt import *
-import sqlite3
 from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtSql import QSqlQueryModel, QSqlDatabase, QSqlTableModel
+import sqlite3
+
 
 #TODO CHECK IF THE USER IS INPUTTING BLANK TABLE FIELDS
 #TODO CAN USE SETCELLWIDGET TO INCLUDE A CHECKBOX FOR STARRED -- CUSTOM ICON?
@@ -35,7 +37,6 @@ class Ui_MainWindow(object):
     def tab_changed(self):
         print("tab changed?")
         pass
-
 
     # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
@@ -141,6 +142,25 @@ class Ui_MainWindow(object):
         self.indexOfDeletedRowsSet.clear()
         self.buttonBox_wordList.setEnabled(False)
 
+    def refreshTableList(self):
+        print("REFRESHING TABLE LIST!?!?!?!?!?")
+        db = QSqlDatabase.addDatabase("QSQLITE", connectionName="prim_conn")
+        db.setDatabaseName("../data/vocab.db")
+        db.open()
+
+        vocabTableList = db.tables()
+        if vocabTableList == 0:
+            print("Empty table.. Creating a starting point..")
+
+        print(vocabTableList)
+        listWidget = self.deckList
+        listWidget.clear()
+        for i in vocabTableList:
+            if i != 'sqlite_sequence':
+                listWidget.addItem(i)
+
+        listWidget.show()
+        db.close()
 
 
     def revertTable(self):
@@ -165,11 +185,11 @@ class Ui_MainWindow(object):
         self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.buttonBox_wordList.setEnabled(False)
 
-
     # TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
     # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
     # THE CORRECT CARD NUM
+    ########### CONTEXT MENU STUFF ###############
     def requestWordTableContextMenu(self, position):
         print("CUSTOME MENU REQ")
         contextMenu = QtWidgets.QMenu("contextMenu")
@@ -193,11 +213,11 @@ class Ui_MainWindow(object):
         action = contextMenuDeckView.exec_(self.deckList.mapToGlobal(position))
         if action == addAction:
             print("Creating a new deck..")
-            self.requestNewTableName()
+            self.openNewTableDialog()
         elif action == deleteAction:
             print("Deleting selected deck..")
             print("Are you sure you want to do this?")
-            self.dropTable()
+            self.openDropTableDialog()
 
     def insertTableRow(self):
         # To complete, this must be able to GUESS which is the correct cardNum
@@ -212,7 +232,6 @@ class Ui_MainWindow(object):
             if i > 3:
                 newItem.setText("0")
             print(newItem.text())
-
 
     def updateTableRow(self):
         print("Updating row..",self.wordTable.currentRow(), self.wordTable.currentColumn())
@@ -229,23 +248,20 @@ class Ui_MainWindow(object):
         self.buttonBox_wordList.setEnabled(True)
         print(self.indexOfDeletedRowsSet)
 
-
-    def requestNewTableName(self):
+    def openNewTableDialog(self):
         print("adding new table")
-        self.w = DeckNamePrompt()
+        self.w = DeckNamePrompt(self)
         self.w.show()
-        print(self.w.nameOfNewDeck)
-        print("Huh")
 
-    def dropTable(self):
+    def openDropTableDialog(self):
         print("Deleting table..")
-        self.w = ConfirmDeleteTable()
+        self.w = ConfirmDeleteTable(self)
         self.w.setTableName(self.nameOfCurrentTable)
         self.w.show()
 
     def openImportCSVDialogue(self):
         print("open impirt csv dialge")
-        self.w = ImportDeck(self)
+        self.w = ImportDeck()
         self.w.show()
 
 
@@ -284,10 +300,6 @@ class Ui_MainWindow(object):
             self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.wordTable.itemChanged.connect(self.enableSave)
         self.buttonBox_wordList.setEnabled(False)
-
-
-
-
 
     def checkUserTableEdit(self, row):
         '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
@@ -429,8 +441,8 @@ class Ui_MainWindow(object):
         newListTableAction = addMenu.addAction("Add new deck")
         importCSVAction = addMenu.addAction("Import CSV")
         self.toolButton_add.setMenu(addMenu)
-        self.toolButton_add.clicked.connect(self.requestNewTableName)
-        newListTableAction.triggered.connect(self.requestNewTableName)
+        self.toolButton_add.clicked.connect(self.openNewTableDialog)
+        newListTableAction.triggered.connect(self.openNewTableDialog)
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
 
 

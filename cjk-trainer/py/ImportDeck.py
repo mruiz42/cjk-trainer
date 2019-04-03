@@ -76,3 +76,4 @@ class Ui_importDialog(object):
         db.createTable(table_name)
         db.insertVocabWordList(table_name, headers, word_list)
         db.closeDatabase()
+        self.refreshTableList()

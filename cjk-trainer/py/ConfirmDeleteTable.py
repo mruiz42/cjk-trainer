@@ -12,7 +12,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_ConfirmDeleteTableDialog(object):
     def setupUi(self, Dialog):
-        Dialog.setObjectName("Dialog")
+        Dialog.setObjectName("Confirm Delete Table")
         Dialog.resize(377, 215)
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
@@ -20,6 +20,10 @@ class Ui_ConfirmDeleteTableDialog(object):
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.No|QtWidgets.QDialogButtonBox.Yes)
         self.buttonBox.setObjectName("buttonBox")
+
+        # ADD
+        self.buttonBox.accepted.connect(self.accepted)
+
         self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -47,3 +51,5 @@ class Ui_ConfirmDeleteTableDialog(object):
 " \n"
 "THIS CANNOT BE UNDONE ", None, -1))
 
+    def accepted(self):
+        self.mainWindow.refreshTableList()
