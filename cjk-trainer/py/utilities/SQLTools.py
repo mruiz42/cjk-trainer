@@ -57,7 +57,9 @@ class SqlTools():
         print("table ", table_name, " created!")
 
     def dropTable(self,table_name):
-        command = ""
+        command = "DROP TABLE " + table_name + ";"
+        self.db.execute(command)
+        self.db.commit()
 
 
 

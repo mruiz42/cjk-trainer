@@ -8,9 +8,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
-from py.MainWindow import *
-import sqlite3
+from py.setupUi.MainWindow import *
+
 
 class Ui_DeckNamePromptDialog(object):
     def setupUi(self, Dialog):
@@ -31,10 +30,6 @@ class Ui_DeckNamePromptDialog(object):
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
-
-        # ADD
-        self.buttonBox.accepted.connect(self.accepted)
-
         self.retranslateUi(Dialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), Dialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), Dialog.reject)
@@ -44,12 +39,3 @@ class Ui_DeckNamePromptDialog(object):
         Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Dialog", None, -1))
         self.lineEdit.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "Enter new deck name here", None, -1))
 
-
-    def accepted(self):
-        table_name = self.lineEdit.text()
-        print("Creating table: ", table_name)
-        db = SqlTools()
-        db.openDatabase('../data/vocab.db')
-        db.createTable(table_name)
-        db.closeDatabase()
-        self.refreshTableList()

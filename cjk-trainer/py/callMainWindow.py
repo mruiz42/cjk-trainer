@@ -1,9 +1,5 @@
-import sys
-import PySide2.Qt
-
 from PySide2.QtWidgets import *
-from PySide2.QtSql import QSqlQueryModel, QSqlDatabase, QSqlTableModel
-from py.MainWindow import *
+from py.setupUi.MainWindow import *
 from py.callImportDeck import *
 from py.utilities.SQLTools import *
 from py.VocabWord import *
@@ -25,13 +21,22 @@ class MainWindow(QMainWindow):
         self.indexOfDeletedRowsSet = set()
         self.indexOfCurrentTable = 0
         self.nameOfCurrentTable = ""
-
-
-        self.ui = Ui_MainWindow()
         self.studySet = []
         self.summaryIndexList = []
         self.cardNum = 0
+
+        self.ui = Ui_MainWindow()
+
+        # # ADDED KEYPRESS EATER TAB BAR
+        # self.ui.tabBar = QtWidgets.QTabBar()
+        # self.ui.tabWidget.setTabBar(self.ui.tabBar)
+        # eater = KeyPressEater(self.ui.tabBar)
+        # self.ui.tabBar.installEventFilter(eater)
+
         self.ui.setupUi(self)
+
+
+
         self.ui.tabWidget.currentChanged.connect(self.tab_changed)
         self.ui.progressBar.reset()
 
@@ -46,11 +51,7 @@ class MainWindow(QMainWindow):
         self.ui.tab_quiz.setEnabled(False)
 
 
-        # ADDED KEYPRESS EATER TAB BAR
-        self.tabBar = QtWidgets.QTabBar()
-        self.ui.tabWidget.setTabBar(self.tabBar)
-        eater = KeyPressEater(self.tabBar)
-        self.tabBar.installEventFilter(eater)
+
 
 
         self.ui.wordTable.installEventFilter(self)
@@ -295,9 +296,9 @@ class MainWindow(QMainWindow):
             print(newItem.text())
 
     def updateTableRow(self):
-        print("Updating row..",self.ui.wordTable.currentRow(), self.wordTable.currentColumn())
-        self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.wordTable.currentColumn())
-        self.ui.wordTable.editItem(self.ui.wordTable.item(self.wordTable.currentRow(),self.wordTable.currentColumn()))
+        print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
+        self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
+        self.ui.wordTable.editItem(self.ui.wordTable.item(self.ui.wordTable.currentRow(),self.ui.wordTable.currentColumn()))
 
     def deleteTableRow(self):
         print("Deleting row: ", self.ui.wordTable.currentRow())
@@ -305,7 +306,7 @@ class MainWindow(QMainWindow):
         cardNumToDel = self.ui.wordTable.item(self.ui.wordTable.currentRow(), 0).text()
 
         self.indexOfDeletedRowsSet.add(cardNumToDel)
-        self.ui.wordTable.removeRow(self.wordTable.currentRow())
+        self.ui.wordTable.removeRow(self.ui.wordTable.currentRow())
         self.ui.buttonBox_wordList.setEnabled(True)
         print(self.indexOfDeletedRowsSet)
 
@@ -322,7 +323,7 @@ class MainWindow(QMainWindow):
 
     def openImportCSVDialogue(self):
         print("open impirt csv dialge")
-        self.w = ImportDeck()
+        self.w = ImportDeck(self)
         self.w.show()
 
 

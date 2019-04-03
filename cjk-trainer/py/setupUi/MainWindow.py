@@ -3,133 +3,24 @@
 # Form implementation generated from reading ui file './ui/MainWindow.ui',
 # licensing of './ui/MainWindow.ui' applies.
 #
-# Created: Sat Mar 30 01:02:37 2019
+# Created: Sat Mar 30 01:38:09 2019
 #      by: pyside2-uic  running on PySide2 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from py.utilities.KeyPressEater import KeyPressEater
+from py.callImportDeck import *
+from py.callConfirmDeleteTable import *
+from py.callDeckNamePrompt import *
 from PySide2 import QtCore, QtGui, QtWidgets
-from py.ImportDeck import *
+from PySide2.QtSql import QSqlQueryModel, QSqlDatabase, QSqlTableModel
 import sqlite3
-from PySide2 import QtCore, QtGui, QtWidgets
 
 
+#TODO CHECK IF THE USER IS INPUTTING BLANK TABLE FIELDS
+#TODO CAN USE SETCELLWIDGET TO INCLUDE A CHECKBOX FOR STARRED -- CUSTOM ICON?
 class Ui_MainWindow(object):
-
-    def __init__(self):
-        self.indexOfModifiedRowsList = []
-        self.indexOfCurrentTable = 0
-        self.nameOfCurrentTable = ""
-
-    # def getListSelection(self):
-    #     model = self.deckList.model()
-    #     string = model.index(0)
-    #     print(string.toString)
-
-    def tab_changed(self):
-        print("tab changed?")
-        pass
-
-    def enableSave(self):
-        ''' This function will enable the buttonBox_wordList features to enable table modification'''
-        self.buttonBox_wordList.setEnabled(True)
-        if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedRowsList:
-            self.indexOfModifiedRowsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
-        print("Modified index:", self.wordTable.row(self.wordTable.selectedItems()[0]))
-
-    def saveTable(self):
-        print("save table")
-        conn = sqlite3.connect('../data/vocab.db')
-        for i in self.indexOfModifiedRowsList:
-            rowData = []
-            print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
-            for j in range(0, self.wordTable.columnCount()):
-                print(j, "Table data", self.wordTable.item(i, j).text())
-                rowData.append(self.wordTable.item(i, j).text())
-            self.checkUserTableEdit(rowData)
-            print("UPDATING TABLE DATA!", rowData)
-
-            command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
-                                                            "ATTEMPTED=?, CORRECT=?, STARRED=? " \
-                                                            " WHERE CARDNUM= " + str(rowData.pop(0))
-            print(command)
-            conn.execute(command, rowData)
-            conn.commit()
-        conn.close()
-        self.indexOfModifiedRowsList.clear()
-        self.buttonBox_wordList.setEnabled(False)
-
-    def revertTable(self):
-        self.wordTable.setSortingEnabled(False)
-        print("reverting changes")
-        self.wordTable.setRowCount(0)
-        self.wordTable.clearContents()
-        self.wordTable.reset()
-        self.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-        conn = sqlite3.connect('../data/vocab.db')
-        result = conn.execute('SELECT * FROM {}'.format(self.nameOfCurrentTable))
-        for row_number, row_data in enumerate(result):
-            print("Row number: ", row_number)
-            self.wordTable.insertRow(row_number)
-            for column_number, data in enumerate(row_data):
-                print("Row data: ", row_data[column_number])
-                if column_number == 0:
-                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                else:
-                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-        conn.close()
-        self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.buttonBox_wordList.setEnabled(False)
-
-    @QtCore.Slot(QtCore.QModelIndex)
-    def on_clicked(self, index):
-        if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
-            print("nothing to do")
-        else:
-            self.wordTable.setSortingEnabled(False)
-            self.indexOfCurrentTable = index
-            self.nameOfCurrentTable = index.data()
-            self.wordTable.setRowCount(0)
-            self.wordTable.clearContents()
-            self.wordTable.reset()
-            self.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-            self.label_deckName.setText("Selected Deck: {}".format(index.data()))
-            conn = sqlite3.connect('../data/vocab.db')
-            result = conn.execute('SELECT * FROM {}'.format(index.data()))
-            for row_number, row_data in enumerate(result):
-                self.wordTable.insertRow(row_number)
-                print("Row number: ", row_number)
-                for column_number, data in enumerate(row_data):
-                    print("Row data: ", row_data[column_number])
-                    if column_number == 0:
-                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                    else:
-                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-            conn.close()
-            self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.wordTable.itemChanged.connect(self.enableSave)
-        self.buttonBox_wordList.setEnabled(False)
-
-    def checkUserTableEdit(self, row):
-        '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
-        try:
-            row[0] = int(row[0])
-        except ValueError:
-            print("FATAL ERROR, PRIMARY KEY HAS BEEN EDITED!")
-            return False
-        if row[6] != 0 and row[6] != 1:
-            print("Resetting isStarred to 0")
-            row[6] = 0
-        indexesToConvert = [4, 5, 6]
-        for i in indexesToConvert:
-            try:
-                row[i] = int(row[i])
-            except ValueError:
-                print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
-                row[4] = 0
-                row[5] = 0
-                # row[i] = 0
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -141,11 +32,11 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMaximumSize(QtCore.QSize(960, 720))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../../../../.designer/icons/appicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # Added path
+        icon.addPixmap(QtGui.QPixmap("../ico/appicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
@@ -163,11 +54,14 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
 
+
         # ADDED KEYPRESS EATER TAB BAR
         self.tabBar = QtWidgets.QTabBar()
         self.tabWidget.setTabBar(self.tabBar)
         eater = KeyPressEater(self.tabBar)
         self.tabBar.installEventFilter(eater)
+
+
 
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(0, 0))
@@ -202,6 +96,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.deckList.sizePolicy().hasHeightForWidth())
         self.deckList.setSizePolicy(sizePolicy)
+        self.deckList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.deckList.setDragDropMode(QtWidgets.QAbstractItemView.NoDragDrop)
         self.deckList.setDefaultDropAction(QtCore.Qt.IgnoreAction)
         self.deckList.setAlternatingRowColors(True)
@@ -209,9 +104,7 @@ class Ui_MainWindow(object):
         self.deckList.setResizeMode(QtWidgets.QListView.Adjust)
         self.deckList.setObjectName("deckList")
 
-        # Added - Prevent user from dragging list view objs
-        self.deckList.setDragEnabled(False)
-        self.deckList.clicked.connect(self.on_clicked)
+
 
         self.verticalLayout_5.addWidget(self.deckList)
         self.gridLayout = QtWidgets.QGridLayout()
@@ -219,24 +112,24 @@ class Ui_MainWindow(object):
         self.pushButton_wordList_select = QtWidgets.QPushButton(self.tab_wordTable)
         self.pushButton_wordList_select.setObjectName("pushButton_wordList_select")
 
-        # Added - Connect
-        self.pushButton_wordList_select.clicked.connect(self.on_clicked)
 
-        self.gridLayout.addWidget(self.pushButton_wordList_select, 0, 2, 1, 1)
-        self.pushButton_wordList_add = QtWidgets.QPushButton(self.tab_wordTable)
-        self.pushButton_wordList_add.setObjectName("pushButton_wordList_add")
-        self.gridLayout.addWidget(self.pushButton_wordList_add, 0, 1, 1, 1)
+
+
+
+        self.gridLayout.addWidget(self.pushButton_wordList_select, 0, 1, 1, 1)
         self.toolButton_add = QtWidgets.QToolButton(self.tab_wordTable)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.toolButton_add.sizePolicy().hasHeightForWidth())
+        self.toolButton_add.setSizePolicy(sizePolicy)
         self.toolButton_add.setCheckable(False)
         self.toolButton_add.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
         self.toolButton_add.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
         self.toolButton_add.setArrowType(QtCore.Qt.NoArrow)
         self.toolButton_add.setObjectName("toolButton_add")
 
-        addMenu = QtWidgets.QMenu("Table add", self.toolButton_add)
-        addMenu.addAction("Create new deck")
-        addMenu.addAction("Import CSV")
-        self.toolButton_add.setMenu(addMenu)
+
 
         self.gridLayout.addWidget(self.toolButton_add, 0, 0, 1, 1)
         self.verticalLayout_5.addLayout(self.gridLayout)
@@ -275,8 +168,10 @@ class Ui_MainWindow(object):
         font.setFamily("Noto Sans CJK HK")
         self.wordTable.setFont(font)
         self.wordTable.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.wordTable.setEditTriggers(
-            QtWidgets.QAbstractItemView.DoubleClicked | QtWidgets.QAbstractItemView.EditKeyPressed | QtWidgets.QAbstractItemView.SelectedClicked)
+        self.wordTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.wordTable.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.wordTable.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.wordTable.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked|QtWidgets.QAbstractItemView.EditKeyPressed|QtWidgets.QAbstractItemView.SelectedClicked)
         self.wordTable.setAlternatingRowColors(True)
         self.wordTable.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.wordTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -286,36 +181,20 @@ class Ui_MainWindow(object):
         self.wordTable.setRowCount(1)
         self.wordTable.setColumnCount(7)
         self.wordTable.setObjectName("wordTable")
-
-        # I changed this stuff to initialize to standard size
         self.wordTable.setColumnCount(7)
         self.wordTable.setRowCount(1)
-        # Added Header Labels
-        self.wordTable.setHorizontalHeaderLabels(
-            ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
-        self.wordTable.setColumnHidden(0, True)
-        self.wordTable.setColumnWidth(1, 210)
-        self.wordTable.setColumnWidth(2, 210)
-        self.wordTable.setColumnWidth(3, 200)
 
-        self.wordTable.setColumnCount(7)
-        self.wordTable.setRowCount(1)
+
+
         self.verticalLayout_12.addWidget(self.wordTable)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)
         self.buttonBox_wordList.setEnabled(False)
-        self.buttonBox_wordList.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Save)
+        self.buttonBox_wordList.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
         self.buttonBox_wordList.setCenterButtons(False)
         self.buttonBox_wordList.setObjectName("buttonBox_wordList")
 
-        # Added Modified - be careful
-        self.buttonBox_wordList.setEnabled(False)
-        self.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
 
-        self.buttonBox_wordList.setCenterButtons(False)
-        self.buttonBox_wordList.setObjectName("buttonBox_wordList")
-        # Added buttonBox_wordList bindings
-        self.buttonBox_wordList.accepted.connect(self.saveTable)
-        self.buttonBox_wordList.rejected.connect(self.revertTable)
+
 
         self.verticalLayout_12.addWidget(self.buttonBox_wordList)
         self.horizontalLayout_3.addLayout(self.verticalLayout_12)
@@ -559,43 +438,33 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "cjk_trainer 0.2", None, -1))
         self.label_deckList.setText(QtWidgets.QApplication.translate("MainWindow", "Deck List", None, -1))
         self.pushButton_wordList_select.setText(QtWidgets.QApplication.translate("MainWindow", "Select", None, -1))
-        self.pushButton_wordList_add.setText(QtWidgets.QApplication.translate("MainWindow", "Add", None, -1))
         self.toolButton_add.setText(QtWidgets.QApplication.translate("MainWindow", "Add", None, -1))
         self.label_deckName.setText(QtWidgets.QApplication.translate("MainWindow", "Selected Deck: ", None, -1))
-        self.lineEdit_searchQuery.setPlaceholderText(
-            QtWidgets.QApplication.translate("MainWindow", "Search for a word", None, -1))
+        self.lineEdit_searchQuery.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "Search for a word", None, -1))
         self.pushButton_search.setText(QtWidgets.QApplication.translate("MainWindow", "Search", None, -1))
         self.wordTable.setSortingEnabled(True)
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_wordTable),
-                                  QtWidgets.QApplication.translate("MainWindow", "Word List", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_wordTable), QtWidgets.QApplication.translate("MainWindow", "Word List", None, -1))
         self.label_typingWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
-        self.lineEdit_answer.setPlaceholderText(
-            QtWidgets.QApplication.translate("MainWindow", "Enter your answer", None, -1))
+        self.lineEdit_answer.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "Enter your answer", None, -1))
         self.pushButton_enter.setText(QtWidgets.QApplication.translate("MainWindow", "Enter", None, -1))
         self.label_fractionCorrect.setText(QtWidgets.QApplication.translate("MainWindow", "0/0", None, -1))
         self.pushButton_notSure_Skip.setText(QtWidgets.QApplication.translate("MainWindow", "Not sure", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_typing),
-                                  QtWidgets.QApplication.translate("MainWindow", "Typing", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_typing), QtWidgets.QApplication.translate("MainWindow", "Typing", None, -1))
         self.label_flashWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
         self.pushButton_nextWord.setText(QtWidgets.QApplication.translate("MainWindow", "Next Word", None, -1))
         self.checkBox_autoPlay.setText(QtWidgets.QApplication.translate("MainWindow", "Autoplay", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_flashcards),
-                                  QtWidgets.QApplication.translate("MainWindow", "Flashcards", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_flashcards), QtWidgets.QApplication.translate("MainWindow", "Flashcards", None, -1))
         self.label_quizWord.setText(QtWidgets.QApplication.translate("MainWindow", "null", None, -1))
         self.pushButton_quizChoice1.setText(QtWidgets.QApplication.translate("MainWindow", "Word1", None, -1))
         self.pushButton_quizChoice2.setText(QtWidgets.QApplication.translate("MainWindow", "Word2", None, -1))
         self.pushButton_quizChoice3.setText(QtWidgets.QApplication.translate("MainWindow", "Word3", None, -1))
         self.pushButton_quizChoice4.setText(QtWidgets.QApplication.translate("MainWindow", "Word4", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_quiz),
-                                  QtWidgets.QApplication.translate("MainWindow", "Quiz", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_tones),
-                                  QtWidgets.QApplication.translate("MainWindow", "Tones", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_statistics),
-                                  QtWidgets.QApplication.translate("MainWindow", "Statistics", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_quiz), QtWidgets.QApplication.translate("MainWindow", "Quiz", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_tones), QtWidgets.QApplication.translate("MainWindow", "Tones", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_statistics), QtWidgets.QApplication.translate("MainWindow", "Statistics", None, -1))
         self.pushButton_2.setText(QtWidgets.QApplication.translate("MainWindow", "Revert", None, -1))
         self.pushButton.setText(QtWidgets.QApplication.translate("MainWindow", "Apply", None, -1))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_settings),
-                                  QtWidgets.QApplication.translate("MainWindow", "Settings", None, -1))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_settings), QtWidgets.QApplication.translate("MainWindow", "Settings", None, -1))
         self.menu_file.setTitle(QtWidgets.QApplication.translate("MainWindow", "Fi&le", None, -1))
         self.menu_help.setTitle(QtWidgets.QApplication.translate("MainWindow", "&Help", None, -1))
         self.actionFrom_Template.setText(QtWidgets.QApplication.translate("MainWindow", "From Template...", None, -1))

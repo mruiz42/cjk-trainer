@@ -1,5 +1,8 @@
-from py.ConfirmDeleteTable import *
-from py.MainWindow import *
+from py.setupUi.MainWindow import *
+from py.setupUi.ConfirmDeleteTable import *
+from py.utilities.SQLTools import *
+
+
 class ConfirmDeleteTable(QtWidgets.QDialog):
 
     def __init__(self, mainWindow, parent=None):
@@ -7,13 +10,18 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
         self.cDTD  = Ui_ConfirmDeleteTableDialog()
         self.mainWindow = mainWindow
         self.cDTD.setupUi(self)
-        self.cDTD.buttonBox.accepted.connect(self.accepted2)
-
+        self.cDTD.buttonBox.accepted.connect(self.deleteConfirmed)
+        self.tableName = ""
 
     def setTableName(self, tableName):
+        self.tableName = tableName
         self.cDTD.label.setText("Are you sure you want to delete the table:\n"+ tableName + "\nTHIS CANNOT BE UNDONE ")
 
-    def accepted2(self):
-        #TODO RENAME NECESSARY -- CONFLICTING FUNCTION NAME
-        print("hi")
+    def deleteConfirmed(self):
+        print("Deleting table: ", self.tableName)
+        db = SqlTools()
+        db.openDatabase('../data/vocab.db')
+        db.dropTable(self.tableName)
+        db.closeDatabase()
         self.mainWindow.refreshTableList()
+
