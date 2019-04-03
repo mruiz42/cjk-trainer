@@ -55,13 +55,6 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
 
 
-        # ADDED KEYPRESS EATER TAB BAR
-        self.tabBar = QtWidgets.QTabBar()
-        self.tabWidget.setTabBar(self.tabBar)
-        eater = KeyPressEater(self.tabBar)
-        self.tabBar.installEventFilter(eater)
-
-
 
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(0, 0))
@@ -104,10 +97,6 @@ class Ui_MainWindow(object):
         self.deckList.setResizeMode(QtWidgets.QListView.Adjust)
         self.deckList.setObjectName("deckList")
 
-        # Added - Prevent user from dragging list view objs
-        self.deckList.setDragEnabled(False)
-        self.deckList.clicked.connect(self.on_clicked)
-        self.deckList.customContextMenuRequested.connect(self.requestDeckViewContextMenu)
 
 
         self.verticalLayout_5.addWidget(self.deckList)
@@ -117,8 +106,7 @@ class Ui_MainWindow(object):
         self.pushButton_wordList_select.setObjectName("pushButton_wordList_select")
 
 
-        # Added - Connect
-        self.pushButton_wordList_select.clicked.connect(self.on_clicked)
+
 
 
         self.gridLayout.addWidget(self.pushButton_wordList_select, 0, 1, 1, 1)
@@ -134,15 +122,6 @@ class Ui_MainWindow(object):
         self.toolButton_add.setArrowType(QtCore.Qt.NoArrow)
         self.toolButton_add.setObjectName("toolButton_add")
 
-        #Added - toolButton menu
-        self.toolButton_add.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        addMenu = QtWidgets.QMenu("addMenu", self.toolButton_add)
-        newListTableAction = addMenu.addAction("Add new deck")
-        importCSVAction = addMenu.addAction("Import CSV")
-        self.toolButton_add.setMenu(addMenu)
-        self.toolButton_add.clicked.connect(self.openNewTableDialog)
-        newListTableAction.triggered.connect(self.openNewTableDialog)
-        importCSVAction.triggered.connect(self.openImportCSVDialogue)
 
 
         self.gridLayout.addWidget(self.toolButton_add, 0, 0, 1, 1)
@@ -198,20 +177,7 @@ class Ui_MainWindow(object):
         self.wordTable.setColumnCount(7)
         self.wordTable.setRowCount(1)
 
-        # I changed this stuff to initialize to standard size
-        self.wordTable.setColumnCount(7)
-        self.wordTable.setRowCount(1)
-        # Added Header Labels
-        self.wordTable.setHorizontalHeaderLabels(
-            ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
-        self.wordTable.setColumnHidden(0, True)
-        self.wordTable.setColumnWidth(1, 210)
-        self.wordTable.setColumnWidth(2, 210)
-        self.wordTable.setColumnWidth(3, 186)
-        self.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
 
-        #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
-        #self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
 
         self.verticalLayout_12.addWidget(self.wordTable)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)
@@ -221,14 +187,6 @@ class Ui_MainWindow(object):
         self.buttonBox_wordList.setObjectName("buttonBox_wordList")
 
 
-        # Added Modified - be careful
-        self.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
-
-        self.buttonBox_wordList.setCenterButtons(False)
-        self.buttonBox_wordList.setObjectName("buttonBox_wordList")
-        # Added buttonBox_wordList bindings
-        self.buttonBox_wordList.accepted.connect(self.saveTable)
-        self.buttonBox_wordList.rejected.connect(self.revertTable)
 
 
         self.verticalLayout_12.addWidget(self.buttonBox_wordList)

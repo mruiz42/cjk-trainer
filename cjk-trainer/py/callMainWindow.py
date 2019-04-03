@@ -20,12 +20,19 @@ from py.VocabWord import *
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.indexOfAddedRowsSet = set()
+        self.indexOfModifiedRowsSet = set()
+        self.indexOfDeletedRowsSet = set()
+        self.indexOfCurrentTable = 0
+        self.nameOfCurrentTable = ""
+
+
         self.ui = Ui_MainWindow()
         self.studySet = []
         self.summaryIndexList = []
         self.cardNum = 0
         self.ui.setupUi(self)
-        self.ui.tabWidget.currentChanged.connect(self.ui.tab_changed)
+        self.ui.tabWidget.currentChanged.connect(self.tab_changed)
         self.ui.progressBar.reset()
 
 
@@ -39,23 +46,54 @@ class MainWindow(QMainWindow):
         self.ui.tab_quiz.setEnabled(False)
 
 
+        # ADDED KEYPRESS EATER TAB BAR
+        self.tabBar = QtWidgets.QTabBar()
+        self.ui.tabWidget.setTabBar(self.tabBar)
+        eater = KeyPressEater(self.tabBar)
+        self.tabBar.installEventFilter(eater)
+
+
         self.ui.wordTable.installEventFilter(self)
 
+        # Added - Prevent user from dragging list view objs
+        self.ui.deckList.setDragEnabled(False)
+        self.ui.deckList.clicked.connect(self.on_clicked)
+        self.ui.deckList.customContextMenuRequested.connect(self.requestDeckViewContextMenu)
+        # Added - Connect
+        self.ui.pushButton_wordList_select.clicked.connect(self.on_clicked)        #Added - toolButton menu
+        self.ui.toolButton_add.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        addMenu = QtWidgets.QMenu("addMenu", self.ui.toolButton_add)
+        newListTableAction = addMenu.addAction("Add new deck")
+        importCSVAction = addMenu.addAction("Import CSV")
+        self.ui.toolButton_add.setMenu(addMenu)
+        self.ui.toolButton_add.clicked.connect(self.openNewTableDialog)
+        newListTableAction.triggered.connect(self.openNewTableDialog)
+        importCSVAction.triggered.connect(self.openImportCSVDialogue)
+        # I changed this stuff to initialize to standard size
+        self.ui.wordTable.setColumnCount(7)
+        self.ui.wordTable.setRowCount(1)
+        # Added Header Labels
+        self.ui.wordTable.setHorizontalHeaderLabels(
+            ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
+        self.ui.wordTable.setColumnHidden(0, True)
+        self.ui.wordTable.setColumnWidth(1, 210)
+        self.ui.wordTable.setColumnWidth(2, 210)
+        self.ui.wordTable.setColumnWidth(3, 186)
+        self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
+
+        #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
+        #self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
+        # Added Modified - be careful
+        self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
+
+        self.ui.buttonBox_wordList.setCenterButtons(False)
+        self.ui.buttonBox_wordList.setObjectName("buttonBox_wordList")
+        # Added buttonBox_wordList bindings
+        self.ui.buttonBox_wordList.accepted.connect(self.saveTable)
+        self.ui.buttonBox_wordList.rejected.connect(self.revertTable)
 
         self.show()
 
-
-
-    def __init__(self):
-        self.indexOfAddedRowsSet = set()
-        self.indexOfModifiedRowsSet = set()
-        self.indexOfDeletedRowsSet = set()
-        self.indexOfCurrentTable = 0
-        self.nameOfCurrentTable = ""
-    # def getListSelection(self):
-    #     model = self.deckList.model()
-    #     string = model.index(0)
-    #     print(string.toString)
 
     def tab_changed(self):
         print("tab changed?")
@@ -64,10 +102,10 @@ class MainWindow(QMainWindow):
     # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
-        self.buttonBox_wordList.setEnabled(True)
+        self.ui.buttonBox_wordList.setEnabled(True)
         # if self.wordTable.row(self.wordTable.selectedItems()[0]) not in self.indexOfModifiedRowsList:
         #     self.indexOfModifiedRowsList.append(self.wordTable.row(self.wordTable.selectedItems()[0]))
-        if self.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
+        if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
             self.indexOfModifiedRowsSet.add(self.wordTable.currentRow())
         print("Modified index:", self.wordTable.currentRow())
 
@@ -84,9 +122,9 @@ class MainWindow(QMainWindow):
             conn = sqlite3.connect('../data/vocab.db')
             for i in self.indexOfModifiedRowsSet:
                 rowData = []
-                for j in range(0, self.wordTable.columnCount()):
+                for j in range(0, self.ui.wordTable.columnCount()):
                     print(j, "Table data", self.wordTable.item(i, j).text())
-                    rowData.append(self.wordTable.item(i, j).text())
+                    rowData.append(self.ui.wordTable.item(i, j).text())
 
 
                 print(rowData)
@@ -112,11 +150,11 @@ class MainWindow(QMainWindow):
         if len(self.indexOfAddedRowsSet) != 0:
             # Check if last row has valid data
             try:
-                print(self.wordTable.item(self.wordTable.rowCount(), 1).text())
+                print(self.ui.wordTable.item(self.ui.wordTable.rowCount(), 1).text())
             except (AttributeError, ValueError):
                 print("garbage data in last row")
                 try:
-                    self.indexOfAddedRowsSet.remove(self.wordTable.rowCount() -1)
+                    self.indexOfAddedRowsSet.remove(self.ui.wordTable.rowCount() -1)
                 except KeyError:
                     print("last row seems good")
 
@@ -125,9 +163,9 @@ class MainWindow(QMainWindow):
             print("SENDING INSERTED ROWS INTO DATABASE")
             for i in self.indexOfAddedRowsSet:
                 rowData = []
-                for j in range(1, self.wordTable.columnCount()):
+                for j in range(1, self.ui.wordTable.columnCount()):
                     print(j, "Table data", self.wordTable.item(i, j).text())
-                    rowData.append(self.wordTable.item(i, j).text())
+                    rowData.append(self.ui.wordTable.item(i, j).text())
 
                 print(i, j, rowData)
                 if rowData[0] == '' or rowData[1] == '':
@@ -163,7 +201,7 @@ class MainWindow(QMainWindow):
         self.indexOfAddedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
         self.indexOfDeletedRowsSet.clear()
-        self.buttonBox_wordList.setEnabled(False)
+        self.ui.buttonBox_wordList.setEnabled(False)
 
     def refreshTableList(self):
         print("REFRESHING TABLE LIST!?!?!?!?!?")
@@ -176,7 +214,7 @@ class MainWindow(QMainWindow):
             print("Empty table.. Creating a starting point..")
 
         print(vocabTableList)
-        listWidget = self.deckList
+        listWidget = self.ui.deckList
         listWidget.clear()
         for i in vocabTableList:
             if i != 'sqlite_sequence':
@@ -187,26 +225,26 @@ class MainWindow(QMainWindow):
 
 
     def revertTable(self):
-        self.wordTable.setSortingEnabled(False)
+        self.ui.wordTable.setSortingEnabled(False)
         print("reverting changes")
-        self.wordTable.setRowCount(0)
-        self.wordTable.clearContents()
-        self.wordTable.reset()
-        self.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.wordTable.setRowCount(0)
+        self.ui.wordTable.clearContents()
+        self.ui.wordTable.reset()
+        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
         conn = sqlite3.connect('../data/vocab.db')
         result = conn.execute('SELECT * FROM {}'.format(self.nameOfCurrentTable))
         for row_number, row_data in enumerate(result):
             print("Row number: ", row_number)
-            self.wordTable.insertRow(row_number)
+            self.ui.wordTable.insertRow(row_number)
             for column_number, data in enumerate(row_data):
                 print("Row data: ", row_data[column_number])
                 if column_number == 0:
-                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                 else:
-                    self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
         conn.close()
-        self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.buttonBox_wordList.setEnabled(False)
+        self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.buttonBox_wordList.setEnabled(False)
 
     # TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
     # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
@@ -219,7 +257,7 @@ class MainWindow(QMainWindow):
         insertAction = contextMenu.addAction("Insert Row")
         updateAction = contextMenu.addAction("Update Row")
         deleteAction = contextMenu.addAction("Delete Row")
-        action = contextMenu.exec_(self.wordTable.mapToGlobal(position))
+        action = contextMenu.exec_(self.ui.wordTable.mapToGlobal(position))
         if action == insertAction:
             self.insertTableRow()
         elif action == updateAction:
@@ -229,11 +267,11 @@ class MainWindow(QMainWindow):
 
     def requestDeckViewContextMenu(self, position):
         print("CUSTOME MENU REQ")
-        self.on_clicked(self.deckList.currentIndex())
+        self.on_clicked(self.ui.deckList.currentIndex())
         contextMenuDeckView = QtWidgets.QMenu("contextMenu")
         addAction = contextMenuDeckView.addAction("Add Table")
         deleteAction = contextMenuDeckView.addAction("Delete Table")
-        action = contextMenuDeckView.exec_(self.deckList.mapToGlobal(position))
+        action = contextMenuDeckView.exec_(self.ui.deckList.mapToGlobal(position))
         if action == addAction:
             print("Creating a new deck..")
             self.openNewTableDialog()
@@ -245,30 +283,30 @@ class MainWindow(QMainWindow):
     def insertTableRow(self):
         # To complete, this must be able to GUESS which is the correct cardNum
         # UNLESS, AUTOINCREMENT gives us a primary key automagically, we'll see
-        self.wordTable.insertRow(self.wordTable.rowCount())
+        self.ui.wordTable.insertRow(self.ui.wordTable.rowCount())
         # We can assume that since we add it to the end, the index of the inserted row will be at the end
-        self.indexOfAddedRowsSet.add(self.wordTable.rowCount()-1)
-        print("Inserting row..", self.wordTable.rowCount()-1)
+        self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount()-1)
+        print("Inserting row..", self.ui.wordTable.rowCount()-1)
         for i in range (0, 7):
             newItem = QtWidgets.QTableWidgetItem()
-            self.wordTable.setItem(self.wordTable.rowCount()-1, i, newItem)
+            self.ui.wordTable.setItem(self.ui.wordTable.rowCount()-1, i, newItem)
             if i > 3:
                 newItem.setText("0")
             print(newItem.text())
 
     def updateTableRow(self):
-        print("Updating row..",self.wordTable.currentRow(), self.wordTable.currentColumn())
-        self.wordTable.setCurrentCell(self.wordTable.currentRow(), self.wordTable.currentColumn())
-        self.wordTable.editItem(self.wordTable.item(self.wordTable.currentRow(),self.wordTable.currentColumn()))
+        print("Updating row..",self.ui.wordTable.currentRow(), self.wordTable.currentColumn())
+        self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.wordTable.currentColumn())
+        self.ui.wordTable.editItem(self.ui.wordTable.item(self.wordTable.currentRow(),self.wordTable.currentColumn()))
 
     def deleteTableRow(self):
-        print("Deleting row: ", self.wordTable.currentRow())
+        print("Deleting row: ", self.ui.wordTable.currentRow())
 
-        cardNumToDel = self.wordTable.item(self.wordTable.currentRow(), 0).text()
+        cardNumToDel = self.ui.wordTable.item(self.ui.wordTable.currentRow(), 0).text()
 
         self.indexOfDeletedRowsSet.add(cardNumToDel)
-        self.wordTable.removeRow(self.wordTable.currentRow())
-        self.buttonBox_wordList.setEnabled(True)
+        self.ui.wordTable.removeRow(self.wordTable.currentRow())
+        self.ui.buttonBox_wordList.setEnabled(True)
         print(self.indexOfDeletedRowsSet)
 
     def openNewTableDialog(self):
@@ -299,30 +337,30 @@ class MainWindow(QMainWindow):
             self.indexOfAddedRowsSet.clear()
 
 
-            self.wordTable.setSortingEnabled(False)
+            self.ui.wordTable.setSortingEnabled(False)
             self.indexOfCurrentTable = index
             self.nameOfCurrentTable = index.data()
-            self.wordTable.setRowCount(0)
-            self.wordTable.clearContents()
-            self.wordTable.reset()
+            self.ui.wordTable.setRowCount(0)
+            self.ui.wordTable.clearContents()
+            self.ui.wordTable.reset()
 
-            self.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-            self.label_deckName.setText("Selected Deck: {}".format(index.data()))
+            self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+            self.ui.label_deckName.setText("Selected Deck: {}".format(index.data()))
             conn = sqlite3.connect('../data/vocab.db')
             result = conn.execute('SELECT * FROM {}'.format(index.data()))
             for row_number, row_data in enumerate(result):
-                self.wordTable.insertRow(row_number)
+                self.ui.wordTable.insertRow(row_number)
                 print("Row number: ", row_number)
                 for column_number, data in enumerate(row_data):
                     print("Row data: ", row_data[column_number])
                     if column_number == 0:
-                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                     else:
-                        self.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             conn.close()
-            self.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.wordTable.itemChanged.connect(self.enableSave)
-        self.buttonBox_wordList.setEnabled(False)
+            self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.wordTable.itemChanged.connect(self.enableSave)
+        self.ui.buttonBox_wordList.setEnabled(False)
 
     def checkUserTableEdit(self, row):
         '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
