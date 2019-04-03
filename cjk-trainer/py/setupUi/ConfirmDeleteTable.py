@@ -12,7 +12,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_ConfirmDeleteTableDialog(object):
     def setupUi(self, Dialog):
-        Dialog.setObjectName("Confirm Delete Table")
+        Dialog.setObjectName("Dialog")
         Dialog.resize(380, 220)
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setObjectName("gridLayout")
@@ -41,7 +41,7 @@ class Ui_ConfirmDeleteTableDialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Dialog", None, -1))
+        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Confirm Delete Table", None, -1))
         self.label.setText(QtWidgets.QApplication.translate("Dialog", "Are you sure you want to delete the table:\n"
 " \n"
 "THIS CANNOT BE UNDONE ", None, -1))

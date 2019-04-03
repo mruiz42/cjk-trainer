@@ -36,6 +36,6 @@ class Ui_DeckNamePromptDialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Dialog", None, -1))
+        Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Deck Name Prompt", None, -1))
         self.lineEdit.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "Enter new deck name here", None, -1))
 
