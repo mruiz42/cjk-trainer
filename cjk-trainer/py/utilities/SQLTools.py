@@ -75,42 +75,6 @@ class SqlTools():
         #I guess multiple words can have sepeate defintions and pronunciations, so look for words that only have
         # are completely identical meaning same hanzi, pinyin, definition.
         print("I guess find any conflicting entries(same hanzi) and then merge the definitions")
-    # def CSVtoSQLFile(self, csvfile, sqlfile, tablename):
-    #     '''This function will parse a CSV line where format is as follows:
-    #     vocabulary word,pronunciation,definition1;definition2;etc.
-    #     (hanzi),(pinyin),(English defn.)
-    #     '''
-    #     hanzi = ""
-    #     pinyin = ""
-    #     definition = ""
-    #     file = open(csvfile, mode="r")
-    #     outfile = open(csvfile + ".sql", mode="w")
-    #     outfile.write("CREATE TABLE " + tablename +
-    #                   "(\nCARDNUM INT PRIMARY KEY NOT NULL,"
-    #                   "\nHANZI CHAR(16),"
-    #                   "\nPINYIN CHAR(32),"
-    #                   "\nDEFINITION CHAR(64)"
-    #                   "\n);\n")
-    #     #cardnum = 0
-    #     for line in file:
-    #         if (len(line) == 0):
-    #             print("Empty Line!")
-    #         elif (line[0] == '#'):
-    #             print("Comment line!")
-    #         else:
-    #             pos0 = line.find(",")
-    #             pos1 = line.find(",", pos0 + 1)
-    #             hanzi = line[0:pos0]
-    #             pinyin = line[pos0 + 1:pos1]
-    #             definition = line[pos1 + 1:-1]
-    #             # print(cardnum, " ", hanzi, pinyin, definition)
-    #             outfile.write("INSERT INTO " + tablename + " VALUES (" + str(cardnum)
-    #                           + ",'" + hanzi + "','" + pinyin + "','" + definition + "');\n")
-    #             #cardnum += 1
-    #     file.close()
-    #     outfile.close()
-
-
 
     # TODO
     #  When I inserted into the table before, I had a typo where it had no comma after PRONUNCIATION in the query,
@@ -148,20 +112,3 @@ class SqlTools():
         file.close()
         self.db.commit()
         print("Finished importing", self.db.total_changes, "entries.")
-
-    if __name__ == "__main__":
-        from ..utilities.SQLTools import SqlTools
-        sys.path.insert(0, '/home/michael/PycharmProjects/cjk-trainer-master/cjk-trainer')
-        tk = SqlTools()
-        #tk.CSVtoSQLFile("Vocab", "outputSQL.db", "nihao3")
-        tk.openDatabase("test.db")
-        #test searching before input
-        #tk.findEntry("")
-        tk.CSVtoSQLDatabase("/home/michael/PycharmProjects/cjk-trainer-master/cjk-trainer/data/chinese_words/Vocab", "test")
-        tup = [(2)]
-        tk.cur.execute('SELECT * FROM TEST WHERE CARDNUM = (?)', tup)
-        print(tk.cur.fetchone())
-        tup = [("发短信")]
-        tk.cur.execute("SELECT * FROM TEST WHERE HANZI = (?)", tup)
-        print(tk.cur.fetchone())
-        tk.closeDatabase()

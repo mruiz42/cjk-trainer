@@ -3,16 +3,13 @@ from py.setupUi.MainWindow import *
 from py.callImportDeck import *
 from py.utilities.SQLTools import *
 from py.VocabWord import *
+DATABASE_PATH = '../data/vocab.db'
 #Developer notes:
-# TODO 01) Manage user interation with vocabulary data
-# TODO 02) Allow user to right click tables in QTableView
 # TODO SEPARATE "BUILT IN TABLES" (NON MODIFYABLE) & "USER DEFINED TABLES" (MODIFYABLE)
-# TODO 03) RCLICK = MODIFY TABLE, DELETE TABLE
 # TODO 04) MANAGE BUILT IN DATA STRUCTURE TO STORE STUDY SET DATA
-# TODO 05) SAVE STUDY SET DATA BACK TO THE SAME DATABASE TABLE
 # TODO 06) ADD OPTION FOR SHUFFLE AND SWAP DEFINITION/PRONUNCIATION/VOCABULARY FOR Q/A
 # TODO 07) CHECK IF THERES A BETTER WAY TO DISABLE TABS
-
+# TODO 08) INDEX, DECKNAME, STARRED, VOCABULARY, DEFINITION, PRONUN(OPTIONAL), CORR#, ATT#
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -98,7 +95,6 @@ class MainWindow(QMainWindow):
 
     def tab_changed(self):
         print("tab changed?")
-        pass
 
     # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
@@ -117,22 +113,19 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
         print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet, "Del rows: ", self.indexOfDeletedRowsSet)
 
-
         if len(self.indexOfModifiedRowsSet) != 0:
             print("SENDING MODIFIED ENTRIES TO DATABASE")
-            conn = sqlite3.connect('../data/vocab.db')
+            conn = sqlite3.connect(DATABASE_PATH)
             for i in self.indexOfModifiedRowsSet:
                 rowData = []
                 for j in range(0, self.ui.wordTable.columnCount()):
                     print(j, "Table data", self.wordTable.item(i, j).text())
                     rowData.append(self.ui.wordTable.item(i, j).text())
 
-
                 print(rowData)
 
                 if rowData[0] == "" or rowData[1] == "" or rowData[2] == "":
-                    print("Empty critical slot found, refusing update into table") ### WTF? it shouldnt hit this condition tho
-
+                    print("Empty critical slot found, refusing update into table")
                 else:
                     self.checkUserTableEdit(rowData)
                     print("UPDATING TABLE DATA!", rowData)
@@ -160,7 +153,7 @@ class MainWindow(QMainWindow):
                     print("last row seems good")
 
             # Begin reading added rows
-            conn = sqlite3.connect('../data/vocab.db')
+            conn = sqlite3.connect(DATABASE_PATH)
             print("SENDING INSERTED ROWS INTO DATABASE")
             for i in self.indexOfAddedRowsSet:
                 rowData = []
@@ -190,7 +183,7 @@ class MainWindow(QMainWindow):
 
         print(self.indexOfDeletedRowsSet)
         if len(self.indexOfDeletedRowsSet) != 0:
-            conn = sqlite3.connect('../data/vocab.db')
+            conn = sqlite3.connect(DATABASE_PATH)
             # Now we must remove the rows user does not want anymore
             # Try to delete the item from the table by primary key
             for i in self.indexOfDeletedRowsSet:
@@ -205,9 +198,9 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.setEnabled(False)
 
     def refreshTableList(self):
-        print("REFRESHING TABLE LIST!?!?!?!?!?")
-        db = QSqlDatabase.addDatabase("QSQLITE", connectionName="prim_conn")
-        db.setDatabaseName("../data/vocab.db")
+        print("REFRESHING TABLE LIST")
+        db = QSqlDatabase.addDatabase("QSQLITE")
+        db.setDatabaseName(DATABASE_PATH)
         db.open()
 
         vocabTableList = db.tables()
@@ -232,7 +225,7 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.clearContents()
         self.ui.wordTable.reset()
         self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-        conn = sqlite3.connect('../data/vocab.db')
+        conn = sqlite3.connect(DATABASE_PATH)
         result = conn.execute('SELECT * FROM {}'.format(self.nameOfCurrentTable))
         for row_number, row_data in enumerate(result):
             print("Row number: ", row_number)
@@ -347,7 +340,7 @@ class MainWindow(QMainWindow):
 
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
             self.ui.label_deckName.setText("Selected Deck: {}".format(index.data()))
-            conn = sqlite3.connect('../data/vocab.db')
+            conn = sqlite3.connect(DATABASE_PATH)
             result = conn.execute('SELECT * FROM {}'.format(index.data()))
             for row_number, row_data in enumerate(result):
                 self.ui.wordTable.insertRow(row_number)
@@ -415,7 +408,7 @@ class MainWindow(QMainWindow):
         win.ui.pushButton_enter.setText("Enter")
 
     def loadStudySet(self):
-        db = sqlite3.connect('../data/vocab.db')
+        db = sqlite3.connect(DATABASE_PATH)
         c = db.execute('SELECT * FROM {}'.format(win.ui.nameOfCurrentTable))
         result = c.fetchall()
 
@@ -505,8 +498,7 @@ if __name__ == "__main__":
     win = MainWindow()
     win.show()
     db = QSqlDatabase.addDatabase("QSQLITE", connectionName="prim_conn")
-    db.setDatabaseName("../data/vocab.db")
-
+    db.setDatabaseName(DATABASE_PATH)
     db.open()
 
     # Generate list of tables for listWidget
@@ -528,7 +520,7 @@ if __name__ == "__main__":
     win.ui.nameOfCurrentTable = listWidget.item(0).data(0)
     print(win.ui.nameOfCurrentTable)
     dbname = win.ui.nameOfCurrentTable
-    conn = sqlite3.connect("../data/vocab.db")
+    conn = sqlite3.connect(DATABASE_PATH)
     c = conn.execute('SELECT * FROM {}'.format(dbname))
     result = c.fetchall()
     conn.close()
