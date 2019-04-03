@@ -44,8 +44,6 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-
-
     def eventFilter(self, source, event):
         #print("entered event filter ")
         #print(event.type())
@@ -69,10 +67,8 @@ class MainWindow(QMainWindow):
             return False
         return super(MainWindow, self).eventFilter(source, event)
 
-
     def calcPercentageCorrect(self):
         return (self.studySet[self.cardNum].timesCorrect/self.studySet[self.cardNum].timesAttempted) * 100
-
 
     def setTextEnter(self):
         win.ui.pushButton_enter.setText("Enter")
@@ -159,11 +155,9 @@ class MainWindow(QMainWindow):
             win.ui.pushButton_enter.clicked.disconnect()
             win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
 
-    def openImportDialog(self):
-        self.w = ImportDeck()
-        self.w.show()
-
-
+    # def openImportDialog(self):
+    #     self.w = ImportDeck()
+    #     self.w.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -171,7 +165,6 @@ if __name__ == "__main__":
     win.show()
     db = QSqlDatabase.addDatabase("QSQLITE", connectionName="prim_conn")
     db.setDatabaseName("../data/vocab.db")
-
 
     db.open()
 
@@ -199,6 +192,5 @@ if __name__ == "__main__":
     result = c.fetchall()
     conn.close()
     print(result)
-
 
     sys.exit(app.exec_())

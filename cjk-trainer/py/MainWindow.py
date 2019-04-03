@@ -10,8 +10,9 @@
 
 
 from py.utilities.KeyPressEater import KeyPressEater
-from PySide2 import QtCore, QtGui, QtWidgets
 from py.callImportDeck import *
+from py.callConfirmDeleteTable import *
+from py.callDeckNamePrompt import *
 import sqlite3
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -26,7 +27,6 @@ class Ui_MainWindow(object):
         self.indexOfDeletedRowsSet = set()
         self.indexOfCurrentTable = 0
         self.nameOfCurrentTable = ""
-
     # def getListSelection(self):
     #     model = self.deckList.model()
     #     string = model.index(0)
@@ -193,7 +193,7 @@ class Ui_MainWindow(object):
         action = contextMenuDeckView.exec_(self.deckList.mapToGlobal(position))
         if action == addAction:
             print("Creating a new deck..")
-            self.addNewTable()
+            self.requestNewTableName()
         elif action == deleteAction:
             print("Deleting selected deck..")
             print("Are you sure you want to do this?")
@@ -230,14 +230,22 @@ class Ui_MainWindow(object):
         print(self.indexOfDeletedRowsSet)
 
 
-    def addNewTable(self):
+    def requestNewTableName(self):
         print("adding new table")
+        self.w = DeckNamePrompt()
+        self.w.show()
+        print(self.w.nameOfNewDeck)
+        print("Huh")
+
     def dropTable(self):
         print("Deleting table..")
+        self.w = ConfirmDeleteTable()
+        self.w.setTableName(self.nameOfCurrentTable)
+        self.w.show()
 
     def openImportCSVDialogue(self):
         print("open impirt csv dialge")
-        self.w = ImportDeck()
+        self.w = ImportDeck(self)
         self.w.show()
 
 
@@ -421,8 +429,8 @@ class Ui_MainWindow(object):
         newListTableAction = addMenu.addAction("Add new deck")
         importCSVAction = addMenu.addAction("Import CSV")
         self.toolButton_add.setMenu(addMenu)
-        self.toolButton_add.clicked.connect(self.addNewTable)
-        newListTableAction.triggered.connect(self.addNewTable)
+        self.toolButton_add.clicked.connect(self.requestNewTableName)
+        newListTableAction.triggered.connect(self.requestNewTableName)
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
 
 
