@@ -190,11 +190,13 @@ class SqlTools():
 
     def updateLastTimeStudied(self, table_name):
         now = datetime.datetime.now()
-        print(now)
-        self.db.execute("UPDATE " + table_name + "SET LASTTIMESTUDIED = " + now)
+        now = str(now).split(' ')
+        print(now[0])
+        self.db.execute("UPDATE [" + table_name + "] SET LASTTIMESTUDIED = " + now[0])
 
     def getLastTimeStudied(self, table_name):
-        cur = self.db.execute("SELECT LASTTIMESTUDIED FROM " + table_name)
+        print("TB", table_name)
+        cur = self.db.execute("SELECT LASTTIMESTUDIED FROM [" + table_name + "];")
         result = cur.fetchone()
 
 

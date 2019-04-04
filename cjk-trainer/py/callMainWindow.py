@@ -178,7 +178,6 @@ class MainWindow(QMainWindow):
         print(tableList)
         self.ui.deckList.clear()
 
-
         for i in tableList:
             if i != 'sqlite_sequence':
                 self.ui.deckList.addItem(i)
@@ -256,10 +255,10 @@ class MainWindow(QMainWindow):
         # We can assume that since we add it to the end, the index of the inserted row will be at the end
         self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount()-1)
         print("Inserting row..", self.ui.wordTable.rowCount()-1)
-        for i in range (0, 7):
+        for i in range (1, 7):
             newItem = QtWidgets.QTableWidgetItem()
             self.ui.wordTable.setItem(self.ui.wordTable.rowCount()-1, i, newItem)
-            if i > 3:
+            if i > 4 or i == 1:
                 newItem.setText("0")
             print(newItem.text())
 
@@ -295,6 +294,7 @@ class MainWindow(QMainWindow):
         self.w.show()
 
     def loadWordTable(self, index):
+        print(self.ui.wordTable.rowCount())
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
@@ -335,7 +335,7 @@ class MainWindow(QMainWindow):
             if event.key() == QtCore.Qt.Key_Tab:
                 #print(self.ui.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", bself.wordTable.rowCount(), self.wordTable.columnCount()
 
-                if self.ui.wordTable.currentColumn() == 4:
+                if self.ui.wordTable.currentColumn() == 5:
                     if self.ui.wordTable.currentIndex().row() == self.ui.wordTable.rowCount() - 1:
                         self.insertTableRow()
                     self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 1)
@@ -344,7 +344,7 @@ class MainWindow(QMainWindow):
 
             elif event.key() == QtCore.Qt.Key_Backtab:
                 if self.ui.wordTable.currentColumn() == 6:
-                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), 3)
+                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), 4)
                     self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
 
             return False
@@ -359,6 +359,10 @@ class MainWindow(QMainWindow):
     def loadStudySet(self):
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
+        db.getLastTimeStudied(self.nameOfCurrentTable)
+        db.updateLastTimeStudied(self.nameOfCurrentTable)
+        db.getLastTimeStudied(self.nameOfCurrentTable)
+
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
 
