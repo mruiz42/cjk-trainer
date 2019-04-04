@@ -16,6 +16,7 @@ DATABASE_PATH = '../data/vocab.db'
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        # Member attributes
         self.indexOfAddedRowsSet = set()        # Index of queued row numbers to be added from wordTable
         self.indexOfModifiedRowsSet = set()     # Index of queued row numbers to be modified from wordTable
         self.indexOfDeletedRowsSet = set()      # Index of queued row numbers to be deleted from wordTable
@@ -24,11 +25,10 @@ class MainWindow(QMainWindow):
         self.studySet = []                      # List of VocabWord objects that the user has selected
         self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
         self.cardNum = 0                        # Iterator for the studySet
+        # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         self.ui.progressBar.reset()
-
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
@@ -37,9 +37,7 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
-
         self.ui.wordTable.installEventFilter(self)
-
         # Added - Prevent user from dragging list view objs
         self.ui.deckList.setDragEnabled(False)
         self.ui.deckList.clicked.connect(self.on_clicked)
@@ -73,7 +71,7 @@ class MainWindow(QMainWindow):
         # Added buttonBox_wordList bindings
         self.ui.buttonBox_wordList.accepted.connect(self.saveTable)
         self.ui.buttonBox_wordList.rejected.connect(self.revertTable)
-
+        # Install tabBar Scroll event filter
         eater = KeyPressEater(self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
         self.ui.tabBar.tabBarClicked.connect(self.tab_changed)
@@ -161,23 +159,28 @@ class MainWindow(QMainWindow):
 
     def refreshTableList(self):
         print("REFRESHING TABLE LIST")
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName(DATABASE_PATH)
-        db.open()
+        # TODO ) SORT BY MOST RECENTLY STUDIED
+        # db = QSqlDatabase.addDatabase("QSQLITE")
+        # db.setDatabaseName(DATABASE_PATH)
+        # db.open()
+        # vocabTableList = db.tables()
 
-        vocabTableList = db.tables()
-        if vocabTableList == 0:
+        db = SqlTools(DATABASE_PATH)
+        tableList = db.getTableList()
+        db.closeDatabase()
+
+        if tableList == 0:
             print("Empty table.. Creating a starting point..")
+            # TODO CALL CREATE DB FROM SQLTOOLS (MUST BE DEFINED THO)
 
-        print(vocabTableList)
-        listWidget = self.ui.deckList
-        listWidget.clear()
-        for i in vocabTableList:
-            if i != 'sqlite_sequence':
-                listWidget.addItem(i)
+        print(tableList)
+        self.ui.deckList.clear()
 
-        listWidget.show()
-        db.close()
+        for i in tableList:
+            self.ui.deckList.addItem(i)
+
+        self.ui.deckList.show()
+        return tableList
 
     def revertTable(self):
         self.ui.wordTable.setSortingEnabled(False)
@@ -186,8 +189,13 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.clearContents()
         self.ui.wordTable.reset()
         self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-        conn = sqlite3.connect(DATABASE_PATH)
-        result = conn.execute('SELECT * FROM {}'.format(self.nameOfCurrentTable))
+
+
+
+        db = SqlTools(DATABASE_PATH)
+        result = db.getTableData(self.nameOfCurrentTable)
+        db.closeDatabase()
+
         for row_number, row_data in enumerate(result):
             print("Row number: ", row_number)
             self.ui.wordTable.insertRow(row_number)
@@ -197,7 +205,9 @@ class MainWindow(QMainWindow):
                     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                 else:
                     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-        conn.close()
+
+
+
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.buttonBox_wordList.setEnabled(False)
 
@@ -288,20 +298,18 @@ class MainWindow(QMainWindow):
             self.indexOfDeletedRowsSet.clear()
             self.indexOfModifiedRowsSet.clear()
             self.indexOfAddedRowsSet.clear()
-
-
             self.ui.wordTable.setSortingEnabled(False)
             self.indexOfCurrentTable = index
             self.nameOfCurrentTable = index.data()
             self.ui.wordTable.setRowCount(0)
             self.ui.wordTable.clearContents()
             self.ui.wordTable.reset()
-
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
 
             self.ui.label_deckName.setText("Selected Deck: {}".format(index.data()))
-            conn = sqlite3.connect(DATABASE_PATH)
-            result = conn.execute('SELECT * FROM {}'.format("[" + self.nameOfCurrentTable + "]"))
+            db = SqlTools(DATABASE_PATH)
+            result = db.getTableData(self.nameOfCurrentTable)
+            db.closeDatabase()
             for row_number, row_data in enumerate(result):
                 self.ui.wordTable.insertRow(row_number)
                 print("Row number: ", row_number)
@@ -312,9 +320,7 @@ class MainWindow(QMainWindow):
                     else:
                         self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
-
-            conn.close()
-            self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
         self.ui.buttonBox_wordList.setEnabled(False)
 
@@ -348,13 +354,11 @@ class MainWindow(QMainWindow):
         win.ui.pushButton_enter.setText("Enter")
 
     def loadStudySet(self):
-        db = sqlite3.connect(DATABASE_PATH)
-        c = db.execute('SELECT * FROM {}'.format("[" + win.ui.nameOfCurrentTable + "]"))
-        result = c.fetchall()
-
+        db = SqlTools(DATABASE_PATH)
+        result = db.getTableData(self.nameOfCurrentTable)
+        db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
 
-        db.close()
         self.studySet = [VocabWord(*t) for t in result]
 
         for i in range(10, len(self.studySet),10):
@@ -431,24 +435,11 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
-    db = SqlTools(DATABASE_PATH)
-    tableList = db.getTableList()
-
-    if tableList == 0:
-        print("Empty table.. Creating a starting point..")
-        # TODO CALL CREATE DB (MUST BE DEFINED THO)
-    print(tableList)
-    for i in tableList:
-        if i != 'sqlite_sequence':
-            win.ui.deckList.addItem(i)
-    win.ui.deckList.show()
+    win.refreshTableList()
 
     win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
     print(win.nameOfCurrentTable)
-    conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.execute('SELECT * FROM {}'.format("[" + win.nameOfCurrentTable + "]"))
-    result = c.fetchall()
-    conn.close()
-    print(result)
+    win.on_clicked(0)
+
 
     sys.exit(app.exec_())

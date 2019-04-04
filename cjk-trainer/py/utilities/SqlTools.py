@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 import sys
 
 class SqlTools():
@@ -164,6 +165,17 @@ class SqlTools():
         print("Finished importing", self.db.total_changes, "entries.")
 
     def getTableList(self):
-        tableList= self.db.tables()
-        return tableList
-    def
+        # TODO SORT THE LIST BY DATE VALUE
+        '''This function will return a list of tables inside of the database'''
+        queryCur = self.db.execute("SELECT * FROM sqlite_sequence")
+        result = queryCur.fetchall()
+        flat_list = []      # We don't need the number of entries in the table, just the name
+        for i in result:
+            flat_list.append(i[0])
+        return flat_list
+
+    def getTableData(self, table_name):
+        '''This function will return a list of tuples representing the rows and columns of the table'''
+        cur = self.db.execute("SELECT * FROM {}".format("[" + table_name + "]"))
+        result = cur.fetchall()
+        return result
