@@ -5,6 +5,7 @@ from py.callImportDeck import *
 from py.utilities.SQLTools import *
 from py.VocabWord import *
 DATABASE_PATH = '../data/vocab.db'
+
 #Developer notes:
 # TODO SEPARATE "BUILT IN TABLES" (NON MODIFYABLE) & "USER DEFINED TABLES" (MODIFYABLE)
 # TODO 04) MANAGE BUILT IN DATA STRUCTURE TO STORE STUDY SET DATA

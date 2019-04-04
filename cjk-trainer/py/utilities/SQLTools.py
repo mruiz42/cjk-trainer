@@ -27,7 +27,6 @@ class SqlTools():
         self.db.executemany(command, vocabword_list)
         self.db.commit()
 
-    #TODO FIND A WAY TO CREATE A UNIQUE/STANDARDIZED TABLE NAME SEPERATE FROM DECKNAME
     def createTable(self, table_name):
         #c = self.db.cursor()
         c = self.cur
@@ -39,15 +38,15 @@ class SqlTools():
         # except sqlite3.OperationalError:
         #     # Table must not exist
         #     # SEARCH FOR TABLE NAME AND DONT RUN IF FOUND!
-        command = ("CREATE TABLE IF NOT EXISTS " + str(table_name) +
+        command = ("CREATE TABLE IF NOT EXISTS [" + str(table_name) + "] "
                    "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
-                   "DECKNAME CHAR,"
                    "STARRED INT,"
                    "VOCABULARY CHAR,"
                    "DEFINITION CHAR,"
                    "PRONUNCIATION CHAR,"
                    "CORRECT INT,"
-                   "ATTEMPTED INT);")
+                   "ATTEMPTED INT,"
+                   "LASTTIMESTUDIED TEXT);")
 
         # Extend table to include
         self.db.execute(command)
