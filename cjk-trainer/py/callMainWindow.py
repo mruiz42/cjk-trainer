@@ -4,8 +4,7 @@ from py.callGenericDialog import *
 from py.callImportDeck import *
 from py.utilities.SqlTools import *
 from py.VocabWord import *
-
-DATABASE_PATH = '../data/vocab.db'
+# Global variable for database interaction
 
 #Developer notes:
 # TODO SEPARATE "BUILT IN TABLES" (NON MODIFYABLE) & "USER DEFINED TABLES" (MODIFYABLE)
@@ -13,10 +12,13 @@ DATABASE_PATH = '../data/vocab.db'
 # TODO 06) ADD OPTION FOR SHUFFLE AND SWAP DEFINITION/PRONUNCIATION/VOCABULARY FOR Q/A
 # TODO 07) CHECK IF THERES A BETTER WAY TO DISABLE TABS
 # TODO 08) INDEX, DECKNAME, STARRED, VOCABULARY, DEFINITION, PRONUN(OPTIONAL), CORR#, ATT#
+# TODO 09) AUTO LOAD THE MOST RECENTLY STUDIED DECK.
+# TODO 10) NORMALIZE FONTS ACROSS UI WIDGETS
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # Member attributes
+        self.DATABASE_PATH = '../data/vocab.db'
         self.indexOfAddedRowsSet = set()        # Index of queued row numbers to be added from wordTable
         self.indexOfModifiedRowsSet = set()     # Index of queued row numbers to be modified from wordTable
         self.indexOfDeletedRowsSet = set()      # Index of queued row numbers to be deleted from wordTable
@@ -103,7 +105,7 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
         print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet, "Del rows: ", self.indexOfDeletedRowsSet)
         # Create Sql Connection
-        db = SqlTools(DATABASE_PATH)
+        db = SqlTools(self.DATABASE_PATH)
         # Update modified rows, if exist
         if len(self.indexOfModifiedRowsSet) != 0:
             print("SENDING MODIFIED ENTRIES TO DATABASE")
@@ -165,7 +167,7 @@ class MainWindow(QMainWindow):
         # db.open()
         # vocabTableList = db.tables()
 
-        db = SqlTools(DATABASE_PATH)
+        db = SqlTools(self.DATABASE_PATH)
         tableList = db.getTableList()
         db.closeDatabase()
 
@@ -192,7 +194,7 @@ class MainWindow(QMainWindow):
 
 
 
-        db = SqlTools(DATABASE_PATH)
+        db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
         db.closeDatabase()
 
@@ -307,7 +309,7 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
 
             self.ui.label_deckName.setText("Selected Deck: {}".format(index.data()))
-            db = SqlTools(DATABASE_PATH)
+            db = SqlTools(self.DATABASE_PATH)
             result = db.getTableData(self.nameOfCurrentTable)
             db.closeDatabase()
             for row_number, row_data in enumerate(result):
@@ -354,7 +356,7 @@ class MainWindow(QMainWindow):
         win.ui.pushButton_enter.setText("Enter")
 
     def loadStudySet(self):
-        db = SqlTools(DATABASE_PATH)
+        db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects

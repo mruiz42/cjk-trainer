@@ -19,7 +19,7 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
 
     def deleteConfirmed(self):
         print("Deleting table: ", self.tableName)
-        db = SqlTools('../data/vocab.db')
+        db = SqlTools(self.DATABASE_PATH)
         db.dropTable(self.tableName)
         db.closeDatabase()
         self.mainWindow.refreshTableList()

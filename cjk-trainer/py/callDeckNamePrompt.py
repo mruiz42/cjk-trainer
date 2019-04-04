@@ -16,7 +16,7 @@ class DeckNamePrompt(QtWidgets.QDialog):
         table_name = self.DNPD.lineEdit.text()
         print("Creating table: ", table_name)
         db = SqlTools()
-        db.openDatabase('../data/vocab.db')
+        db.openDatabase(self.DATABASE_PATH)
         db.createTable(table_name)
         db.closeDatabase()
         self.mainWindow.refreshTableList()
