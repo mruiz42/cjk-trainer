@@ -1,4 +1,5 @@
 from py.setupUi.ImportDeck import *
+DATABASE_PATH = '../data/vocab.db'
 class ImportDeck(QtWidgets. QDialog):
 
     def __init__(self, mainWindow, parent=None):
@@ -18,8 +19,7 @@ class ImportDeck(QtWidgets. QDialog):
         for i in word_list:
             print(i)
         print(table_name)
-        db = SqlTools()
-        db.openDatabase('../data/vocab.db')
+        db = SqlTools(DATABASE_PATH)
         db.createTable(table_name)
         db.insertVocabWordList(table_name, headers, word_list)
         db.closeDatabase()

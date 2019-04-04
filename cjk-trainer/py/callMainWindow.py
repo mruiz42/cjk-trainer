@@ -102,45 +102,32 @@ class MainWindow(QMainWindow):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
         self.ui.buttonBox_wordList.setEnabled(True)
         if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
-            self.indexOfModifiedRowsSet.add(self.wordTable.currentRow())
-        print("Modified index:", self.wordTable.currentRow())
+            self.indexOfModifiedRowsSet.add(self.ui.wordTable.currentRow())
+        print("Modified index:", self.ui.wordTable.currentRow())
 
-    # TODO CHANGE LOGIC WHEN SQLTOOLS IS UPDATED
+    # TODO DOESNT CONSISTENTLY WORK, NEED TO WORK OUT LOGIC BUGS
     def saveTable(self):
         print("save table")
 
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedRowsSet
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
         print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet, "Del rows: ", self.indexOfDeletedRowsSet)
-
+        # Create Sql Connection
+        db = SqlTools(DATABASE_PATH)
+        # Update modified rows, if exist
         if len(self.indexOfModifiedRowsSet) != 0:
             print("SENDING MODIFIED ENTRIES TO DATABASE")
-            conn = sqlite3.connect(DATABASE_PATH)
-            for i in self.indexOfModifiedRowsSet:
+            for rowIndex in self.indexOfModifiedRowsSet:
                 rowData = []
                 for j in range(0, self.ui.wordTable.columnCount()):
-                    print(j, "Table data", self.wordTable.item(i, j).text())
-                    rowData.append(self.ui.wordTable.item(i, j).text())
-
+                    print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
+                    rowData.append(self.ui.wordTable.item(rowIndex, j).text())
                 print(rowData)
-
-                if rowData[0] == "" or rowData[1] == "" or rowData[2] == "":
-                    print("Empty critical slot found, refusing update into table")
-                else:
-                    self.checkUserTableEdit(rowData)
-                    print("UPDATING TABLE DATA!", rowData)
-                    print("Updating table at card Num:", i)
-
-                    command = "UPDATE " + self.nameOfCurrentTable + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
-                                                                    "ATTEMPTED=?, CORRECT=?, STARRED=? " \
-                                                                    " WHERE CARDNUM= " + str(rowData.pop(0))
-                    print(command)
-                    conn.execute(command, rowData)
-                    conn.commit()
-            conn.close()
-
-
-
+                # Update the database
+                db.modifyTableRows(self.nameOfCurrentTable, rowData, rowIndex)
+        # Add rows, if exist
+        # TODO ) GETTING AN ERROR WHERE IF THERES NO BLANK ROW AT END, IT WILL DISREGARD THE LAST LINE
+        # EVEN IF I HAS VALID DATA
         if len(self.indexOfAddedRowsSet) != 0:
             # Check if last row has valid data
             try:
@@ -151,42 +138,30 @@ class MainWindow(QMainWindow):
                     self.indexOfAddedRowsSet.remove(self.ui.wordTable.rowCount() -1)
                 except KeyError:
                     print("last row seems good")
-
             # Begin reading added rows
-            conn = sqlite3.connect(DATABASE_PATH)
             print("SENDING INSERTED ROWS INTO DATABASE")
-            for i in self.indexOfAddedRowsSet:
+            for rowIndex in self.indexOfAddedRowsSet:
                 rowData = []
                 for j in range(1, self.ui.wordTable.columnCount()):
-                    print(j, "Table data", self.wordTable.item(i, j).text())
-                    rowData.append(self.ui.wordTable.item(i, j).text())
-
-                print(i, j, rowData)
+                    print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
+                    rowData.append(self.ui.wordTable.item(rowIndex, j).text())
+                print(rowIndex, j, rowData)
                 if rowData[0] == '' or rowData[1] == '':
                     print("Empty critical slot found, refusing insert into table")
                 else:
-                    self.checkUserTableEdit(rowData)
                     print("INSERTING TABLE DATA!", rowData)
-                    print("Updating table at card Num:", i + 1)  # cardnum is one ahead of actual index?
+                    print("Updating table at card Num:", rowIndex + 1)  # cardnum is one ahead of actual index?
+                    db.addTableRow(self.nameOfCurrentTable, rowData)
 
-                    command = "INSERT INTO " + self.nameOfCurrentTable + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
-                                                                         "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
-                    print(command)
-                    conn.execute(command, rowData)
-                    conn.commit()
-            conn.close()
-
+        # Delete rows, if exist
         print(self.indexOfDeletedRowsSet)
         if len(self.indexOfDeletedRowsSet) != 0:
-            conn = sqlite3.connect(DATABASE_PATH)
             # Now we must remove the rows user does not want anymore
             # Try to delete the item from the table by primary key
-            for i in self.indexOfDeletedRowsSet:
-                command = "DELETE FROM " + self.nameOfCurrentTable + " WHERE CARDNUM = " + i
-                conn.execute(command)
-                conn.commit()
-            conn.close()
+            for rowIndex in self.indexOfDeletedRowsSet:
+                db.deleteTableRow(self.nameOfCurrentTable, rowIndex)
 
+        db.closeDatabase()
         self.indexOfAddedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
         self.indexOfDeletedRowsSet.clear()
@@ -347,28 +322,6 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
         self.ui.buttonBox_wordList.setEnabled(False)
-    def checkUserTableEdit(self, row):
-        '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
-        # THIS LOGIC IS FLAWED UNLESS YOU CHECK FOR A LEN6 AND LEN7 LIST
-        # TODO CHANGE LOGIC HERE PROBABLY
-
-        try:
-            row[0] = int(row[0])
-        except ValueError:
-            print("FATAL ERROR, PRIMARY KEY HAS BEEN EDITED!")
-            return False
-        if row[6] != 0 and row[6] != 1:
-            print("Resetting isStarred to 0")
-            row[6] = 0
-        indexesToConvert = [4, 5, 6]
-        for i in indexesToConvert:
-            try:
-                row[i] = int(row[i])
-            except ValueError:
-                print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
-                row[4] = 0
-                row[5] = 0
-                # row[i] = 0
 
     def eventFilter(self, source, event):
         #print("entered event filter ")
@@ -380,7 +333,7 @@ class MainWindow(QMainWindow):
 
                 if self.ui.wordTable.currentColumn() == 4:
                     if self.ui.wordTable.currentIndex().row() == self.ui.wordTable.rowCount() - 1:
-                        self.ui.insertTableRow()
+                        self.insertTableRow()
                     self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 1)
                     self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
 
