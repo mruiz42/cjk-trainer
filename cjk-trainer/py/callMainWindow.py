@@ -59,15 +59,13 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.setRowCount(1)
         # Added Header Labels
         self.ui.wordTable.setHorizontalHeaderLabels(
-            ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted'])
+            ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
         self.ui.wordTable.setColumnHidden(0, True)
         self.ui.wordTable.setColumnWidth(1, 60)
         self.ui.wordTable.setColumnWidth(2, 176)
         self.ui.wordTable.setColumnWidth(3, 176)
         self.ui.wordTable.setColumnWidth(4, 176)
         self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
-        #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
-        #self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
         self.ui.buttonBox_wordList.setCenterButtons(False)
@@ -433,31 +431,22 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
-    db = QSqlDatabase.addDatabase("QSQLITE", connectionName="prim_conn")
-    db.setDatabaseName(DATABASE_PATH)
-    db.open()
+    db = SqlTools(DATABASE_PATH)
+    tableList = db.getTableList()
 
-    # Generate list of tables for listWidget
-    # Add to SQLTools so we have a local db and cur object to call from main without making a mess in main
-    # Call this function to update the list of decks
-    vocabTableList = db.tables()
-    if vocabTableList == 0:
+    if tableList == 0:
         print("Empty table.. Creating a starting point..")
-
-    print(vocabTableList)
-    listWidget = win.ui.deckList
-    for i in vocabTableList:
+        # TODO CALL CREATE DB (MUST BE DEFINED THO)
+    print(tableList)
+    for i in tableList:
         if i != 'sqlite_sequence':
-            listWidget.addItem(i)
+            win.ui.deckList.addItem(i)
+    win.ui.deckList.show()
 
-    listWidget.show()
-    db.close()
-
-    win.ui.nameOfCurrentTable = listWidget.item(0).data(0)
-    print(win.ui.nameOfCurrentTable)
-    dbname = win.ui.nameOfCurrentTable
+    win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
+    print(win.nameOfCurrentTable)
     conn = sqlite3.connect(DATABASE_PATH)
-    c = conn.execute('SELECT * FROM {}'.format(dbname))
+    c = conn.execute('SELECT * FROM {}'.format("[" + win.nameOfCurrentTable + "]"))
     result = c.fetchall()
     conn.close()
     print(result)

@@ -126,7 +126,6 @@ class SqlTools():
         # are completely identical meaning same hanzi, pinyin, definition.
         print("I guess find any conflicting entries(same hanzi) and then merge the definitions")
 
-
     # TODO
     #  When I inserted into the table before, I had a typo where it had no comma after PRONUNCIATION in the query,
     #  and it was complaining about 7 values being passed to the command because the hidden cardnum cell was still there
@@ -163,3 +162,8 @@ class SqlTools():
         file.close()
         self.db.commit()
         print("Finished importing", self.db.total_changes, "entries.")
+
+    def getTableList(self):
+        tableList= self.db.tables()
+        return tableList
+    def
