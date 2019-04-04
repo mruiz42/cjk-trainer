@@ -9,7 +9,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
-from py.utilities.SQLTools import *
+from py.utilities.SqlTools import *
 from py.utilities.CSVTools import importDialogHelper
 
 class Ui_importDialog(object):

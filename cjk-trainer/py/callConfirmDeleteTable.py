@@ -1,6 +1,6 @@
 from py.setupUi.MainWindow import *
 from py.setupUi.ConfirmDeleteTable import *
-from py.utilities.SQLTools import *
+from py.utilities.SqlTools import *
 
 
 class ConfirmDeleteTable(QtWidgets.QDialog):
@@ -19,8 +19,7 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
 
     def deleteConfirmed(self):
         print("Deleting table: ", self.tableName)
-        db = SqlTools()
-        db.openDatabase('../data/vocab.db')
+        db = SqlTools('../data/vocab.db')
         db.dropTable(self.tableName)
         db.closeDatabase()
         self.mainWindow.refreshTableList()

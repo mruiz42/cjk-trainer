@@ -21,16 +21,16 @@ class SqlTools():
 
     #TODO ADD FIELDS/REARRANGE
     def insertVocabWordList(self, table_name, headers, vocabword_list):
-        header_string = '(' + ','.join(headers + ['ATTEMPTED', 'CORRECT', 'STARRED']) + ')'
-        placeholders = '(' + ','.join(['?' for header in headers] + ['0', '0', '0']) + ')'
-        command = 'INSERT INTO ' + table_name + header_string + ' VALUES ' + placeholders
+        header_string = '(' + ', '.join(headers + ['STARRED', 'CORRECT', 'ATTEMPTED', 'LASTTIMESTUDIED']) + ')'
+        placeholders = '(' + ', '.join(['?' for header in headers] + ['0', '0', '0', '0']) + ')'
+        command = "INSERT INTO " + "[" + table_name + "]" + header_string + " VALUES " + placeholders
         print(command)
         self.db.executemany(command, vocabword_list)
         self.db.commit()
 
     def createTable(self, table_name):
         #c = self.db.cursor()
-        c = self.cur
+        #c = self.cur
         # Check if table exists
         # try:
         #     c.execute('SELECT * FROM ' + tablename)
@@ -47,7 +47,7 @@ class SqlTools():
                    "PRONUNCIATION CHAR,"
                    "CORRECT INT,"
                    "ATTEMPTED INT,"
-                   "LASTTIMESTUDIED TEXT);")
+                   "LASTTIMESTUDIED CHAR);")
 
         # Extend table to include
         self.db.execute(command)
@@ -55,12 +55,12 @@ class SqlTools():
         print("table ", table_name, " created!")
 
     def dropTable(self,table_name):
-        command = "DROP TABLE " + table_name + ";"
+        command = "DROP TABLE " +"[" + table_name +"]"+ ";"
         self.db.execute(command)
         self.db.commit()
 
     def modifyTableRows(self, table_name, row_data, row_index):
-        if row_data[0] == "" or row_data[1] == "" or row_data[2] == "":
+        if row_data[0] == "" or row_data[2] == "" or row_data[3] == "":
             print("Empty critical slot found, refusing update into table")
         else:
             self.checkUserTableEdit(row_data)
@@ -77,14 +77,14 @@ class SqlTools():
     def addTableRow(self, table_name, row_data):
         self.checkUserTableEdit(row_data)
 
-        command = "INSERT INTO " + table_name + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
+        command = "INSERT INTO " + "[" + table_name + "] " + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
                                                 "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
         print(command)
         self.db.execute(command, row_data)
         self.db.commit()
 
     def deleteTableRow(self, table_name, row_index):
-        command = "DELETE FROM " + table_name + " WHERE CARDNUM = " + row_index
+        command = "DELETE FROM " + "[" + table_name + "]" + " WHERE CARDNUM = " + row_index
         self.db.execute(command)
         self.db.commit()
 
@@ -92,15 +92,15 @@ class SqlTools():
         '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
         # THIS LOGIC IS FLAWED UNLESS YOU CHECK FOR A LEN6 AND LEN7 LIST
         # TODO CHANGE LOGIC HERE PROBABLY
-
+        # TODO COME BACK TO CHANGE THE INDEXES OF EACH ROW
         try:
             row[0] = int(row[0])
         except ValueError:
             print("FATAL ERROR, PRIMARY KEY HAS BEEN EDITED!")
             return False
-        if row[6] != 0 and row[6] != 1:
+        if row[1] != 0 and row[1] != 1:
             print("Resetting isStarred to 0")
-            row[6] = 0
+            row[1] = 0
         indexesToConvert = [4, 5, 6]
         for i in indexesToConvert:
             try:

@@ -1,5 +1,7 @@
 from py.setupUi.ImportDeck import *
 DATABASE_PATH = '../data/vocab.db'
+
+
 class ImportDeck(QtWidgets. QDialog):
 
     def __init__(self, mainWindow, parent=None):
@@ -13,8 +15,8 @@ class ImportDeck(QtWidgets. QDialog):
 
 
     def acceptInput(self):
-        table_name = self.lineEdit.text()
-        vocab_list = self.plainTextEdit.toPlainText().splitlines()
+        table_name = self.iD.lineEdit.text()
+        vocab_list = self.iD.plainTextEdit.toPlainText().splitlines()
         headers, word_list = importDialogHelper(vocab_list)
         for i in word_list:
             print(i)
@@ -23,4 +25,4 @@ class ImportDeck(QtWidgets. QDialog):
         db.createTable(table_name)
         db.insertVocabWordList(table_name, headers, word_list)
         db.closeDatabase()
-        self.refreshTableList()
+        self.mainWindow.refreshTableList()

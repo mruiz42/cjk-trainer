@@ -2,7 +2,7 @@ from PySide2.QtWidgets import *
 from py.setupUi.MainWindow import *
 from py.callGenericDialog import *
 from py.callImportDeck import *
-from py.utilities.SQLTools import *
+from py.utilities.SqlTools import *
 from py.VocabWord import *
 
 DATABASE_PATH = '../data/vocab.db'
@@ -21,18 +21,10 @@ class MainWindow(QMainWindow):
         self.indexOfDeletedRowsSet = set()      # Index of queued row numbers to be deleted from wordTable
         self.indexOfCurrentTable = 0            # Index of current table in the deckList
         self.nameOfCurrentTable = ""            # Name of current table_name for the SQL TableName
-        self.nameOfCurrentDeck = ""             # Name of current deck name as defined by the user
         self.studySet = []                      # List of VocabWord objects that the user has selected
         self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
         self.cardNum = 0                        # Iterator for the studySet
         self.ui = Ui_MainWindow()
-
-        # # ADDED KEYPRESS EATER TAB BAR
-        # self.ui.tabBar = QtWidgets.QTabBar()
-        # self.ui.tabWidget.setTabBar(self.ui.tabBar)
-        # eater = KeyPressEater(self.ui.tabBar)
-        # self.ui.tabBar.installEventFilter(eater)
-
         self.ui.setupUi(self)
 
         self.ui.progressBar.reset()
@@ -67,11 +59,12 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.setRowCount(1)
         # Added Header Labels
         self.ui.wordTable.setHorizontalHeaderLabels(
-            ['Index', 'Vocabulary', 'Definition', 'Pronunciation', 'Attempted', 'Correct', 'Starred'])
+            ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted'])
         self.ui.wordTable.setColumnHidden(0, True)
-        self.ui.wordTable.setColumnWidth(1, 210)
-        self.ui.wordTable.setColumnWidth(2, 210)
-        self.ui.wordTable.setColumnWidth(3, 186)
+        self.ui.wordTable.setColumnWidth(1, 60)
+        self.ui.wordTable.setColumnWidth(2, 176)
+        self.ui.wordTable.setColumnWidth(3, 176)
+        self.ui.wordTable.setColumnWidth(4, 176)
         self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         #self.wordTable.itemSelectionChanged.connect(self.autoInsertTableRow)
         #self.wordTable.currentCellChanged.connect(self.autoInsertTableRow)
@@ -92,7 +85,7 @@ class MainWindow(QMainWindow):
     def tab_changed(self):
         #self.ui.tabBar.blockSignals(True)
         print("tab changed?")
-        self.cardNum = 1
+        #self.cardNum = 1
         if self.cardNum != 0:
             self.w = GenericDialog(self)
             self.w.show()
@@ -132,7 +125,7 @@ class MainWindow(QMainWindow):
         if len(self.indexOfAddedRowsSet) != 0:
             # Check if last row has valid data
             try:
-                print(self.ui.wordTable.item(self.ui.wordTable.rowCount(), 1).text())
+                print(self.ui.wordTable.item(self.ui.wordTable.rowCount() - 1, 1).text())
             except (AttributeError, ValueError):
                 print("garbage data in last row")
                 try:
@@ -307,9 +300,10 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.reset()
 
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+
             self.ui.label_deckName.setText("Selected Deck: {}".format(index.data()))
             conn = sqlite3.connect(DATABASE_PATH)
-            result = conn.execute('SELECT * FROM {}'.format(index.data()))
+            result = conn.execute('SELECT * FROM {}'.format("[" + self.nameOfCurrentTable + "]"))
             for row_number, row_data in enumerate(result):
                 self.ui.wordTable.insertRow(row_number)
                 print("Row number: ", row_number)
@@ -319,6 +313,8 @@ class MainWindow(QMainWindow):
                         self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                     else:
                         self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+
             conn.close()
             self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
@@ -355,7 +351,7 @@ class MainWindow(QMainWindow):
 
     def loadStudySet(self):
         db = sqlite3.connect(DATABASE_PATH)
-        c = db.execute('SELECT * FROM {}'.format(win.ui.nameOfCurrentTable))
+        c = db.execute('SELECT * FROM {}'.format("[" + win.ui.nameOfCurrentTable + "]"))
         result = c.fetchall()
 
         #We have a tuple, now lets make a list of VocabWord objects
