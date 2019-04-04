@@ -12,11 +12,12 @@ class DeckNamePrompt(QtWidgets.QDialog):
         # ADD
         self.DNPD.buttonBox.accepted.connect(self.acceptInput)
 
+
     def acceptInput(self):
         table_name = self.DNPD.lineEdit.text()
         print("Creating table: ", table_name)
-        db = SqlTools()
-        db.openDatabase(self.DATABASE_PATH)
+
+        db = SqlTools(self.mainWindow.DATABASE_PATH)
         db.createTable(table_name)
         db.closeDatabase()
         self.mainWindow.refreshTableList()

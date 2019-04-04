@@ -42,10 +42,10 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.installEventFilter(self)
         # Added - Prevent user from dragging list view objs
         self.ui.deckList.setDragEnabled(False)
-        self.ui.deckList.clicked.connect(self.on_clicked)
+        self.ui.deckList.clicked.connect(self.loadWordTable)
         self.ui.deckList.customContextMenuRequested.connect(self.requestDeckViewContextMenu)
         # Added - Connect
-        self.ui.pushButton_wordList_select.clicked.connect(self.on_clicked)        #Added - toolButton menu
+        self.ui.pushButton_wordList_select.clicked.connect(self.loadWordTable)        #Added - toolButton menu
         self.ui.toolButton_add.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         addMenu = QtWidgets.QMenu("addMenu", self.ui.toolButton_add)
         newListTableAction = addMenu.addAction("Add new deck")
@@ -178,8 +178,10 @@ class MainWindow(QMainWindow):
         print(tableList)
         self.ui.deckList.clear()
 
+
         for i in tableList:
-            self.ui.deckList.addItem(i)
+            if i != 'sqlite_sequence':
+                self.ui.deckList.addItem(i)
 
         self.ui.deckList.show()
         return tableList
@@ -234,7 +236,7 @@ class MainWindow(QMainWindow):
 
     def requestDeckViewContextMenu(self, position):
         print("CUSTOME MENU REQ")
-        self.on_clicked(self.ui.deckList.currentIndex())
+        self.loadWordTable(self.ui.deckList.currentIndex())
         contextMenuDeckView = QtWidgets.QMenu("contextMenu")
         addAction = contextMenuDeckView.addAction("Add Table")
         deleteAction = contextMenuDeckView.addAction("Delete Table")
@@ -292,8 +294,7 @@ class MainWindow(QMainWindow):
         self.w = ImportDeck(self)
         self.w.show()
 
-    @QtCore.Slot(QtCore.QModelIndex)
-    def on_clicked(self, index):
+    def loadWordTable(self, index):
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
@@ -441,7 +442,7 @@ if __name__ == "__main__":
 
     win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
     print(win.nameOfCurrentTable)
-    win.on_clicked(0)
+    win.loadWordTable(0)
 
 
     sys.exit(app.exec_())

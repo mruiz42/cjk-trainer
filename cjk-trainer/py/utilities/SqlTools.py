@@ -4,6 +4,7 @@ import sys
 
 class SqlTools():
     def __init__(self, db_path):
+        print("Opening database:" + db_path)
         self.db = sqlite3.connect(db_path)
         self.cur = self.db.cursor()
 
@@ -102,15 +103,13 @@ class SqlTools():
         if row[1] != 0 and row[1] != 1:
             print("Resetting isStarred to 0")
             row[1] = 0
-        indexesToConvert = [4, 5, 6]
-        for i in indexesToConvert:
+        for i in [5, 6]:
             try:
                 row[i] = int(row[i])
             except ValueError:
                 print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
-                row[4] = 0
                 row[5] = 0
-                # row[i] = 0
+                row[6] = 0
 
 
     #TODO MULTIPLE LANG SUPPORT
@@ -167,15 +166,37 @@ class SqlTools():
     def getTableList(self):
         # TODO SORT THE LIST BY DATE VALUE
         '''This function will return a list of tables inside of the database'''
-        queryCur = self.db.execute("SELECT * FROM sqlite_sequence")
-        result = queryCur.fetchall()
+        # queryCur = self.db.execute("SELECT * FROM sqlite_sequence")
+        # result = queryCur.fetchall()
+        # flat_list = []      # We don't need the number of entries in the table, just the name
+        # for i in result:
+        #     flat_list.append(i[0])
+        #return flat_list
+        cur = self.db.execute("SELECT NAME FROM sqlite_master WHERE type= " + "'table'" + " ORDER BY NAME;")
+        result = cur.fetchall()
         flat_list = []      # We don't need the number of entries in the table, just the name
         for i in result:
+            print(i)
             flat_list.append(i[0])
+
+        print(flat_list)
         return flat_list
 
     def getTableData(self, table_name):
         '''This function will return a list of tuples representing the rows and columns of the table'''
         cur = self.db.execute("SELECT * FROM {}".format("[" + table_name + "]"))
         result = cur.fetchall()
+        return result
+
+    def updateLastTimeStudied(self, table_name):
+        now = datetime.datetime.now()
+        print(now)
+        self.db.execute("UPDATE " + table_name + "SET LASTTIMESTUDIED = " + now)
+
+    def getLastTimeStudied(self, table_name):
+        cur = self.db.execute("SELECT LASTTIMESTUDIED FROM " + table_name)
+        result = cur.fetchone()
+
+
+        print(result)
         return result

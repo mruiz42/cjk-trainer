@@ -72,7 +72,7 @@
          <enum>QTabWidget::West</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="iconSize">
          <size>
@@ -168,7 +168,7 @@
                <enum>Qt::CustomContextMenu</enum>
               </property>
               <property name="dragDropMode">
-               <enum>QAbstractItemView::NoDragDrop</enum>
+               <enum>QAbstractItemView::DragOnly</enum>
               </property>
               <property name="defaultDropAction">
                <enum>Qt::IgnoreAction</enum>
@@ -862,11 +862,6 @@
            </layout>
           </item>
          </layout>
-        </widget>
-        <widget class="QWidget" name="tab_tones">
-         <attribute name="title">
-          <string>Tones</string>
-         </attribute>
         </widget>
         <widget class="QWidget" name="tab_statistics">
          <attribute name="title">
