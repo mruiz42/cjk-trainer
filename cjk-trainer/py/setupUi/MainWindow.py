@@ -54,14 +54,9 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
 
-
         # ADDED KEYPRESS EATER TAB BAR
         self.tabBar = QtWidgets.QTabBar()
         self.tabWidget.setTabBar(self.tabBar)
-        eater = KeyPressEater(self.tabBar)
-        self.tabBar.installEventFilter(eater)
-
-
 
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(0, 0))

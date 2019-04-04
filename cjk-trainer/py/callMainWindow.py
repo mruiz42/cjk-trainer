@@ -1,5 +1,6 @@
 from PySide2.QtWidgets import *
 from py.setupUi.MainWindow import *
+from py.callGenericDialog import *
 from py.callImportDeck import *
 from py.utilities.SQLTools import *
 from py.VocabWord import *
@@ -22,7 +23,6 @@ class MainWindow(QMainWindow):
         self.studySet = []                      # List of VocabWord objects that the user has selected
         self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
         self.cardNum = 0                        # Iterator for the studySet
-
         self.ui = Ui_MainWindow()
 
         # # ADDED KEYPRESS EATER TAB BAR
@@ -33,7 +33,6 @@ class MainWindow(QMainWindow):
 
         self.ui.setupUi(self)
 
-        self.ui.tabWidget.currentChanged.connect(self.tab_changed)
         self.ui.progressBar.reset()
 
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
@@ -82,10 +81,20 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.accepted.connect(self.saveTable)
         self.ui.buttonBox_wordList.rejected.connect(self.revertTable)
 
+        eater = KeyPressEater(self.ui.tabBar)
+        self.ui.tabBar.installEventFilter(eater)
+        self.ui.tabBar.tabBarClicked.connect(self.tab_changed)
         self.show()
 
+    # TODO INSTALL EVENT FILTER TO DISABLE TAB SWITCHING WHILE STUDY SESSION IN PROG
     def tab_changed(self):
+        #self.ui.tabBar.blockSignals(True)
         print("tab changed?")
+        self.cardNum = 1
+        if self.cardNum != 0:
+            self.w = GenericDialog(self)
+            self.w.show()
+            print(self.w.allowTabChange)
 
     # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
@@ -410,7 +419,7 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(True)
         self.ui.tab_typing.setEnabled(True)
         self.ui.tab_quiz.setEnabled(True)
-        self.ui.wordTable.itemChanged.connect(win.ui.enableSave)
+        self.ui.wordTable.itemChanged.connect(win.enableSave)
 
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()

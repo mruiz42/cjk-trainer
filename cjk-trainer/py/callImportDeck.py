@@ -6,12 +6,12 @@ class ImportDeck(QtWidgets. QDialog):
         self.iD  = Ui_importDialog()
         self.mainWindow = mainWindow
         self.iD.setupUi(self)
-        self.iD.pushButton_Import.clicked.connect(self.accepted)  # ADD
+        self.iD.pushButton_Import.clicked.connect(self.acceptInput)  # ADD
         self.iD.pushButton_Cancel.clicked.connect(self.reject) #ADD
 
 
 
-    def accepted(self):
+    def acceptInput(self):
         table_name = self.lineEdit.text()
         vocab_list = self.plainTextEdit.toPlainText().splitlines()
         headers, word_list = importDialogHelper(vocab_list)
