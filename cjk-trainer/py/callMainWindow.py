@@ -4,6 +4,7 @@ from py.callGenericDialog import *
 from py.callImportDeck import *
 from py.utilities.SQLTools import *
 from py.VocabWord import *
+
 DATABASE_PATH = '../data/vocab.db'
 
 #Developer notes:
