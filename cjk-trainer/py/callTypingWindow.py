@@ -16,7 +16,7 @@ from PySide2 import QtWidgets
 # Todo 11) Add percentage of estimated knowlege of word
 # Todo 12) Press ALT to enable shortcuts!
 
-from py.TypingWindow import *
+from py.setupUi.TypingWindow import *
 
 class TypingWindow(QtWidgets. QMainWindow):
 
