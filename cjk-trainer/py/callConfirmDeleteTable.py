@@ -22,5 +22,5 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
         db = SqlTools(self.DATABASE_PATH)
         db.dropTable(self.tableName)
         db.closeDatabase()
-        self.mainWindow.refreshTableList()
+        self.mainWindow.reloadTableList()
 

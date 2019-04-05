@@ -20,4 +20,4 @@ class DeckNamePrompt(QtWidgets.QDialog):
         db = SqlTools(self.mainWindow.DATABASE_PATH)
         db.createTable(table_name)
         db.closeDatabase()
-        self.mainWindow.refreshTableList()
+        self.mainWindow.reloadTableList()

@@ -23,4 +23,4 @@ class ImportDeck(QtWidgets. QDialog):
         db.createTable(table_name)
         db.insertVocabWordList(table_name, headers, word_list)
         db.closeDatabase()
-        self.mainWindow.refreshTableList()
+        self.mainWindow.reloadTableList()

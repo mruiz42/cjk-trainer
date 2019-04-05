@@ -62,13 +62,12 @@ class SqlTools():
         self.db.commit()
 
     def modifyTableRows(self, table_name, row_data, row_index):
-        if row_data[0] == "" or row_data[2] == "" or row_data[3] == "":
-            print("Empty critical slot found, refusing update into table")
-        else:
-            self.checkUserTableEdit(row_data)
+
+        if not self.validateRow(row_data):
+            print("Table edit: ", row_data, " has been validated.")
+
             print("UPDATING TABLE DATA!", row_data)
             print("Updating table at card Num:", row_index)
-
             command = "UPDATE " + table_name + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
                                                             "ATTEMPTED=?, CORRECT=?, STARRED=? " \
                                                             " WHERE CARDNUM= " + str(row_data.pop(0))
@@ -77,7 +76,7 @@ class SqlTools():
             self.db.commit()
 
     def addTableRow(self, table_name, row_data):
-        self.checkUserTableEdit(row_data)
+        self.validateRow(row_data)
 
         command = "INSERT INTO " + "[" + table_name + "] " + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
                                                 "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
@@ -90,26 +89,33 @@ class SqlTools():
         self.db.execute(command)
         self.db.commit()
 
-    def checkUserTableEdit(self, row):
-        '''This function will check the data types of a list to make sure 0, 4, 5, 6 are integers'''
-        # THIS LOGIC IS FLAWED UNLESS YOU CHECK FOR A LEN6 AND LEN7 LIST
+    def validateRow(self, row_data):
+        '''This function will check the data types of a list to make sure 1, 5, 6 are integers'''
         # TODO CHANGE LOGIC HERE PROBABLY
         # TODO COME BACK TO CHANGE THE INDEXES OF EACH ROW
-        try:
-            row[0] = int(row[0])
-        except ValueError:
-            print("FATAL ERROR, PRIMARY KEY HAS BEEN EDITED!")
+        # The row being passed in will include everything including index 0, cardnum (primary key)
+        # [CARDNUM ,STARRED, VOCABULARY, DEFINITION, PRONUNCIATION, CORRECT, ATTEMPTED, LASTTIMESTUDIED]
+        if len(row_data) != 7:
+            print("ERROR! Table edit: ", row_data, " has been REJECTED! Row length is ",len(row_data), ", should be 7.")
             return False
-        if row[1] != 0 and row[1] != 1:
-            print("Resetting isStarred to 0")
-            row[1] = 0
-        for i in [5, 6]:
-            try:
-                row[i] = int(row[i])
-            except ValueError:
-                print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
-                row[5] = 0
-                row[6] = 0
+        #Im not sure I care if there is empty data in for words
+        # elif row_data[2] == "" or row_data[3] == "" or row_data[4] == "":
+        #     print("Empty critical slot found, refusing update into table")
+        #     return False
+        else:
+            if row_data[1] != '0' and row_data[1] != '1':
+                print("Resetting isStarred to 0")
+                row_data[1] = '0'
+            for i in range(5, 7):
+                try:
+                    row_data[i] = int(row_data[i])
+                except ValueError:
+                    print("VALUE ERROR: INTEGER FIELDS CANNOT CONTAIN A CHARACTER! RESETTING STATISTICS TO DEFAULT VALUES")
+                    row_data[5] = '0'
+                    row_data[6] = '0'
+            print("Table edit: ", row_data, " has been validated.")
+            return True
+
 
 
     #TODO MULTIPLE LANG SUPPORT
