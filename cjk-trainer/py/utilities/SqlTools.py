@@ -23,9 +23,9 @@ class SqlTools():
 
     #TODO ADD FIELDS/REARRANGE
     def insertFromCSV(self, table_name, headers, vocabword_list):
-        '''This function will read a CSV and input to a SQL'''
+        '''This function will read a CSV file and input to a SQL database'''
         default_header = ['VOCABULARY', 'DEFINITION', 'PRONUNCIATION']
-        print(headers)
+        print('headers', headers)
         for headers in default_header:
 
 

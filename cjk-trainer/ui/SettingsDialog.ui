@@ -7,11 +7,18 @@
     <x>0</x>
     <y>0</y>
     <width>475</width>
-    <height>505</height>
+    <height>554</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Settings</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../ico/appicon.png</normaloff>../ico/appicon.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -27,8 +34,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>459</width>
-        <height>440</height>
+        <width>439</width>
+        <height>731</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -72,17 +79,14 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>0</number>
-         </property>
+        <layout class="QGridLayout" name="gridLayout_2">
          <property name="sizeConstraint">
           <enum>QLayout::SetFixedSize</enum>
          </property>
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item>
+         <item row="0" column="0">
           <widget class="QLabel" name="label_displayFirst">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -95,7 +99,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1">
           <widget class="QRadioButton" name="radioButton_vocabulary">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -111,7 +115,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="1" column="1">
           <widget class="QRadioButton" name="radioButton_definition">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -127,7 +131,178 @@
         </layout>
        </item>
        <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_wordListSettings">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Word List Settings</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="0">
+          <widget class="QFontComboBox" name="fontComboBox"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox_fontSize">
+           <item>
+            <property name="text">
+             <string>10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>11</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>12</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>14</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>16</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>18</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>20</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>22</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_font">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Font</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_fontSize">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Font Size</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="checkBox_pronunciation">
+           <property name="text">
+            <string>Pronunciation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="checkBox_timesCorrect">
+           <property name="text">
+            <string>Times Correct</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="checkBox_timesAttempted">
+           <property name="text">
+            <string>Times Attempted</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Visible Columns</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="checkBox_dateStudied">
+           <property name="text">
+            <string>Date Studied</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="Line" name="line_6">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -156,6 +331,22 @@
         </widget>
        </item>
        <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="Line" name="line_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -177,6 +368,22 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item>
         <widget class="Line" name="line_4">
@@ -202,6 +409,22 @@
         </widget>
        </item>
        <item>
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="Line" name="line_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -224,6 +447,22 @@
          </property>
         </widget>
        </item>
+       <item>
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -236,26 +475,37 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>36</height>
-      </size>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_status">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>36</height>
+        </size>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -268,8 +518,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>254</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -284,8 +534,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>322</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

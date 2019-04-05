@@ -1,16 +1,15 @@
-from py.setupUi.ImportDeck import *
+from py.setupUi.ImportCsvDialog import *
 from py.utilities.CsvTools import importDialogHelper
+from py.utilities.SqlTools import *
 
-
-class ImportDeck(QtWidgets. QDialog):
+class ImportCSVDialog(QtWidgets. QDialog):
 
     def __init__(self, mainWindow, parent=None):
-        super(ImportDeck,self).__init__(parent)
-        self.iD  = Ui_importDialog()
+        super(ImportCSVDialog, self).__init__(parent)
+        self.icd  = Ui_ImportCsvDialog()
         self.mainWindow = mainWindow
-        self.iD.setupUi(self)
-        self.iD.pushButton_Import.clicked.connect(self.acceptInput)  # ADD
-        self.iD.pushButton_Cancel.clicked.connect(self.reject) #ADD
+        self.icd.setupUi(self)
+
 
 
     def acceptInput(self):

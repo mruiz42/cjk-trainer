@@ -357,7 +357,7 @@ class MainWindow(QMainWindow):
 
     def openImportCSVDialogue(self):
         print("open impirt csv dialge")
-        self.w = ImportDeck(self)
+        self.w = ImportCSVDialog(self)
         self.w.show()
 
     def eventFilter(self, source, event):

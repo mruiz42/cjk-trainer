@@ -348,7 +348,7 @@
                    <string>Selected Deck: </string>
                   </property>
                   <property name="alignment">
-                   <set>Qt::AlignCenter</set>
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -358,7 +358,7 @@
                    <string>-</string>
                   </property>
                   <property name="alignment">
-                   <set>Qt::AlignCenter</set>
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -388,10 +388,22 @@
                 <item>
                  <widget class="QLineEdit" name="lineEdit_searchQuery">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>120</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>200</width>
+                    <height>16777215</height>
+                   </size>
                   </property>
                   <property name="placeholderText">
                    <string>Search for a word</string>
@@ -647,7 +659,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>null</string>
+                 <string>[null]</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -821,7 +833,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>null</string>
+                 <string>[null]</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -999,7 +1011,7 @@
               <item>
                <widget class="QLabel" name="label_quizWord">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -1017,7 +1029,7 @@
                  <number>1</number>
                 </property>
                 <property name="text">
-                 <string>null</string>
+                 <string>[null]</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -1094,7 +1106,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>Word1</string>
+                   <string>[Word1]</string>
                   </property>
                  </widget>
                 </item>
@@ -1107,7 +1119,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>Word2</string>
+                   <string>[Word2]</string>
                   </property>
                  </widget>
                 </item>
@@ -1124,7 +1136,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>Word3</string>
+                   <string>[Word3]</string>
                   </property>
                  </widget>
                 </item>
@@ -1137,7 +1149,7 @@
                    </size>
                   </property>
                   <property name="text">
-                   <string>Word4</string>
+                   <string>[Word4]</string>
                   </property>
                  </widget>
                 </item>
@@ -1287,8 +1299,8 @@
      <y>641</y>
     </hint>
     <hint type="destinationlabel">
-     <x>898</x>
-     <y>641</y>
+     <x>1320</x>
+     <y>646</y>
     </hint>
    </hints>
   </connection>
