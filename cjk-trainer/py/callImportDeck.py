@@ -1,4 +1,5 @@
 from py.setupUi.ImportDeck import *
+from py.utilities.CSVTools import importDialogHelper
 
 
 class ImportDeck(QtWidgets. QDialog):
@@ -21,6 +22,6 @@ class ImportDeck(QtWidgets. QDialog):
         print(table_name)
         db = SqlTools(self.mainWindow.DATABASE_PATH)
         db.createTable(table_name)
-        db.insertVocabWordList(table_name, headers, word_list)
+        db.insertFromCSV(table_name, headers, word_list)
         db.closeDatabase()
         self.mainWindow.reloadTableList()

@@ -22,11 +22,16 @@ class SqlTools():
         self.db.close()
 
     #TODO ADD FIELDS/REARRANGE
-    def insertVocabWordList(self, table_name, headers, vocabword_list):
-        default_header = ['VOCABULARY', 'DEFINITION', 'PRONUNCIATION'
-        for i in default_header:
-            j = headers.index(i)
-            if not vocabword_list[j]:
+    def insertFromCSV(self, table_name, headers, vocabword_list):
+        '''This function will read a CSV and input to a SQL'''
+        default_header = ['VOCABULARY', 'DEFINITION', 'PRONUNCIATION']
+        print(headers)
+        for headers in default_header:
+
+
+            k = headers.index(j)
+            print(headers, vocabword_list, k)
+            if k>= 0 and not vocabword_list[k]:
                 vocabword_list[vocabword_list.index(i)] = ""
 
         header_string = '(' + ', '.join(headers + ['STARRED', 'CORRECT', 'ATTEMPTED']) + ')'

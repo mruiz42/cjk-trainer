@@ -1,4 +1,5 @@
 from PySide2.QtWidgets import *
+from py.utilities.KeyPressEater import *
 from py.setupUi.MainWindow import *
 from py.callGenericDialog import *
 from py.callImportDeck import *
@@ -17,6 +18,8 @@ from random import shuffle
 # TODO 09) AUTO LOAD THE MOST RECENTLY STUDIED DECK.
 # TODO 10) NORMALIZE FONTS ACROSS UI WIDGETS
 # TODO 11) ADD EXPORT TO CSV FUNCTION
+# TODO 12) ADD STAR THIS WORD CONTEXT MENU
+# TODO 13) ADD ABILITY TO RESET STATS
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -33,7 +36,7 @@ class MainWindow(QMainWindow):
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.progressBar.reset()
+        self.ui.progressBar_typing.reset()
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
@@ -58,16 +61,20 @@ class MainWindow(QMainWindow):
         newListTableAction.triggered.connect(self.openNewTableDialog)
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
         # I changed this stuff to initialize to standard size
-        self.ui.wordTable.setColumnCount(7)
+        self.ui.wordTable.setColumnCount(8)
         self.ui.wordTable.setRowCount(1)
         # Added Header Labels
         self.ui.wordTable.setHorizontalHeaderLabels(
-            ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
+            ['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
         self.ui.wordTable.setColumnHidden(0, True)
-        self.ui.wordTable.setColumnWidth(1, 60)
-        self.ui.wordTable.setColumnWidth(2, 176)
-        self.ui.wordTable.setColumnWidth(3, 176)
-        self.ui.wordTable.setColumnWidth(4, 176)
+        self.ui.wordTable.setColumnWidth(1, 48)
+        self.ui.wordTable.setColumnWidth(2, 256)
+        self.ui.wordTable.setColumnWidth(3, 256)
+        self.ui.wordTable.setColumnWidth(4, 256)
+        self.ui.wordTable.setColumnWidth(5, 84)
+        self.ui.wordTable.setColumnWidth(6, 96)
+        self.ui.wordTable.setColumnWidth(7, 200)
+
         self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")

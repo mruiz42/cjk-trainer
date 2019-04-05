@@ -24,17 +24,21 @@ def importCSV(file_path):
 
 
 '''This function will return a list of '''
-def importDialogHelper(line_list):
+def importDialogHelper(line_list, delim=","):
     '''This function will return a list of VocabWord objects'''
     # determine the format of input
     # i[0]
     headers = line_list[0].strip('<').strip('>').split('><')
     word_list = []
     for i in line_list[1:]:
-        word_split = i.split(',')
+        word_split = i.split(delim)
         if i.lstrip()[0] == '#':
+            print("Comment line.")
             pass
-        word_list.append(word_split)
+        if len(i) == 0:
+            print("Empty line.")
+        else:
+            word_list.append(word_split)
     return headers, word_list
 
 #def

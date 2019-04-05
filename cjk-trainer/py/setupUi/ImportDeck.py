@@ -10,7 +10,6 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from py.utilities.SqlTools import *
-from py.utilities.CSVTools import importDialogHelper
 
 class Ui_importDialog(object):
     def setupUi(self, importDialog):
@@ -43,10 +42,10 @@ class Ui_importDialog(object):
         self.lineEdit.setPlaceholderText(
             QtWidgets.QApplication.translate("importDialog", "New Flashcard Deck", None, -1))
         self.plainTextEdit.setPlainText(
-            QtWidgets.QApplication.translate("importDialog", "<VOCABULARY><PRONUNCIATION><DEFINITION>\n"
+            QtWidgets.QApplication.translate("importDialog", "<VOCABULARY><DEFINITION><PRONUNCIATION>\n"
+                                                             "# Vocabulary and Definition MANDATORY fields, "
+                                                             "can adjust to any order."
+                                                             "\n# Comments start with '#' acceptable."
                                                              "", None, -1))
-        self.plainTextEdit.setPlaceholderText(
-            QtWidgets.QApplication.translate("importDialog", "Default Format = <VOCABULARY><ROMANIZATION><DEFINITION> ",
-                                             None, -1))
         self.pushButton_Import.setText(QtWidgets.QApplication.translate("importDialog", "Import", None, -1))
         self.pushButton_Cancel.setText(QtWidgets.QApplication.translate("importDialog", "Cancel", None, -1))
