@@ -29,7 +29,7 @@ class SqlTools():
         print(command)
         self.db.executemany(command, vocabword_list)
         self.db.commit()
-
+        self.setLastTimeStudied(table_name, date_time="min")
     def createTable(self, table_name):
         #c = self.db.cursor()
         #c = self.cur
@@ -194,12 +194,20 @@ class SqlTools():
         result = cur.fetchall()
         return result
 
-    def updateLastTimeStudied(self, table_name):
-        now = datetime.datetime.now()
-        iterList =[now]
-        command = "UPDATE [" + table_name + "] SET LASTTIMESTUDIED = ?"
-        self.db.execute(command, iterList)
-        self.db.commit()
+    def setLastTimeStudied(self, table_name, date_time="now"):
+        if date_time == "min":
+            min = datetime.datetime.min()
+            iterList = [min]
+            command = "UPDATE [" + table_name + "] SET LASTTIMESTUDIED = ?"
+            self.db.execute(command, iterList)
+            self.db.commit()
+
+        elif date_time == "now":
+            now = datetime.datetime.now()
+            iterList =[now]
+            command = "UPDATE [" + table_name + "] SET LASTTIMESTUDIED = ?"
+            self.db.execute(command, iterList)
+            self.db.commit()
 
     def getLastTimeStudied(self, table_name):
         print("TB", table_name)

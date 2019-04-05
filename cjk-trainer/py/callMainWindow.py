@@ -183,6 +183,7 @@ class MainWindow(QMainWindow):
         for table_name in tableList:
             tableDict.update({table_name:db.getLastTimeStudied(table_name)})
         db.closeDatabase()
+        print(tableDict)
 
         tableList = [key for (key, value) in sorted(tableDict.items(), key=lambda t: t[1])]
         tableList.reverse()
@@ -384,7 +385,7 @@ class MainWindow(QMainWindow):
     def loadStudySet(self):
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
-        db.updateLastTimeStudied(self.nameOfCurrentTable)
+        db.setLastTimeStudied(self.nameOfCurrentTable)
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
         if len(result) != 0:
