@@ -1,5 +1,5 @@
 from py.setupUi.ImportDeck import *
-from py.utilities.CSVTools import importDialogHelper
+from py.utilities.CsvTools import importDialogHelper
 
 
 class ImportDeck(QtWidgets. QDialog):

@@ -182,7 +182,7 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>12</pointsize>
+                <pointsize>10</pointsize>
                </font>
               </property>
               <property name="contextMenuPolicy">
@@ -348,7 +348,7 @@
                    <string>Selected Deck: </string>
                   </property>
                   <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                   <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -356,6 +356,9 @@
                  <widget class="QLabel" name="label_deckName">
                   <property name="text">
                    <string>-</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
@@ -440,8 +443,8 @@
               </property>
               <property name="font">
                <font>
-                <family>Noto Sans CJK JP</family>
-                <pointsize>12</pointsize>
+                <family>Noto Sans CJK HK Thin</family>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="focusPolicy">

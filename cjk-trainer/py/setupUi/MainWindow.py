@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'MainWindow.ui',
 # licensing of 'MainWindow.ui' applies.
 #
-# Created: Fri Apr  5 05:30:48 2019
+# Created: Fri Apr  5 05:57:56 2019
 #      by: pyside2-uic  running on PySide2 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -87,7 +87,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.deckList.sizePolicy().hasHeightForWidth())
         self.deckList.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(10)
         self.deckList.setFont(font)
         self.deckList.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.deckList.setDragDropMode(QtWidgets.QAbstractItemView.DragOnly)
@@ -154,10 +154,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_13.setObjectName("verticalLayout_13")
         self.label_selectedDeck = QtWidgets.QLabel(self.tab_wordTable)
         self.label_selectedDeck.setMinimumSize(QtCore.QSize(34, 0))
-        self.label_selectedDeck.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.label_selectedDeck.setAlignment(QtCore.Qt.AlignCenter)
         self.label_selectedDeck.setObjectName("label_selectedDeck")
         self.verticalLayout_13.addWidget(self.label_selectedDeck)
         self.label_deckName = QtWidgets.QLabel(self.tab_wordTable)
+        self.label_deckName.setAlignment(QtCore.Qt.AlignCenter)
         self.label_deckName.setObjectName("label_deckName")
         self.verticalLayout_13.addWidget(self.label_deckName)
         self.horizontalLayout_10.addLayout(self.verticalLayout_13)
@@ -194,8 +195,8 @@ class Ui_MainWindow(object):
         self.wordTable.setSizePolicy(sizePolicy)
         self.wordTable.setMinimumSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
-        font.setFamily("Noto Sans CJK JP")
-        font.setPointSize(12)
+        font.setFamily("Noto Sans CJK HK Thin")
+        font.setPointSize(11)
         self.wordTable.setFont(font)
         self.wordTable.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.wordTable.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)

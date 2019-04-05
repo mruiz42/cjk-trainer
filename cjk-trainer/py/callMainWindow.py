@@ -68,8 +68,8 @@ class MainWindow(QMainWindow):
             ['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
         self.ui.wordTable.setColumnHidden(0, True)
         self.ui.wordTable.setColumnWidth(1, 48)
-        self.ui.wordTable.setColumnWidth(2, 256)
-        self.ui.wordTable.setColumnWidth(3, 256)
+        self.ui.wordTable.setColumnWidth(2, 300)
+        self.ui.wordTable.setColumnWidth(3, 300)
         self.ui.wordTable.setColumnWidth(4, 256)
         self.ui.wordTable.setColumnWidth(5, 84)
         self.ui.wordTable.setColumnWidth(6, 96)
@@ -389,6 +389,15 @@ class MainWindow(QMainWindow):
     def setTextEnter(self):
         win.ui.pushButton_enter.setText("Enter")
 
+    def resetProgressBars(self):
+
+        win.ui.progressBar_typing.reset()
+        win.ui.progressBar_typing.setRange(0, len(self.studyList) + 1)
+        win.ui.progressBar_flashcards.reset()
+        win.ui.progressBar_flashcards.setRange(0, len(self.studyList) + 1)
+        win.ui.progressBar_quiz.reset()
+        win.ui.progressBar_quiz.setRange(0, len(self.studyList) + 1)
+
     def loadStudySet(self):
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
@@ -403,8 +412,7 @@ class MainWindow(QMainWindow):
                 #print(i)
 
             print(self.studyList)
-            win.ui.progressBar.reset()
-            win.ui.progressBar.setRange(0, len(self.studyList) + 1)
+            self.resetProgressBars()
             win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
             self.ui.tab_flashcards.setEnabled(True)
             self.ui.tab_typing.setEnabled(True)
