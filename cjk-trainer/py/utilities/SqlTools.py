@@ -27,9 +27,11 @@ class SqlTools():
         placeholders = '(' + ', '.join(['?' for header in headers] + ['0', '0', '0', '0']) + ')'
         command = "INSERT INTO " + "[" + table_name + "]" + header_string + " VALUES " + placeholders
         print(command)
+        print(vocabword_list)
         self.db.executemany(command, vocabword_list)
         self.db.commit()
         self.setLastTimeStudied(table_name, date_time="min")
+
     def createTable(self, table_name):
         #c = self.db.cursor()
         #c = self.cur
@@ -54,6 +56,7 @@ class SqlTools():
         # Extend table to include
         self.db.execute(command)
         self.db.commit()
+
         print("table ", table_name, " created!")
 
     def dropTable(self,table_name):
@@ -196,7 +199,7 @@ class SqlTools():
 
     def setLastTimeStudied(self, table_name, date_time="now"):
         if date_time == "min":
-            min = datetime.datetime.min()
+            min = datetime.datetime.min
             iterList = [min]
             command = "UPDATE [" + table_name + "] SET LASTTIMESTUDIED = ?"
             self.db.execute(command, iterList)
