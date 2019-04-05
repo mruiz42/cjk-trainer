@@ -63,25 +63,25 @@ class SqlTools():
 
     def modifyTableRows(self, table_name, row_data, row_index):
 
-        if not self.validateRow(row_data):
+        if self.validateRow(row_data):
             print("Table edit: ", row_data, " has been validated.")
 
             print("UPDATING TABLE DATA!", row_data)
             print("Updating table at card Num:", row_index)
-            command = "UPDATE " + table_name + " SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
-                                                            "ATTEMPTED=?, CORRECT=?, STARRED=? " \
-                                                            " WHERE CARDNUM= " + str(row_data.pop(0))
+            command = "UPDATE " + table_name + " SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
+                                                            "CORRECT=?, ATTEMPTED=? WHERE CARDNUM= " + str(row_data.pop(0))
             print(command)
             self.db.execute(command, row_data)
             self.db.commit()
+            print("Cardnum:", row_data[0], "has been modified.")
 
     def addTableRow(self, table_name, row_data):
         self.validateRow(row_data)
 
-        command = "INSERT INTO " + "[" + table_name + "] " + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
-                                                "ATTEMPTED, CORRECT, STARRED) VALUES (?,?,?,?,?,?)"
+        command = "INSERT INTO " + "[" + table_name + "] " + " (STARRED, VOCABULARY, DEFINITION, PRONUNCIATION," \
+                                                             " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?)"
         print(command)
-        self.db.execute(command, row_data)
+        self.db.execute(command, row_data[1:])
         self.db.commit()
 
     def deleteTableRow(self, table_name, row_index):

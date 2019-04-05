@@ -140,11 +140,12 @@ class MainWindow(QMainWindow):
             print("SENDING INSERTED ROWS INTO DATABASE")
             for rowIndex in self.indexOfAddedRowsSet:
                 rowData = []
-                for j in range(1, self.ui.wordTable.columnCount()):
+                for j in range(0, self.ui.wordTable.columnCount()):
                     print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
                     rowData.append(self.ui.wordTable.item(rowIndex, j).text())
                 print(rowIndex, j, rowData)
-                if rowData[0] == '' or rowData[1] == '':
+                if rowData[1] == '' or rowData[2] == '':
+                    print(rowData)
                     print("Empty critical slot found, refusing insert into table")
                 else:
                     print("INSERTING TABLE DATA!", rowData)
@@ -355,13 +356,13 @@ class MainWindow(QMainWindow):
                 if self.ui.wordTable.currentColumn() == 5:
                     if self.ui.wordTable.currentIndex().row() == self.ui.wordTable.rowCount() - 1:
                         self.insertTableRow()
-                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 1)
+                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 2)
                     self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
 
 
             elif event.key() == QtCore.Qt.Key_Backtab:
-                if self.ui.wordTable.currentColumn() == 6:
-                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), 4)
+                if self.ui.wordTable.currentColumn() == 1:
+                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() - 1, 4)
                     self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
 
             return False
