@@ -206,6 +206,9 @@ class SqlTools():
         cur = self.db.execute("SELECT LASTTIMESTUDIED FROM [" + table_name + "];")
         result = cur.fetchone()
 
-
+        try:
+            result = result[0]
+        except TypeError:
+            result = '0'
         print(result)
         return result

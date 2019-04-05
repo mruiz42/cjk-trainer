@@ -177,7 +177,6 @@ class MainWindow(QMainWindow):
         try:
             print("Attempting to remove: sqlite_sequence from database.")
             tableList.remove('sqlite_sequence')
-
         except ValueError:
             print("ValueError: sqlite_sequence not in database.")
 
@@ -185,17 +184,18 @@ class MainWindow(QMainWindow):
             tableDict.update({table_name:db.getLastTimeStudied(table_name)})
         db.closeDatabase()
 
-        print(tableDict)
+        tableList = [key for (key, value) in sorted(tableDict.items(), key=lambda t: t[1])]
+        tableList.reverse()
+        print(tableList)
         if tableList == 0:
             print("Empty table.. Creating a starting point..")
             # TODO CALL CREATE DB FROM SQLTOOLS (MUST BE DEFINED THO)
 
-        print(tableList)
         self.ui.deckList.clear()
 
         for i in tableList:
-            if i != 'sqlite_sequence':
-                self.ui.deckList.addItem(i)
+            # if i != 'sqlite_sequence':
+            self.ui.deckList.addItem(i)
 
         self.ui.deckList.show()
         return tableList
@@ -387,21 +387,26 @@ class MainWindow(QMainWindow):
         db.updateLastTimeStudied(self.nameOfCurrentTable)
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
+        if len(result) != 0:
+            self.studyList = [VocabWord(*t) for t in result]
 
-        self.studyList = [VocabWord(*t) for t in result]
+            for i in range(10, len(self.studyList), 10):
+                self.summaryIndexList.append(i)
+                #print(i)
 
-        for i in range(10, len(self.studyList), 10):
-            self.summaryIndexList.append(i)
-            #print(i)
-
-        print(self.studyList)
-        win.ui.progressBar.reset()
-        win.ui.progressBar.setRange(0, len(self.studyList) + 1)
-        win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
-        self.ui.tab_flashcards.setEnabled(True)
-        self.ui.tab_typing.setEnabled(True)
-        self.ui.tab_quiz.setEnabled(True)
-        self.ui.wordTable.itemChanged.connect(win.enableSave)
+            print(self.studyList)
+            win.ui.progressBar.reset()
+            win.ui.progressBar.setRange(0, len(self.studyList) + 1)
+            win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
+            self.ui.tab_flashcards.setEnabled(True)
+            self.ui.tab_typing.setEnabled(True)
+            self.ui.tab_quiz.setEnabled(True)
+            self.ui.wordTable.itemChanged.connect(win.enableSave)
+            print("Loaded :", self.nameOfCurrentTable)
+            return True
+        else:
+            print("Cannot load an empty table!")
+            return False
 
     def shuffleStudySet(self):
         pass
