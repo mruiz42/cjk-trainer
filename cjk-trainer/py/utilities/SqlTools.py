@@ -23,8 +23,14 @@ class SqlTools():
 
     #TODO ADD FIELDS/REARRANGE
     def insertVocabWordList(self, table_name, headers, vocabword_list):
-        header_string = '(' + ', '.join(headers + ['STARRED', 'CORRECT', 'ATTEMPTED', 'LASTTIMESTUDIED']) + ')'
-        placeholders = '(' + ', '.join(['?' for header in headers] + ['0', '0', '0', '0']) + ')'
+        default_header = ['VOCABULARY', 'DEFINITION', 'PRONUNCIATION'
+        for i in default_header:
+            j = headers.index(i)
+            if not vocabword_list[j]:
+                vocabword_list[vocabword_list.index(i)] = ""
+
+        header_string = '(' + ', '.join(headers + ['STARRED', 'CORRECT', 'ATTEMPTED']) + ')'
+        placeholders = '(' + ', '.join(['?' for header in headers] + ['0', '0', '0']) + ')'
         command = "INSERT INTO " + "[" + table_name + "]" + header_string + " VALUES " + placeholders
         print(command)
         print(vocabword_list)
