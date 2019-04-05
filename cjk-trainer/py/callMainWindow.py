@@ -16,6 +16,7 @@ from random import shuffle
 # TODO 08) INDEX, DECKNAME, STARRED, VOCABULARY, DEFINITION, PRONUN(OPTIONAL), CORR#, ATT#
 # TODO 09) AUTO LOAD THE MOST RECENTLY STUDIED DECK.
 # TODO 10) NORMALIZE FONTS ACROSS UI WIDGETS
+# TODO 11) ADD EXPORT TO CSV FUNCTION
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -169,15 +170,22 @@ class MainWindow(QMainWindow):
     def reloadTableList(self):
         print("REFRESHING TABLE LIST")
         # TODO ) SORT BY MOST RECENTLY STUDIED
-        # db = QSqlDatabase.addDatabase("QSQLITE")
-        # db.setDatabaseName(DATABASE_PATH)
-        # db.open()
-        # vocabTableList = db.tables()
-
         db = SqlTools(self.DATABASE_PATH)
         tableList = db.getTableList()
+        tableDict = {}
+
+        try:
+            print("Attempting to remove: sqlite_sequence from database.")
+            tableList.remove('sqlite_sequence')
+
+        except ValueError:
+            print("ValueError: sqlite_sequence not in database.")
+
+        for table_name in tableList:
+            tableDict.update({table_name:db.getLastTimeStudied(table_name)})
         db.closeDatabase()
 
+        print(tableDict)
         if tableList == 0:
             print("Empty table.. Creating a starting point..")
             # TODO CALL CREATE DB FROM SQLTOOLS (MUST BE DEFINED THO)
@@ -344,7 +352,6 @@ class MainWindow(QMainWindow):
         self.w = ImportDeck(self)
         self.w.show()
 
-
     def eventFilter(self, source, event):
         #print("entered event filter ")
         #print(event.type())
@@ -377,10 +384,7 @@ class MainWindow(QMainWindow):
     def loadStudySet(self):
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
-        db.getLastTimeStudied(self.nameOfCurrentTable)
         db.updateLastTimeStudied(self.nameOfCurrentTable)
-        db.getLastTimeStudied(self.nameOfCurrentTable)
-
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
 

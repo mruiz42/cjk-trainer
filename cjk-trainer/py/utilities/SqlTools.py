@@ -43,13 +43,13 @@ class SqlTools():
         #     # SEARCH FOR TABLE NAME AND DONT RUN IF FOUND!
         command = ("CREATE TABLE IF NOT EXISTS [" + str(table_name) + "] "
                    "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
-                   "STARRED INT,"
-                   "VOCABULARY CHAR,"
-                   "DEFINITION CHAR,"
-                   "PRONUNCIATION CHAR,"
+                   "STARRED BOOL,"
+                   "VOCABULARY TEXT,"
+                   "DEFINITION TEXT,"
+                   "PRONUNCIATION TEXT,"
                    "CORRECT INT,"
                    "ATTEMPTED INT,"
-                   "LASTTIMESTUDIED CHAR);")
+                   "LASTTIMESTUDIED DATE);")
 
         # Extend table to include
         self.db.execute(command)
@@ -196,9 +196,10 @@ class SqlTools():
 
     def updateLastTimeStudied(self, table_name):
         now = datetime.datetime.now()
-        now = str(now).split(' ')
-        print(now[0])
-        self.db.execute("UPDATE [" + table_name + "] SET LASTTIMESTUDIED = " + now[0])
+        iterList =[now]
+        command = "UPDATE [" + table_name + "] SET LASTTIMESTUDIED = ?"
+        self.db.execute(command, iterList)
+        self.db.commit()
 
     def getLastTimeStudied(self, table_name):
         print("TB", table_name)
