@@ -26,6 +26,7 @@ class ImportCSVDialog(QtWidgets. QDialog):
                                                                     "Vocabulary,Definition,Pronunciation(optional)\n",
                                                  None, -1))
         elif self.sep == 'tab':
+            self.sep = '\t'
             self.icd.plainTextEdit.setPlaceholderText(
                 QtWidgets.QApplication.translate("ImportCsvDialog", "Vocabulary    Definition    "
                                                                     "Pronunciation(optional)\n"

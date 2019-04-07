@@ -23,7 +23,7 @@ def importCSV(file_path):
 
     #outFile = open(outFile_Path + ".txt")
 
-
+# TODO MAKE THIS FUNCTION MORE RELIABLE, ACCOUNT FOR USER INCLUDING SPACES IN BETWEEN COMMAS?
 '''This function will return a list of strings to input into database'''
 def importDialogHelper(line_list, delim=","):
     '''
@@ -32,17 +32,43 @@ def importDialogHelper(line_list, delim=","):
     Post: returns a (SQL compatible) list of user defined words and default values. eg. ['word1','word2','',0,0]
     Purpose: Provides a means to take user inputted data and send it to SqlTools
     '''
-
-    word_list = []
-    for i in line_list[1:]:
-        word_split = i.split(delim)
-        if i.lstrip()[0] == '#':
+    vocab_list = []
+    validLine = True
+    for line in line_list:
+        word_split = line.split(delim)
+        # Check for empty line
+        if len(line) == 0:
+            print("Empty line.")
+            pass
+        # Check for comment line
+        elif line.lstrip()[0] == '#':
             print("Comment line.")
             pass
-        if len(i) == 0:
-            print("Empty line.")
+        # Check for vocab and definition critical slots
         else:
-            word_list.append(word_split)
-    return headers, word_list
+            try:
+                print(word_split[0])
+            except IndexError:
+                print("Cannot import this line, missing Vocabulary slot!")
+                validLine = False
+            try:
+                print(word_split[1])
+            except IndexError:
+                print("Cannot import this line, missing Definition slot!")
+                validLine = False
+            try:
+                print(word_split[2])
+            except IndexError:
+                word_split.append('')
+            # if line is acceptable
+            if validLine == True:
+                word_split.append('0')
+                word_split.append('0')
+                word_split.append('0')
+                vocab_list.append(word_split)
+            else:
+                print("Inputted line not valid at line num: ", line_list.index(line), "Line skipped.")
+                pass
+            validLine = True
 
-#def
+    return vocab_list

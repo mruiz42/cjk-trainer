@@ -25,13 +25,10 @@ class SqlTools():
     def insertManyFromList(self, table_name, vocab_list):
         '''This function will insert a list's values and input them into a SQL database'''
 
-        command = "INSERT INTO " + "[" + table_name + "] " + " (STARRED, VOCABULARY, DEFINITION, PRONUNCIATION," \
-                                                             " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?)"
+        command = "INSERT INTO " + "[" + table_name + "] " + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
+                                                             " CORRECT, ATTEMPTED, STARRED) VALUES (?,?,?,?,?,?)"
 
-
-
-
-        self.db.execute(command, vocab_list)
+        self.db.executemany(command, vocab_list)
         self.db.commit()
         self.setLastTimeStudied(table_name, date_time="min")
 

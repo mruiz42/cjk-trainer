@@ -23,4 +23,5 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
         db.dropTable(self.tableName)
         db.closeDatabase()
         self.mainWindow.reloadTableList()
+        self.mainWindow.ui.wordTable.clear()
 
