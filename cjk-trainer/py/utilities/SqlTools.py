@@ -223,3 +223,6 @@ class SqlTools():
             result = '0'
         print(result)
         return result
+
+    #TODO RETURN A LIST OF STARRED WORDS ONLY
+    def getStarredOnly(self):

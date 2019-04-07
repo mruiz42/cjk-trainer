@@ -418,10 +418,14 @@ class MainWindow(QMainWindow):
             print(self.studyList)
             self.resetProgressBars()
             win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
+            win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
+            win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
             self.ui.tab_flashcards.setEnabled(True)
             self.ui.tab_typing.setEnabled(True)
             self.ui.tab_quiz.setEnabled(True)
             self.ui.wordTable.itemChanged.connect(win.enableSave)
+            self.reloadTableList()
+            self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentTable)
             return True
         else:
