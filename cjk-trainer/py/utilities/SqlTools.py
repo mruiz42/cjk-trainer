@@ -225,4 +225,4 @@ class SqlTools():
         return result
 
     #TODO RETURN A LIST OF STARRED WORDS ONLY
-    def getStarredOnly(self):
+    #def getStarredOnly(self):

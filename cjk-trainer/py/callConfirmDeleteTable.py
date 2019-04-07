@@ -24,4 +24,7 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
         db.closeDatabase()
         self.mainWindow.reloadTableList()
         self.mainWindow.ui.wordTable.clear()
+        self.ui.wordTable.setHorizontalHeaderLabels(
+            ['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
+
 

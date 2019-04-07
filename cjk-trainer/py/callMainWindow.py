@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.reset()
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
 
-            self.ui.label_deckName.setText("Selected Deck: {}".format(index.data()))
+            self.ui.label_deckName.setText(index.data())
             db = SqlTools(self.DATABASE_PATH)
             result = db.getTableData(self.nameOfCurrentTable)
             db.closeDatabase()
