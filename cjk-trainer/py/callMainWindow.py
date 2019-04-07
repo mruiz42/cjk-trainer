@@ -2,13 +2,15 @@ from PySide2.QtWidgets import *
 from py.utilities.KeyPressEater import *
 from py.setupUi.MainWindow import *
 from py.callGenericDialog import *
-from py.callImportDeck import *
+from py.callImportCsvDialog import *
+from py.callConfirmDeleteTable import *
 from py.utilities.SqlTools import *
 from py.VocabWord import *
 from random import shuffle
 
-# Global variable for database interaction
-
+# ADDED KEYPRESS EATER TAB BAR
+# self.tabBar = QtWidgets.QTabBar()
+# self.tabWidget.setTabBar(self.tabBar)
 #Developer notes:
 # TODO SEPARATE "BUILT IN TABLES" (NON MODIFYABLE) & "USER DEFINED TABLES" (MODIFYABLE)
 # TODO 04) MANAGE BUILT IN DATA STRUCTURE TO STORE STUDY SET DATA
@@ -74,7 +76,6 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.setColumnWidth(5, 84)
         self.ui.wordTable.setColumnWidth(6, 96)
         self.ui.wordTable.setColumnWidth(7, 200)
-
         self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")

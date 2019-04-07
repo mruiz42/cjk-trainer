@@ -22,24 +22,16 @@ class SqlTools():
         self.db.close()
 
     #TODO ADD FIELDS/REARRANGE
-    def insertFromCSV(self, table_name, headers, vocabword_list):
-        '''This function will read a CSV file and input to a SQL database'''
-        default_header = ['VOCABULARY', 'DEFINITION', 'PRONUNCIATION']
-        print('headers', headers)
-        for headers in default_header:
+    def insertManyFromList(self, table_name, vocab_list):
+        '''This function will insert a list's values and input them into a SQL database'''
+
+        command = "INSERT INTO " + "[" + table_name + "] " + " (STARRED, VOCABULARY, DEFINITION, PRONUNCIATION," \
+                                                             " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?)"
 
 
-            k = headers.index(j)
-            print(headers, vocabword_list, k)
-            if k>= 0 and not vocabword_list[k]:
-                vocabword_list[vocabword_list.index(i)] = ""
 
-        header_string = '(' + ', '.join(headers + ['STARRED', 'CORRECT', 'ATTEMPTED']) + ')'
-        placeholders = '(' + ', '.join(['?' for header in headers] + ['0', '0', '0']) + ')'
-        command = "INSERT INTO " + "[" + table_name + "]" + header_string + " VALUES " + placeholders
-        print(command)
-        print(vocabword_list)
-        self.db.executemany(command, vocabword_list)
+
+        self.db.execute(command, vocab_list)
         self.db.commit()
         self.setLastTimeStudied(table_name, date_time="min")
 
@@ -82,7 +74,7 @@ class SqlTools():
 
             print("UPDATING TABLE DATA!", row_data)
             print("Updating table at card Num:", row_index)
-            command = "UPDATE " + table_name + " SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
+            command = "UPDATE [" + table_name + "] SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
                                                             "CORRECT=?, ATTEMPTED=? WHERE CARDNUM= " + str(row_data.pop(0))
             print(command)
             self.db.execute(command, row_data)

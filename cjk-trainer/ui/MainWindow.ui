@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1340</width>
+    <width>1159</width>
     <height>709</height>
    </rect>
   </property>
@@ -218,7 +218,7 @@
               <item row="0" column="0">
                <widget class="QToolButton" name="toolButton_add">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -226,13 +226,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>32</height>
+                  <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>16777215</width>
-                  <height>16777212</height>
+                  <width>120</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="text">
@@ -254,9 +254,21 @@
               </item>
               <item row="0" column="1">
                <widget class="QPushButton" name="pushButton_wordList_select">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>120</width>
                   <height>32</height>
                  </size>
                 </property>
@@ -278,7 +290,7 @@
              <number>0</number>
             </property>
             <property name="bottomMargin">
-             <number>0</number>
+             <number>2</number>
             </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -401,8 +413,8 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>200</width>
-                    <height>16777215</height>
+                    <width>180</width>
+                    <height>32</height>
                    </size>
                   </property>
                   <property name="placeholderText">
@@ -593,6 +605,12 @@
                  <size>
                   <width>0</width>
                   <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>32</height>
                  </size>
                 </property>
                 <property name="baseSize">
@@ -974,7 +992,7 @@
          <attribute name="title">
           <string>Quiz</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_11">
+         <layout class="QVBoxLayout" name="verticalLayout_16">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
@@ -983,7 +1001,7 @@
                <enum>Qt::Vertical</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
+               <enum>QSizePolicy::Expanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1010,35 +1028,17 @@
               </item>
               <item>
                <widget class="QLabel" name="label_quizWord">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
                 <property name="font">
                  <font>
                   <family>WenQuanYi Zen Hei Mono</family>
                   <pointsize>36</pointsize>
                  </font>
                 </property>
-                <property name="autoFillBackground">
-                 <bool>false</bool>
-                </property>
-                <property name="lineWidth">
-                 <number>1</number>
-                </property>
                 <property name="text">
                  <string>[null]</string>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
                 <property name="wordWrap">
                  <bool>true</bool>
-                </property>
-                <property name="indent">
-                 <number>-1</number>
                 </property>
                </widget>
               </item>
@@ -1063,7 +1063,7 @@
                <enum>Qt::Vertical</enum>
               </property>
               <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
+               <enum>QSizePolicy::Expanding</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1074,21 +1074,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="Line" name="line_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QProgressBar" name="progressBar_quiz">
-              <property name="value">
-               <number>24</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
               <property name="spacing">
                <number>0</number>
               </property>
@@ -1096,62 +1082,102 @@
                <enum>QLayout::SetDefaultConstraint</enum>
               </property>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_9">
+               <layout class="QVBoxLayout" name="verticalLayout_11">
                 <item>
-                 <widget class="QPushButton" name="pushButton_quizChoice1">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>64</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>[Word1]</string>
+                 <widget class="Line" name="line_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_quizChoice2">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>64</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>[Word2]</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_10">
-                <item>
-                 <widget class="QPushButton" name="pushButton_quizChoice3">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>64</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>[Word3]</string>
+                 <widget class="QProgressBar" name="progressBar_quiz">
+                  <property name="value">
+                   <number>24</number>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_quizChoice4">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>64</height>
-                   </size>
+                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <property name="spacing">
+                   <number>0</number>
                   </property>
-                  <property name="text">
-                   <string>[Word4]</string>
+                  <property name="sizeConstraint">
+                   <enum>QLayout::SetDefaultConstraint</enum>
                   </property>
-                 </widget>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_9">
+                    <item>
+                     <widget class="QPushButton" name="pushButton_quizChoice1">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>64</height>
+                       </size>
+                      </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::TabFocus</enum>
+                      </property>
+                      <property name="text">
+                       <string>[Word1]</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_quizChoice2">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>64</height>
+                       </size>
+                      </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::TabFocus</enum>
+                      </property>
+                      <property name="text">
+                       <string>[Word2]</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_10">
+                    <item>
+                     <widget class="QPushButton" name="pushButton_quizChoice3">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>64</height>
+                       </size>
+                      </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::TabFocus</enum>
+                      </property>
+                      <property name="text">
+                       <string>[Word3]</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_quizChoice4">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>64</height>
+                       </size>
+                      </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::TabFocus</enum>
+                      </property>
+                      <property name="text">
+                       <string>[Word4]</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>
@@ -1177,7 +1203,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1340</width>
+     <width>1159</width>
      <height>30</height>
     </rect>
    </property>

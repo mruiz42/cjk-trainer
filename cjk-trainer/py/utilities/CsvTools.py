@@ -1,4 +1,5 @@
 from py.VocabWord import VocabWord
+import csv
 def importCSV(file_path):
     #def delimiterCommaToParenthesis_Pronun:
     #inFile_Path = input("Enter path to input file:")
@@ -23,12 +24,15 @@ def importCSV(file_path):
     #outFile = open(outFile_Path + ".txt")
 
 
-'''This function will return a list of '''
+'''This function will return a list of strings to input into database'''
 def importDialogHelper(line_list, delim=","):
-    '''This function will return a list of VocabWord objects'''
-    # determine the format of input
-    # i[0]
-    headers = line_list[0].strip('<').strip('>').split('><')
+    '''
+    Pre: line_list: A list of user-inputted csv strings. eg.(['word1,def1', 'word2,def2']
+        delim: the delimiter used to separate words (default = ',')
+    Post: returns a (SQL compatible) list of user defined words and default values. eg. ['word1','word2','',0,0]
+    Purpose: Provides a means to take user inputted data and send it to SqlTools
+    '''
+
     word_list = []
     for i in line_list[1:]:
         word_split = i.split(delim)
