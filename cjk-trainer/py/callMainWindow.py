@@ -40,6 +40,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.progressBar_typing.reset()
+        self.ui.progressBar_flashcards.reset()
+        self.ui.progressBar_quiz.reset()
         self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
@@ -217,7 +219,6 @@ class MainWindow(QMainWindow):
         else:
             self.indexOfCurrentTable = index
             self.nameOfCurrentTable = index.data()
-
             self.indexOfDeletedRowsSet.clear()
             self.indexOfModifiedRowsSet.clear()
             self.indexOfAddedRowsSet.clear()
@@ -244,6 +245,7 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
         self.ui.buttonBox_wordList.setEnabled(False)
+        self.loadStudySet()
 
     def reloadWordTable(self):
         self.indexOfDeletedRowsSet.clear()
