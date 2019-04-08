@@ -1,9 +1,11 @@
 # CJK-Trainer
 A program geared towards native English speakers to facilitate language vocabulary building. However, I want this to be as modular as possible, so that any language can be studied using this software.
 
-![alt text](https://i.imgur.com/WlsklX7.png)
+![alt text](https://i.imgur.com/7hdBY8a.png)
 
+![alt text](https://i.imgur.com/tzed8c5.png)
 
+![alt text](https://i.imgur.com/NckF65m.png)
 Previously based on PyQt5, transitioned to PySide2 as it is now the officially supported python binding for the  qt framework.
 
 
