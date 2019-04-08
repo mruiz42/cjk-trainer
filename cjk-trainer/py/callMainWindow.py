@@ -393,9 +393,10 @@ class MainWindow(QMainWindow):
         win.ui.progressBar_quiz.setRange(0, len(self.studyList) + 1)
 
     def loadStudySet(self):
+        self.cardNum = 0
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
-        db.setLastTimeStudied(self.nameOfCurrentTable)
+        #db.setLastTimeStudied(self.nameOfCurrentTable)
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
         if len(result) != 0:
@@ -417,7 +418,6 @@ class MainWindow(QMainWindow):
             self.reloadTableList()
             self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentTable)
-            self.cardNum = 0
             return True
         else:
             print("Cannot load an empty table!")
