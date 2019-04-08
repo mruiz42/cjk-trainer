@@ -11,8 +11,20 @@ class ImportCSVDialog(QtWidgets. QDialog):
         self.icd.setupUi(self)
         self.icd.buttonBox.accepted.connect(self.acceptInput)
         self.icd.comboBox_separator.currentIndexChanged.connect(self.comboBox_changeEvent)
+        self.icd.buttonBox.setDisabled(True)
+        self.icd.lineEdit_tableName.textEdited.connect(self.enableButtonBox)
+        self.icd.plainTextEdit.textChanged.connect(self.enableButtonBox)
         # Member variables
         self.sep = self.icd.comboBox_separator.currentText()
+
+
+    def enableButtonBox(self):
+        lineEdit = self.icd.lineEdit_tableName
+        plainTextEdit = self.icd.plainTextEdit
+        if lineEdit.text() != '' and plainTextEdit.toPlainText() != '':
+            self.icd.buttonBox.setDisabled(False)
+        else:
+            self.icd.buttonBox.setDisabled(True)
 
 
 
