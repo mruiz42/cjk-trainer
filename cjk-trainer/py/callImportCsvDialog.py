@@ -26,8 +26,6 @@ class ImportCSVDialog(QtWidgets. QDialog):
         else:
             self.icd.buttonBox.setDisabled(True)
 
-
-
     def comboBox_changeEvent(self):
         '''This function will set the self.sep variable to the current text as well as adjust the placeholder text in
         plainTextEdit'''

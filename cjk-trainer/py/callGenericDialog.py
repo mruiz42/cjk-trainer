@@ -6,6 +6,7 @@ class GenericDialog(QtWidgets. QDialog):
         self.gd  = Ui_GenericDialog()
         self.mainWindow = mainWindow
         self.gd.setupUi(self)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.gd.buttonBox.accepted.connect(self.acceptInput)
         self.allowTabChange = False
 

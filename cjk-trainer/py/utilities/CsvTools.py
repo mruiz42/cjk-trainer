@@ -29,7 +29,7 @@ def importDialogHelper(line_list, delim=","):
     '''
     Pre: line_list: A list of user-inputted csv strings. eg.(['word1,def1', 'word2,def2']
         delim: the delimiter used to separate words (default = ',')
-    Post: returns a (SQL compatible) list of user defined words and default values. eg. ['word1','word2','',0,0]
+    Post: returns a (SQL compatible) list of user defined words and default values. eg. ['word1','word2','',0,0,0]
     Purpose: Provides a means to take user inputted data and send it to SqlTools
     '''
     vocab_list = []

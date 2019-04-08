@@ -67,7 +67,7 @@ class Ui_ImportCsvDialog(object):
         ImportCsvDialog.setWindowTitle(QtWidgets.QApplication.translate("ImportCsvDialog", "Import from CSV", None, -1))
         self.comboBox_separator.setItemText(0, QtWidgets.QApplication.translate("ImportCsvDialog", ",", None, -1))
         self.comboBox_separator.setItemText(1, QtWidgets.QApplication.translate("ImportCsvDialog", "tab", None, -1))
-        self.comboBox_separator.setItemText(2, QtWidgets.QApplication.translate("ImportCsvDialog", "-", None, -1))
+        self.comboBox_separator.setItemText(2, QtWidgets.QApplication.translate("ImportCsvDialog", " - ", None, -1))
         self.comboBox_separator.setItemText(3, QtWidgets.QApplication.translate("ImportCsvDialog", "/", None, -1))
         self.lineEdit_tableName.setPlaceholderText(QtWidgets.QApplication.translate("ImportCsvDialog", "Name of new deck", None, -1))
         self.label_separator.setText(QtWidgets.QApplication.translate("ImportCsvDialog", "Separator", None, -1))

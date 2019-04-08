@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.nameOfCurrentTable = ""            # Name of current table_name for the SQL TableName
         self.studyList = []                      # List of VocabWord objects that the user has selected
         self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
-        self.cardNum = 0                        # Iterator for the studySet
+        self.cardNum = 1                        # Iterator for the studySet
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -88,9 +88,9 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.accepted.connect(self.saveTable)
         self.ui.buttonBox_wordList.rejected.connect(self.reloadWordTable)
         # Install tabBar Scroll event filter
-        eater = KeyPressEater(self.ui.tabBar)
+        eater = KeyPressEater(self, self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
-        self.ui.tabBar.tabBarClicked.connect(self.tab_changed)
+        #self.ui.tabBar.tabBarClicked.connect()
         self.show()
 
     # TODO INSTALL EVENT FILTER TO DISABLE TAB SWITCHING WHILE STUDY SESSION IN PROG

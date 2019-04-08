@@ -36,6 +36,7 @@ class Ui_GenericDialog(object):
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), GenericDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(GenericDialog)
 
+
     def retranslateUi(self, GenericDialog):
         GenericDialog.setWindowTitle(QtWidgets.QApplication.translate("GenericDialog", "Generic Dialog", None, -1))
         self.label.setText(QtWidgets.QApplication.translate("GenericDialog", "TextLabel", None, -1))
