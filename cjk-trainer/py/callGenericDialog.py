@@ -14,3 +14,5 @@ class GenericDialog(QtWidgets. QDialog):
 
     def acceptInput(self):
         self.allowTabChange = True
+        print("before or after")
+        # self.mainWindow.ui.tabBar.setCurrentIndex(self.index)

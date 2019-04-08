@@ -14,13 +14,17 @@ class KeyPressEater(QObject):
             print("Ate key press")
             return True
         elif event.type() == QEvent.Type.MouseButtonPress:
-            print("received signal")
             if self.mainWindow.cardNum > 0:
-                print("hi")
+                self.index = self.mainWindow.ui.tabBar.tabAt(event.pos())
                 self.dialog = GenericDialog(self.mainWindow)
+                self.dialog.gd.label.setText("Switching tabs will result in unsaved progress.\n "
+                                             "Would you like to proceed?")
+                self.dialog.setWindowTitle("Tab Switching")
                 self.dialog.show()
                 if not self.dialog.allowTabChange:
                     return True
+                self.mainWindow.ui.tabBar.setCurrentIndex(self.index)
+
         else:
             # standard event processing
             return QObject.eventFilter(self, obj, event)
