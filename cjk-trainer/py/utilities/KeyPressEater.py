@@ -1,5 +1,5 @@
 from PySide2.QtCore import QObject, QEvent
-from py.callGenericDialog import *
+from py.callChangeTabDialog import *
 
 class KeyPressEater(QObject):
     def __init__(self, mainWindow, parent=None):
@@ -16,15 +16,11 @@ class KeyPressEater(QObject):
         elif event.type() == QEvent.Type.MouseButtonPress:
             if self.mainWindow.cardNum > 0:
                 self.index = self.mainWindow.ui.tabBar.tabAt(event.pos())
-                self.dialog = GenericDialog(self.mainWindow)
-                self.dialog.gd.label.setText("Switching tabs will result in unsaved progress.\n "
-                                             "Would you like to proceed?")
-                self.dialog.setWindowTitle("Tab Switching")
+                self.dialog = ChangeTabDialog(self.mainWindow, self.index)
                 self.dialog.show()
-                if not self.dialog.allowTabChange:
-                    return True
-                self.mainWindow.ui.tabBar.setCurrentIndex(self.index)
-
+                return True
+            else:
+                return False
         else:
             # standard event processing
             return QObject.eventFilter(self, obj, event)
