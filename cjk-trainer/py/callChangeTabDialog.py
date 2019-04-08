@@ -12,3 +12,4 @@ class ChangeTabDialog(GenericDialog):
     def acceptInput(self):
         print("before or after")
         self.mainWindow.ui.tabBar.setCurrentIndex(self.index)
+        self.mainWindow.cardNum = 0

@@ -32,10 +32,11 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedRowsSet = set()     # Index of queued row numbers to be modified from wordTable
         self.indexOfDeletedRowsSet = set()      # Index of queued row numbers to be deleted from wordTable
         self.indexOfCurrentTable = 0            # Index of current table in the deckList
+        self.indexOfCurrentTab = 0              # Index of current tab in the tabBar
         self.nameOfCurrentTable = ""            # Name of current table_name for the SQL TableName
-        self.studyList = []                      # List of VocabWord objects that the user has selected
+        self.studyList = []                     # List of VocabWord objects that the user has selected
         self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
-        self.cardNum = 1                        # Iterator for the studySet
+        self.cardNum = 0                        # Iterator for the studySet
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -90,18 +91,7 @@ class MainWindow(QMainWindow):
         # Install tabBar Scroll event filter
         eater = KeyPressEater(self, self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
-        #self.ui.tabBar.tabBarClicked.connect()
         self.show()
-
-    # TODO INSTALL EVENT FILTER TO DISABLE TAB SWITCHING WHILE STUDY SESSION IN PROG
-    def tab_changed(self):
-        #self.ui.tabBar.blockSignals(True)
-        print("tab changed?")
-        #self.cardNum = 1
-        if self.cardNum != 0:
-            self.w = GenericDialog(self)
-            self.w.show()
-            print(self.w.allowTabChange)
 
     # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
@@ -427,6 +417,7 @@ class MainWindow(QMainWindow):
             self.reloadTableList()
             self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentTable)
+            self.cardNum = 0
             return True
         else:
             print("Cannot load an empty table!")
@@ -473,7 +464,7 @@ class MainWindow(QMainWindow):
             win.ui.lineEdit_answer.setPlaceholderText("Enter the correct answer")
 
     def nextWord(self):
-        win.ui.progressBar.setValue(self.cardNum +1)
+        win.ui.progressBar_typing.setValue(self.cardNum +1)
         win.ui.label_fractionCorrect.clear()
         print(self.cardNum, len(self.studyList))
         if self.cardNum == len(self.studyList):

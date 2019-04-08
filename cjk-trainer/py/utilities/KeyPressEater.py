@@ -9,18 +9,22 @@ class KeyPressEater(QObject):
         self.mainWindow = mainWindow
 
     def eventFilter(self, obj, event):
-        #print(event.type())
+
+
         if event.type() == QEvent.Type.Wheel:
             print("Ate key press")
             return True
+
+
         elif event.type() == QEvent.Type.MouseButtonPress:
-            if self.mainWindow.cardNum > 0:
-                self.index = self.mainWindow.ui.tabBar.tabAt(event.pos())
-                self.dialog = ChangeTabDialog(self.mainWindow, self.index)
-                self.dialog.show()
-                return True
-            else:
-                return False
+                if self.mainWindow.cardNum > 0 and self.mainWindow.indexOfCurrentTab != self.mainWindow.ui.tabBar.tabAt(event.pos()):
+                    self.index = self.mainWindow.ui.tabBar.tabAt(event.pos())
+                    self.tabDialog = ChangeTabDialog(self.mainWindow, self.index)
+                    self.tabDialog.show()
+                    return True
+                else:
+                    self.mainWindow.indexOfCurrentTab = self.mainWindow.ui.tabBar.tabAt(event.pos())
+                    return False
         else:
             # standard event processing
             return QObject.eventFilter(self, obj, event)
