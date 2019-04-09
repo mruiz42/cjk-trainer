@@ -66,7 +66,7 @@ class ImportCSVDialog(QtWidgets. QDialog):
             print(i)
         print(table_name)
         db = SqlTools(self.mainWindow.DATABASE_PATH)
-        db.createTable(table_name)
+        db.createDeckTable(table_name)
         db.insertManyFromList(table_name, word_list)
         db.closeDatabase()
         self.mainWindow.reloadTableList()

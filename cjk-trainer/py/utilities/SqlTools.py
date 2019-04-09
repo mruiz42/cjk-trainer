@@ -32,7 +32,7 @@ class SqlTools():
         self.db.commit()
         self.setLastTimeStudied(table_name, date_time="min")
 
-    def createTable(self, table_name):
+    def createDeckTable(self, table_name):
         #c = self.db.cursor()
         #c = self.cur
         # Check if table exists
@@ -61,6 +61,9 @@ class SqlTools():
 
 
         print("table ", table_name, " created!")
+
+    def createSessionTable(self):
+        pass
 
     def dropTable(self,table_name):
         command = "DROP TABLE " +"[" + table_name +"]"+ ";"
@@ -151,7 +154,7 @@ class SqlTools():
         pinyin = ""
         definition = ""
         file = open(csvfile, mode="r")
-        self.createTable(tablename)
+        self.createDeckTable(tablename)
 
         #cardnum = 0
         for line in file:

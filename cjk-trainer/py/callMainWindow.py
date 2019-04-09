@@ -169,9 +169,11 @@ class MainWindow(QMainWindow):
         self.indexOfDeletedRowsSet.clear()
         self.ui.buttonBox_wordList.setEnabled(False)
 
-    def reloadTableList(self):
+    def reloadTableList(self, reset_checked=False):
         print("REFRESHING TABLE LIST")
-        # TODO ) SORT BY MOST RECENTLY STUDIED
+        if reset_checked==True:
+            self.ui.checkBox_starredOnly.setChecked(False)
+
         db = SqlTools(self.DATABASE_PATH)
         tableList = db.getTableList()
         tableDict = {}
@@ -201,7 +203,6 @@ class MainWindow(QMainWindow):
             self.ui.deckList.addItem(i)
 
         self.ui.deckList.show()
-        self.ui.checkBox_starredOnly.setChecked(False)
         return tableList
 
     def loadWordTable(self, index):
@@ -418,7 +419,7 @@ class MainWindow(QMainWindow):
             self.ui.tab_typing.setEnabled(True)
             self.ui.tab_quiz.setEnabled(True)
             self.ui.wordTable.itemChanged.connect(win.enableSave)
-            self.reloadTableList()
+            self.reloadTableList(reset_checked=True)
             #self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentTable)
             return True
@@ -496,7 +497,6 @@ class MainWindow(QMainWindow):
     def showStarredOnly(self):
         #yooo wtf PySide2.QtCore.Qt.CheckState.Checked
 
-        print("yooo wtf", self.ui.checkBox_starredOnly.checkState())
         self.studyList = []
         self.indexOfDeletedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
