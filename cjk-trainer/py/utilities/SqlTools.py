@@ -53,9 +53,12 @@ class SqlTools():
                    "ATTEMPTED INT,"
                    "LASTTIMESTUDIED DATE);")
 
+
+
         # Extend table to include
         self.db.execute(command)
         self.db.commit()
+
 
         print("table ", table_name, " created!")
 
@@ -197,6 +200,12 @@ class SqlTools():
         result = cur.fetchall()
         return result
 
+    def getStarredTableData(self, table_name):
+        cur = self.db.execute("SELECT * FROM {}".format("[" + table_name + "] WHERE STARRED = 1"))
+        result = cur.fetchall()
+        return result
+
+
     def setLastTimeStudied(self, table_name, date_time="now"):
         if date_time == "min":
             min = datetime.datetime.min
@@ -223,6 +232,3 @@ class SqlTools():
             result = '0'
         print(result)
         return result
-
-    #TODO RETURN A LIST OF STARRED WORDS ONLY
-    #def getStarredOnly(self):

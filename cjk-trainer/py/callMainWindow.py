@@ -91,6 +91,7 @@ class MainWindow(QMainWindow):
         # Install tabBar Scroll event filter
         eater = KeyPressEater(self, self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
+        self.ui.checkBox_starredOnly.stateChanged.connect(self.showStarredOnly)
         self.show()
 
     # TODO Im pretty sure there is a logic flaw here, should rethink this
@@ -200,10 +201,12 @@ class MainWindow(QMainWindow):
             self.ui.deckList.addItem(i)
 
         self.ui.deckList.show()
+        self.ui.checkBox_starredOnly.setChecked(False)
         return tableList
 
     def loadWordTable(self, index):
         print(self.ui.wordTable.rowCount())
+        #self.ui.checkBox_starredOnly.setChecked(False)
         if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
             print("nothing to do")
         else:
@@ -218,7 +221,7 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.reset()
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
 
-            self.ui.label_deckName.setText(index.data())
+            self.ui.label_selectedDeck.setText(index.data())
             db = SqlTools(self.DATABASE_PATH)
             result = db.getTableData(self.nameOfCurrentTable)
             db.closeDatabase()
@@ -322,7 +325,6 @@ class MainWindow(QMainWindow):
             print(newItem.text())
         print("Number of rows after insert: ", self.ui.wordTable.rowCount())
 
-
     def updateTableRow(self):
         print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
         self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
@@ -386,14 +388,15 @@ class MainWindow(QMainWindow):
     def resetProgressBars(self):
 
         win.ui.progressBar_typing.reset()
-        win.ui.progressBar_typing.setRange(0, len(self.studyList) + 1)
+        win.ui.progressBar_typing.setRange(0, len(self.studyList))
         win.ui.progressBar_flashcards.reset()
-        win.ui.progressBar_flashcards.setRange(0, len(self.studyList) + 1)
+        win.ui.progressBar_flashcards.setRange(0, len(self.studyList))
         win.ui.progressBar_quiz.reset()
-        win.ui.progressBar_quiz.setRange(0, len(self.studyList) + 1)
+        win.ui.progressBar_quiz.setRange(0, len(self.studyList))
 
     def loadStudySet(self):
         self.cardNum = 0
+
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
         #db.setLastTimeStudied(self.nameOfCurrentTable)
@@ -416,14 +419,21 @@ class MainWindow(QMainWindow):
             self.ui.tab_quiz.setEnabled(True)
             self.ui.wordTable.itemChanged.connect(win.enableSave)
             self.reloadTableList()
-            self.ui.deckList.setCurrentRow(0)
+            #self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentTable)
             return True
         else:
             print("Cannot load an empty table!")
             return False
 
+    def loadStarredStudySet(self):
+        pass
+
     def shuffleStudySet(self):
+        pass
+
+    def breakdownSummary(self):
+        print(self.cardNum, len(self.studyList) - 1)
         pass
 
     def checkAnswer(self):
@@ -467,7 +477,7 @@ class MainWindow(QMainWindow):
         win.ui.progressBar_typing.setValue(self.cardNum +1)
         win.ui.label_fractionCorrect.clear()
         print(self.cardNum, len(self.studyList))
-        if self.cardNum == len(self.studyList):
+        if self.cardNum == len(self.studyList) -1:
             print("END GAME")
         elif self.cardNum in self.summaryIndexList:
             print("fuq")
@@ -483,6 +493,64 @@ class MainWindow(QMainWindow):
             win.ui.pushButton_enter.clicked.disconnect()
             win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
 
+    def showStarredOnly(self):
+        #yooo wtf PySide2.QtCore.Qt.CheckState.Checked
+
+        print("yooo wtf", self.ui.checkBox_starredOnly.checkState())
+        self.studyList = []
+        self.indexOfDeletedRowsSet.clear()
+        self.indexOfModifiedRowsSet.clear()
+        self.indexOfAddedRowsSet.clear()
+        self.ui.wordTable.setSortingEnabled(False)
+        self.ui.wordTable.setRowCount(0)
+        self.ui.wordTable.clearContents()
+        self.ui.wordTable.reset()
+        self.ui.wordTable.blockSignals(True)                    # Prevent a bug where cell changes would occur on table loading
+        if self.ui.checkBox_starredOnly.checkState() == QtCore.Qt.CheckState.Checked:
+            db = SqlTools(self.DATABASE_PATH)
+            result = db.getStarredTableData(self.nameOfCurrentTable)
+            db.closeDatabase()
+            for row_number, row_data in enumerate(result):
+                print("Row number: ", row_number)
+                self.ui.wordTable.insertRow(row_number)
+                for column_number, data in enumerate(row_data):
+                    print("Row data: ", row_data[column_number])
+                    if column_number == 0:
+                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    else:
+                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+            if len(result) != 0:
+                self.studyList = [VocabWord(*t) for t in result]
+
+                for i in range(10, len(self.studyList), 10):
+                    self.summaryIndexList.append(i)
+                    # print(i)
+
+                print(self.studyList)
+                self.resetProgressBars()
+                win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
+                win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
+                win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
+                self.ui.tab_flashcards.setEnabled(True)
+                self.ui.tab_typing.setEnabled(True)
+                self.ui.tab_quiz.setEnabled(True)
+                self.ui.wordTable.itemChanged.connect(win.enableSave)
+                self.reloadTableList()
+                # self.ui.deckList.setCurrentRow(0)
+                print("Loaded :", self.nameOfCurrentTable)
+                return True
+            else:
+                print("Cannot load an empty table!")
+                return False
+
+            self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+            self.ui.buttonBox_wordList.setEnabled(False)
+            self.loadStudySet()
+        elif self.ui.checkBox_starredOnly.isChecked() == False:
+            self.reloadWordTable()
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
@@ -492,6 +560,6 @@ if __name__ == "__main__":
     win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
     print(win.nameOfCurrentTable)
     win.loadWordTable(0)
-
+    win.reloadWordTable()
 
     sys.exit(app.exec_())

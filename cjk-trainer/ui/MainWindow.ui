@@ -558,7 +558,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <widget class="QCheckBox" name="checkBox_shuffle">
+               <widget class="QCheckBox" name="checkBox_starredOnly">
                 <property name="layoutDirection">
                  <enum>Qt::LeftToRight</enum>
                 </property>
@@ -703,16 +703,16 @@
              </spacer>
             </item>
             <item>
-             <widget class="Line" name="line_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+             <widget class="QProgressBar" name="progressBar_typing">
+              <property name="value">
+               <number>24</number>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QProgressBar" name="progressBar_typing">
-              <property name="value">
-               <number>24</number>
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -880,16 +880,16 @@
              </spacer>
             </item>
             <item>
-             <widget class="Line" name="line_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+             <widget class="QProgressBar" name="progressBar_flashcards">
+              <property name="value">
+               <number>24</number>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QProgressBar" name="progressBar_flashcards">
-              <property name="value">
-               <number>24</number>
+             <widget class="Line" name="line_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -1074,16 +1074,16 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_11">
                 <item>
-                 <widget class="Line" name="line_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                 <widget class="QProgressBar" name="progressBar_quiz">
+                  <property name="value">
+                   <number>24</number>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QProgressBar" name="progressBar_quiz">
-                  <property name="value">
-                   <number>24</number>
+                 <widget class="Line" name="line_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
                   </property>
                  </widget>
                 </item>
