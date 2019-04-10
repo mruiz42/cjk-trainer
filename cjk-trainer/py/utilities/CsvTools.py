@@ -1,4 +1,4 @@
-from py.VocabWord import VocabWord
+from VocabWord import VocabWord
 
 def importCSV(file_path):
     #def delimiterCommaToParenthesis_Pronun:

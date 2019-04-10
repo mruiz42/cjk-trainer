@@ -1,5 +1,5 @@
-from py.setupUi.SettingsDialog import *
-from py.Settings import *
+from setupUi.SettingsDialog import *
+from Settings import *
 
 class SettingsDialog(QtWidgets. QDialog):
 

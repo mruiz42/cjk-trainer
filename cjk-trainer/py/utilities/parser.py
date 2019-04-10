@@ -1,4 +1,4 @@
-from py.VocabWord import *
+from VocabWord import *
 import random
 # Parser will
 # Parser.py will parse a file and import VocabWord objects

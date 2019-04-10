@@ -1,4 +1,4 @@
-from py.setupUi.GenericDialog import *
+from setupUi.GenericDialog import *
 class GenericDialog(QtWidgets. QDialog):
 
     def __init__(self, mainWindow, parent=None):

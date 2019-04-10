@@ -8,7 +8,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from py.setupUi.MainWindow import *
+from setupUi.MainWindow import *
 
 
 class Ui_DeckNamePromptDialog(object):

@@ -1,5 +1,5 @@
 from PySide2.QtCore import QObject, QEvent
-from py.callChangeTabDialog import *
+from callChangeTabDialog import *
 
 class KeyPressEater(QObject):
     def __init__(self, mainWindow, parent=None):

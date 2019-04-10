@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../ico/appicon.png</normaloff>../ico/appicon.png</iconset>
+    <normaloff>../../../../.designer/ico/appicon.png</normaloff>../../../../.designer/ico/appicon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -522,7 +522,7 @@
                <bool>false</bool>
               </attribute>
               <attribute name="verticalHeaderVisible">
-               <bool>true</bool>
+               <bool>false</bool>
               </attribute>
               <attribute name="verticalHeaderDefaultSectionSize">
                <number>42</number>
@@ -564,6 +564,13 @@
                 </property>
                 <property name="text">
                  <string>Study Starred Only</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_shuffle">
+                <property name="text">
+                 <string>Study Shuffled</string>
                 </property>
                </widget>
               </item>

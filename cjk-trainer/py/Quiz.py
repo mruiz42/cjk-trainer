@@ -1,3 +1,3 @@
-from py.Exercise import *
+from Exercise import *
 class QuizExercise(Exercise):
     pass

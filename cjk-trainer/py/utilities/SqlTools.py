@@ -62,7 +62,8 @@ class SqlTools():
 
         print("table ", table_name, " created!")
 
-    def createSessionTable(self):
+    def createSessionTable(self, table_name):
+        command = ("CREATE TABLE IF NOT EXISTS [" + str(table_name) + "] (ACCURACY INT, TIMESPENT DATE);")
         pass
 
     def dropTable(self,table_name):
@@ -72,9 +73,8 @@ class SqlTools():
 
     def modifyTableRows(self, table_name, row_data, row_index):
 
-        if self.validateRow(row_data):
+        if self.validateRow(row_data, num_rows=6):
             print("Table edit: ", row_data, " has been validated.")
-
             print("UPDATING TABLE DATA!", row_data)
             print("Updating table at card Num:", row_index)
             command = "UPDATE [" + table_name + "] SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
@@ -88,7 +88,7 @@ class SqlTools():
         self.validateRow(row_data)
 
         command = "INSERT INTO " + "[" + table_name + "] " + " (STARRED, VOCABULARY, DEFINITION, PRONUNCIATION," \
-                                                             " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?)"
+                                                             " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?);"
         print(command)
         self.db.execute(command, row_data[1:])
         self.db.commit()
@@ -98,13 +98,13 @@ class SqlTools():
         self.db.execute(command)
         self.db.commit()
 
-    def validateRow(self, row_data):
+    def validateRow(self, row_data, num_rows=7):
         '''This function will check the data types of a list to make sure 1, 5, 6 are integers'''
         # TODO CHANGE LOGIC HERE PROBABLY
         # TODO COME BACK TO CHANGE THE INDEXES OF EACH ROW
         # The row being passed in will include everything including index 0, cardnum (primary key)
         # [CARDNUM ,STARRED, VOCABULARY, DEFINITION, PRONUNCIATION, CORRECT, ATTEMPTED, LASTTIMESTUDIED]
-        if len(row_data) != 7:
+        if len(row_data) != self.num_rows:
             print("ERROR! Table edit: ", row_data, " has been REJECTED! Row length is ",len(row_data), ", should be 7.")
             return False
         #Im not sure I care if there is empty data in for words

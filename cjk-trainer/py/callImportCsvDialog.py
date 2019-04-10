@@ -1,6 +1,6 @@
-from py.setupUi.ImportCsvDialog import *
-from py.utilities.CsvTools import importDialogHelper
-from py.utilities.SqlTools import *
+from setupUi.ImportCsvDialog import *
+from utilities.CsvTools import importDialogHelper
+from utilities.SqlTools import *
 
 class ImportCSVDialog(QtWidgets. QDialog):
 

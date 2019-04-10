@@ -1,12 +1,12 @@
 from PySide2.QtWidgets import *
-from py.setupUi.MainWindow import *
-from py.utilities.KeyPressEater import *
-from py.callDeckNamePrompt import *
-from py.callGenericDialog import *
-from py.callImportCsvDialog import *
-from py.callConfirmDeleteTable import *
-from py.utilities.SqlTools import *
-from py.VocabWord import *
+from setupUi.MainWindow import *
+from utilities.KeyPressEater import *
+from callDeckNamePrompt import *
+from callGenericDialog import *
+from callImportCsvDialog import *
+from callConfirmDeleteTable import *
+from utilities.SqlTools import *
+from VocabWord import *
 from random import shuffle
 
 # ADDED KEYPRESS EATER TAB BAR
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.nameOfCurrentTable = ""            # Name of current table_name for the SQL TableName
         self.studyList = []                     # List of VocabWord objects that the user has selected
         self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
+        self.missedWordList = []                #
         self.cardNum = 0                        # Iterator for the studySet
         # UI adjustments
         self.ui = Ui_MainWindow()
@@ -409,12 +410,10 @@ class MainWindow(QMainWindow):
             for i in range(10, len(self.studyList), 10):
                 self.summaryIndexList.append(i)
                 #print(i)
-
+            self.shuffleStudySet()
             print(self.studyList)
             self.resetProgressBars()
-            win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
-            win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
-            win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
+            self.reloadWordLabels()
             self.ui.tab_flashcards.setEnabled(True)
             self.ui.tab_typing.setEnabled(True)
             self.ui.tab_quiz.setEnabled(True)
@@ -422,19 +421,30 @@ class MainWindow(QMainWindow):
             self.reloadTableList(reset_checked=True)
             #self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentTable)
+
             return True
         else:
             print("Cannot load an empty table!")
             return False
 
+    def reloadWordLabels(self):
+        win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
+        win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
+        win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
+
     def loadStarredStudySet(self):
         pass
 
     def shuffleStudySet(self):
-        pass
+        print("Shuffled study set")
+        print(self.studyList)
+        shuffle(self.studyList)
+        self.reloadWordLabels()
 
     def breakdownSummary(self):
         print(self.cardNum, len(self.studyList) - 1)
+
+
         pass
 
     def checkAnswer(self):
@@ -446,7 +456,6 @@ class MainWindow(QMainWindow):
         if textValue in answerList:
             print("Correct!")
             win.ui.lineEdit_answer.clear()
-
             self.studyList[self.cardNum].timesCorrect += 1
             self.studyList[self.cardNum].timesAttempted += 1
 
@@ -463,6 +472,7 @@ class MainWindow(QMainWindow):
             self.studyList[self.cardNum].timesAttempted += 1
             percent = self.calcPercentageCorrect()
             self.ui.label_fractionCorrect.setText("%" + str(percent))
+            self.missedWordList.append(self.studyList[self.cardNum])                    # Add to incorrect list
             print("Incorrect!")
             print("Card number: " + str(self.cardNum))
             win.ui.pushButton_enter.setText("Enter")
@@ -480,8 +490,8 @@ class MainWindow(QMainWindow):
         print(self.cardNum, len(self.studyList))
         if self.cardNum == len(self.studyList) -1:
             print("END GAME")
-        elif self.cardNum in self.summaryIndexList:
-            print("fuq")
+        # elif self.cardNum in self.summaryIndexList:
+        #     print("fuq")
         else:
             self.cardNum += 1
             win.ui.lineEdit_answer.setEnabled(True)
@@ -495,7 +505,6 @@ class MainWindow(QMainWindow):
             win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
 
     def showStarredOnly(self):
-        #yooo wtf PySide2.QtCore.Qt.CheckState.Checked
 
         self.studyList = []
         self.indexOfDeletedRowsSet.clear()
