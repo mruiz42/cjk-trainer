@@ -23,6 +23,8 @@ from random import shuffle
 # TODO 11) ADD EXPORT TO CSV FUNCTION
 # TODO 12) ADD STAR THIS WORD CONTEXT MENU
 # TODO 13) ADD ABILITY TO RESET STATS
+# TODO 14) PARSE FOR PUNCTUATION ON CHECK ANSWER
+#   puncList = [".",";",":","!","?","/","\\",",","#","@","$","&",")","(","\""]
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -450,6 +452,8 @@ class MainWindow(QMainWindow):
     def checkAnswer(self):
         textValue = win.ui.lineEdit_answer.text()
         answerList = self.studyList[self.cardNum].definition.split(";")
+
+
         print("You entered: " + textValue + " $? " + ", ".join(answerList))
         print(self.studyList[self.cardNum])
 

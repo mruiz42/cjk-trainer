@@ -21,28 +21,23 @@ class SqlTools():
         #print("something")
         self.db.close()
 
-    #TODO ADD FIELDS/REARRANGE
+    # TODO NEED TO CHECK IMPORTED DATA BEFORE INSERTING TO TABLE.
+    #   CURRENTLY ORDERES ARE DIFFERENT SO CHECKING BY POSITION DOESNT WORK
     def insertManyFromList(self, table_name, vocab_list):
         '''This function will insert a list's values and input them into a SQL database'''
 
         command = "INSERT INTO " + "[" + table_name + "] " + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
                                                              " CORRECT, ATTEMPTED, STARRED) VALUES (?,?,?,?,?,?)"
+        print(vocab_list)
 
+        for i in vocab_list:
+            if len(i) != 6:
+                vocab_list.pop(i)
         self.db.executemany(command, vocab_list)
         self.db.commit()
         self.setLastTimeStudied(table_name, date_time="min")
 
     def createDeckTable(self, table_name):
-        #c = self.db.cursor()
-        #c = self.cur
-        # Check if table exists
-        # try:
-        #     c.execute('SELECT * FROM ' + tablename)
-        #     print(c.fetchall())
-        #     print("table exists, probably.")
-        # except sqlite3.OperationalError:
-        #     # Table must not exist
-        #     # SEARCH FOR TABLE NAME AND DONT RUN IF FOUND!
         command = ("CREATE TABLE IF NOT EXISTS [" + str(table_name) + "] "
                    "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
                    "STARRED BOOL,"
@@ -52,9 +47,6 @@ class SqlTools():
                    "CORRECT INT,"
                    "ATTEMPTED INT,"
                    "LASTTIMESTUDIED DATE);")
-
-
-
         # Extend table to include
         self.db.execute(command)
         self.db.commit()
@@ -104,8 +96,8 @@ class SqlTools():
         # TODO COME BACK TO CHANGE THE INDEXES OF EACH ROW
         # The row being passed in will include everything including index 0, cardnum (primary key)
         # [CARDNUM ,STARRED, VOCABULARY, DEFINITION, PRONUNCIATION, CORRECT, ATTEMPTED, LASTTIMESTUDIED]
-        if len(row_data) != self.num_rows:
-            print("ERROR! Table edit: ", row_data, " has been REJECTED! Row length is ",len(row_data), ", should be 7.")
+        if len(row_data) != num_rows:
+            print("ERROR! Table edit: ", row_data, " has been REJECTED! Row length is ",len(row_data), ", should be ", num_rows, ".")
             return False
         #Im not sure I care if there is empty data in for words
         # elif row_data[2] == "" or row_data[3] == "" or row_data[4] == "":
