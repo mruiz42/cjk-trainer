@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'MainWindow.ui',
-# licensing of 'MainWindow.ui' applies.
+# Form implementation generated from reading ui file './ui/MainWindow.ui',
+# licensing of './ui/MainWindow.ui' applies.
 #
-# Created: Mon Apr  8 08:39:06 2019
+# Created: Fri Apr 12 11:01:56 2019
 #      by: pyside2-uic  running on PySide2 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../ico/appicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("ico/appicon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
@@ -41,8 +41,11 @@ class Ui_MainWindow(object):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+
+        # ADDED KEYPRESS EATER TAB BAR
         self.tabBar = QtWidgets.QTabBar()
         self.tabWidget.setTabBar(self.tabBar)
+
         self.tabWidget.setSizePolicy(sizePolicy)
         self.tabWidget.setMinimumSize(QtCore.QSize(0, 0))
         self.tabWidget.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -223,7 +226,7 @@ class Ui_MainWindow(object):
         self.wordTable.horizontalHeader().setMinimumSectionSize(56)
         self.wordTable.horizontalHeader().setSortIndicatorShown(True)
         self.wordTable.horizontalHeader().setStretchLastSection(False)
-        self.wordTable.verticalHeader().setVisible(True)
+        self.wordTable.verticalHeader().setVisible(False)
         self.wordTable.verticalHeader().setDefaultSectionSize(42)
         self.wordTable.verticalHeader().setMinimumSectionSize(20)
         self.wordTable.verticalHeader().setSortIndicatorShown(True)
@@ -235,6 +238,9 @@ class Ui_MainWindow(object):
         self.checkBox_starredOnly.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.checkBox_starredOnly.setObjectName("checkBox_starredOnly")
         self.horizontalLayout_16.addWidget(self.checkBox_starredOnly)
+        self.checkBox_shuffle = QtWidgets.QCheckBox(self.tab_wordTable)
+        self.checkBox_shuffle.setObjectName("checkBox_shuffle")
+        self.horizontalLayout_16.addWidget(self.checkBox_shuffle)
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_16.addItem(spacerItem4)
         self.buttonBox_wordList = QtWidgets.QDialogButtonBox(self.tab_wordTable)
@@ -557,6 +563,7 @@ class Ui_MainWindow(object):
         self.pushButton_search.setText(QtWidgets.QApplication.translate("MainWindow", "Search", None, -1))
         self.wordTable.setSortingEnabled(True)
         self.checkBox_starredOnly.setText(QtWidgets.QApplication.translate("MainWindow", "Study Starred Only", None, -1))
+        self.checkBox_shuffle.setText(QtWidgets.QApplication.translate("MainWindow", "Study Shuffled", None, -1))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_wordTable), QtWidgets.QApplication.translate("MainWindow", "Word List", None, -1))
         self.label_typingWord.setText(QtWidgets.QApplication.translate("MainWindow", "[null]", None, -1))
         self.lineEdit_answer.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "Enter your answer", None, -1))

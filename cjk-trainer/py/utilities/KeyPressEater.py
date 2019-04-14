@@ -17,7 +17,7 @@ class KeyPressEater(QObject):
 
 
         elif event.type() == QEvent.Type.MouseButtonPress:
-                if self.mainWindow.cardNum > 0 and self.mainWindow.indexOfCurrentTab != self.mainWindow.ui.tabBar.tabAt(event.pos()):
+                if self.mainWindow.wordDeck.cardNum > 0 and self.mainWindow.indexOfCurrentTab != self.mainWindow.ui.tabBar.tabAt(event.pos()):
                     self.index = self.mainWindow.ui.tabBar.tabAt(event.pos())
                     self.tabDialog = ChangeTabDialog(self.mainWindow, self.index)
                     self.tabDialog.show()

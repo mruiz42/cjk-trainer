@@ -7,8 +7,10 @@ from callImportCsvDialog import *
 from callConfirmDeleteTable import *
 from utilities.SqlTools import *
 from VocabWord import *
-from random import shuffle
-
+from VocabWordDeck import *
+from TypingExercise import *
+from FlashcardExercise import *
+from QuizExercise import *
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
@@ -36,18 +38,18 @@ class MainWindow(QMainWindow):
         self.indexOfCurrentTable = 0            # Index of current table in the deckList
         self.indexOfCurrentTab = 0              # Index of current tab in the tabBar
         self.nameOfCurrentTable = ""            # Name of current table_name for the SQL TableName
-        self.studyList = []                     # List of VocabWord objects that the user has selected
-        self.summaryIndexList = []              # List of indexes for studySet to save and break down statistics to user
-        self.missedWordList = []                #
-        self.cardNum = 0                        # Iterator for the studySet
+        self.wordDeck = VocabWordDeck(self)     # Storage container for vocabWord objects
+        self.typingExercise = TypingExercise(self, self.wordDeck)           # Object for controlling typing module
+        self.flashcardExercise = FlashcardExercise(self, self.wordDeck)     # Object for controlling flashcard module
+        self.quizExercise = QuizExercise(self, self.wordDeck)               # Object for controlling quiz module
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.progressBar_typing.reset()
         self.ui.progressBar_flashcards.reset()
         self.ui.progressBar_quiz.reset()
-        self.ui.pushButton_enter.clicked.connect(self.checkAnswer)
-        self.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
+        self.ui.pushButton_enter.clicked.connect(self.typingExercise.checkAnswer)
+        self.ui.pushButton_notSure_Skip.clicked.connect(self.typingExercise.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
         self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
         self.ui.pushButton_wordList_select.clicked.connect(self.loadStudySet)
@@ -94,8 +96,45 @@ class MainWindow(QMainWindow):
         # Install tabBar Scroll event filter
         eater = KeyPressEater(self, self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
-        self.ui.checkBox_starredOnly.stateChanged.connect(self.showStarredOnly)
+        self.ui.checkBox_starredOnly.stateChanged.connect(self.starredButtonAction)
+        self.ui.checkBox_shuffle.stateChanged.connect(self.shuffleButtonAction)
         self.show()
+
+    def shuffleButtonAction(self):
+        state = self.ui.checkBox_shuffle.checkState()
+        print(state)
+        if state == QtCore.Qt.CheckState.Checked:
+            self.ui.wordTable.clear()
+            self.wordDeck.shuffleStudySet()
+            lineNo = 0
+            for i in self.wordDeck.studyList:
+                self.ui.wordTable.insertRow(lineNo)
+                self.ui.wordTable.setItem(lineNo, 1, QtWidgets.QTableWidgetItem(str(i.isStarred)))
+                self.ui.wordTable.setItem(lineNo, 2, QtWidgets.QTableWidgetItem(str(i.vocabulary)))
+                self.ui.wordTable.setItem(lineNo, 3, QtWidgets.QTableWidgetItem(str(i.definition)))
+                self.ui.wordTable.setItem(lineNo, 4, QtWidgets.QTableWidgetItem(str(i.pronunciation)))
+                self.ui.wordTable.setItem(lineNo, 5, QtWidgets.QTableWidgetItem(str(i.timesCorrect)))
+                self.ui.wordTable.setItem(lineNo, 6, QtWidgets.QTableWidgetItem(str(i.timesAttempted)))
+
+                lineNo += 1
+                #self.ui.wordTable.setItem(i, 0).QtWidgets.QTableWidgetItem(str(data))
+                #self.ui.wordTable.insertRow(i)
+
+                    #print("Row data: ", j[colNo])
+
+                    # if column_number == 0:
+                    #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    # else:
+                    #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+
+        else:
+            self.reloadWordTable()
+
+
+
+    def loadExercises(self):
+        self.typingExercise = VocabWordDeck()
 
     # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
@@ -204,7 +243,6 @@ class MainWindow(QMainWindow):
         for i in tableList:
             # if i != 'sqlite_sequence':
             self.ui.deckList.addItem(i)
-
         self.ui.deckList.show()
         return tableList
 
@@ -273,9 +311,9 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.setEnabled(False)
 
     # TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
-    # BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
-    # IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
-    # THE CORRECT CARD NUM
+    #   BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
+    #   IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
+    #   THE CORRECT CARD NUM
 
     ########### CONTEXT MENU STUFF ###############
     def requestWordTableContextMenu(self, position):
@@ -383,23 +421,20 @@ class MainWindow(QMainWindow):
             return False
         return super(MainWindow, self).eventFilter(source, event)
 
-    def calcPercentageCorrect(self):
-        return (self.studyList[self.cardNum].timesCorrect / self.studyList[self.cardNum].timesAttempted) * 100
-
     def setTextEnter(self):
         win.ui.pushButton_enter.setText("Enter")
 
     def resetProgressBars(self):
 
         win.ui.progressBar_typing.reset()
-        win.ui.progressBar_typing.setRange(0, len(self.studyList))
+        win.ui.progressBar_typing.setRange(0, len(self.wordDeck.studyList))
         win.ui.progressBar_flashcards.reset()
-        win.ui.progressBar_flashcards.setRange(0, len(self.studyList))
+        win.ui.progressBar_flashcards.setRange(0, len(self.wordDeck.studyList))
         win.ui.progressBar_quiz.reset()
-        win.ui.progressBar_quiz.setRange(0, len(self.studyList))
+        win.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
 
-    def loadStudySet(self):
-        self.cardNum = 0
+    def loadStudySet(self, shuffle=False):
+        self.wordDeck.cardNum = 0
 
         db = SqlTools(self.DATABASE_PATH)
         result = db.getTableData(self.nameOfCurrentTable)
@@ -407,13 +442,13 @@ class MainWindow(QMainWindow):
         db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
         if len(result) != 0:
-            self.studyList = [VocabWord(*t) for t in result]
+            self.wordDeck.studyList = [VocabWord(*t) for t in result]
+            #self.wordDeck.shuffleStudySet()
 
-            for i in range(10, len(self.studyList), 10):
-                self.summaryIndexList.append(i)
+            for i in range(10, len(self.wordDeck.studyList), 10):
+                self.wordDeck.summaryIndexList.append(i)
                 #print(i)
-            self.shuffleStudySet()
-            print(self.studyList)
+            print("loaded study set: ", self.wordDeck.studyList)
             self.resetProgressBars()
             self.reloadWordLabels()
             self.ui.tab_flashcards.setEnabled(True)
@@ -430,87 +465,19 @@ class MainWindow(QMainWindow):
             return False
 
     def reloadWordLabels(self):
-        win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
-        win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
-        win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
+        win.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
+        win.ui.label_flashWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
+        win.ui.label_quizWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
 
     def loadStarredStudySet(self):
         pass
 
-    def shuffleStudySet(self):
-        print("Shuffled study set")
-        print(self.studyList)
-        shuffle(self.studyList)
-        self.reloadWordLabels()
-
     def breakdownSummary(self):
-        print(self.cardNum, len(self.studyList) - 1)
+        print(self.wordDeck.cardNum, len(self.wordDeck.studyList) - 1)
 
+    def starredButtonAction(self):
 
-        pass
-
-    def checkAnswer(self):
-        textValue = win.ui.lineEdit_answer.text()
-        answerList = self.studyList[self.cardNum].definition.split(";")
-
-
-        print("You entered: " + textValue + " $? " + ", ".join(answerList))
-        print(self.studyList[self.cardNum])
-
-        if textValue in answerList:
-            print("Correct!")
-            win.ui.lineEdit_answer.clear()
-            self.studyList[self.cardNum].timesCorrect += 1
-            self.studyList[self.cardNum].timesAttempted += 1
-
-            percent = self.calcPercentageCorrect()
-            win.ui.label_fractionCorrect.setText("%" + str(percent))
-
-            win.ui.label_typingWord.setText("Correct!\n " + ",".join(answerList))
-            win.ui.pushButton_enter.setText("Continue")
-            win.ui.lineEdit_answer.setPlaceholderText("Press Enter to continue")
-            win.ui.lineEdit_answer.setDisabled(True)
-            win.ui.pushButton_enter.clicked.disconnect()
-            win.ui.pushButton_enter.clicked.connect(self.nextWord)
-        else:
-            self.studyList[self.cardNum].timesAttempted += 1
-            percent = self.calcPercentageCorrect()
-            self.ui.label_fractionCorrect.setText("%" + str(percent))
-            self.missedWordList.append(self.studyList[self.cardNum])                    # Add to incorrect list
-            print("Incorrect!")
-            print("Card number: " + str(self.cardNum))
-            win.ui.pushButton_enter.setText("Enter")
-            win.ui.pushButton_notSure_Skip.show()
-            win.ui.lineEdit_answer.clear()
-            win.ui.label_typingWord.setText("Oops! Correct answer is: \n" + self.studyList[self.cardNum].definition)
-            win.ui.pushButton_notSure_Skip.setText("I was right")
-            win.ui.pushButton_notSure_Skip.clicked.disconnect()
-            win.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
-            win.ui.lineEdit_answer.setPlaceholderText("Enter the correct answer")
-
-    def nextWord(self):
-        win.ui.progressBar_typing.setValue(self.cardNum +1)
-        win.ui.label_fractionCorrect.clear()
-        print(self.cardNum, len(self.studyList))
-        if self.cardNum == len(self.studyList) -1:
-            print("END GAME")
-        # elif self.cardNum in self.summaryIndexList:
-        #     print("fuq")
-        else:
-            self.cardNum += 1
-            win.ui.lineEdit_answer.setEnabled(True)
-            win.ui.pushButton_notSure_Skip.hide()
-            win.ui.lineEdit_answer.setFocus()
-            win.ui.lineEdit_answer.clear()
-            win.ui.lineEdit_answer.setPlaceholderText("Enter your answer")
-            win.ui.pushButton_enter.setText("Don't Know")
-            win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
-            win.ui.pushButton_enter.clicked.disconnect()
-            win.ui.pushButton_enter.clicked.connect(self.checkAnswer)
-
-    def showStarredOnly(self):
-
-        self.studyList = []
+        self.typingExercise.studyList = []
         self.indexOfDeletedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
         self.indexOfAddedRowsSet.clear()
@@ -534,17 +501,18 @@ class MainWindow(QMainWindow):
                         self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
             if len(result) != 0:
-                self.studyList = [VocabWord(*t) for t in result]
+                self.wordDeck.studyList = [VocabWord(*t) for t in result]
 
-                for i in range(10, len(self.studyList), 10):
+                for i in range(10, len(self.wordDeck.studyList), 10):
                     self.summaryIndexList.append(i)
                     # print(i)
 
-                print(self.studyList)
+                print(self.wordDeck.studyList)
                 self.resetProgressBars()
-                win.ui.label_typingWord.setText(self.studyList[self.cardNum].vocabulary)
-                win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
-                win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
+                # win.ui.label_typingWord.setText(self.exercise.studyList[self.cardNum].vocabulary)
+                # win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
+                # win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
+                self.reloadWordLabels()
                 self.ui.tab_flashcards.setEnabled(True)
                 self.ui.tab_typing.setEnabled(True)
                 self.ui.tab_quiz.setEnabled(True)
@@ -557,19 +525,17 @@ class MainWindow(QMainWindow):
                 print("Cannot load an empty table!")
                 return False
 
-            self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+            self.ui.wordTable.blockSignals(False)       # Prevent a bug where cell changes would occur on table loading
             self.ui.buttonBox_wordList.setEnabled(False)
             self.loadStudySet()
         elif self.ui.checkBox_starredOnly.isChecked() == False:
             self.reloadWordTable()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
     win.reloadTableList()
-
     win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
     print(win.nameOfCurrentTable)
     win.loadWordTable(0)
