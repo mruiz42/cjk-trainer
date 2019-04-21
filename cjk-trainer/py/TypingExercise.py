@@ -17,7 +17,8 @@ class TypingExercise():
         print("You entered: " + textValue + " $? " + ", ".join(answerList))
         print(self.wordDeck.studyList[self.wordDeck.cardNum])
 
-        if textValue in answerList:
+        if textValue.lower() in (answer.lower() for answer in answerList):
+
             print("Correct!")
             self.mainWindow.ui.lineEdit_answer.clear()
             self.wordDeck.studyList[self.wordDeck.cardNum].timesCorrect += 1

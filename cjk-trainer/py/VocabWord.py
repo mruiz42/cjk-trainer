@@ -11,3 +11,4 @@ class VocabWord:
         self.dateStudied = da
     def __str__(self):
         return self.vocabulary + "," + self.definition + self.pronunciation + str(self.timesCorrect) + str(self.timesAttempted)
+

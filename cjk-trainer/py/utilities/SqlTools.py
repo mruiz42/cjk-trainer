@@ -64,8 +64,7 @@ class SqlTools():
         self.db.commit()
 
     def modifyTableRows(self, table_name, row_data, row_index):
-
-        if self.validateRow(row_data, num_rows=6):
+        if self.validateRow(row_data, num_rows=7):
             print("Table edit: ", row_data, " has been validated.")
             print("UPDATING TABLE DATA!", row_data)
             print("Updating table at card Num:", row_index)
@@ -96,8 +95,8 @@ class SqlTools():
         # TODO COME BACK TO CHANGE THE INDEXES OF EACH ROW
         # The row being passed in will include everything including index 0, cardnum (primary key)
         # [CARDNUM ,STARRED, VOCABULARY, DEFINITION, PRONUNCIATION, CORRECT, ATTEMPTED, LASTTIMESTUDIED]
+
         if len(row_data) != num_rows:
-            print("ERROR! Table edit: ", row_data, " has been REJECTED! Row length is ",len(row_data), ", should be ", num_rows, ".")
             return False
         #Im not sure I care if there is empty data in for words
         # elif row_data[2] == "" or row_data[3] == "" or row_data[4] == "":

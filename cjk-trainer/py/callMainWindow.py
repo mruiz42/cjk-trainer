@@ -72,9 +72,10 @@ class MainWindow(QMainWindow):
         newListTableAction.triggered.connect(self.openNewTableDialog)
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
         # I changed this stuff to initialize to standard size
-        self.ui.wordTable.setColumnCount(8)
+        self.ui.wordTable.setColumnCount(7)
         self.ui.wordTable.setRowCount(1)
         # Added Header Labels
+        # {:>7}{:>15.2f}{:>11.2f}".format
         self.ui.wordTable.setHorizontalHeaderLabels(
             ['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
         self.ui.wordTable.setColumnHidden(0, True)
@@ -101,10 +102,13 @@ class MainWindow(QMainWindow):
         self.show()
 
     def shuffleButtonAction(self):
+
         state = self.ui.checkBox_shuffle.checkState()
         print(state)
         if state == QtCore.Qt.CheckState.Checked:
             self.ui.wordTable.clear()
+            self.ui.wordTable.setHorizontalHeaderLabels(
+                ['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
             self.wordDeck.shuffleStudySet()
             lineNo = 0
             for i in self.wordDeck.studyList:
@@ -215,6 +219,7 @@ class MainWindow(QMainWindow):
         print("REFRESHING TABLE LIST")
         if reset_checked==True:
             self.ui.checkBox_starredOnly.setChecked(False)
+            self.ui.checkBox_shuffle.setChecked(False)
 
         db = SqlTools(self.DATABASE_PATH)
         tableList = db.getTableList()
