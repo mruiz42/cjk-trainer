@@ -31,7 +31,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # Member attributes
-        self.DATABASE_PATH = '../data/vocab.db'
+        self.DATABASE_PATH = '../data/vocab2.db'
+        self.database = SqlTools(self.DATABASE_PATH)
+        # Check if tables exist
+        self.database.createCardsTable()
+        self.database.createDeckTable()
+        self.database.createSessionsTable()
+        self.database.createStatisticsTable()
+
         self.indexOfAddedRowsSet = set()        # Index of queued row numbers to be added from wordTable
         self.indexOfModifiedRowsSet = set()     # Index of queued row numbers to be modified from wordTable
         self.indexOfDeletedRowsSet = set()      # Index of queued row numbers to be deleted from wordTable
@@ -159,8 +166,6 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedRowsSet
         self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
         print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet, "Del rows: ", self.indexOfDeletedRowsSet)
-        # Create Sql Connection
-        db = SqlTools(self.DATABASE_PATH)
         # Update modified rows, if exist
         if len(self.indexOfModifiedRowsSet) != 0:
             print("SENDING MODIFIED ENTRIES TO DATABASE")
@@ -171,7 +176,7 @@ class MainWindow(QMainWindow):
                     rowData.append(self.ui.wordTable.item(rowIndex, j).text())
                 print(rowData)
                 # Update the database
-                db.modifyTableRows(self.nameOfCurrentTable, rowData, rowIndex)
+                self.database.modifyTableRows(self.nameOfCurrentTable, rowData, rowIndex)
         # Add rows, if exist
         # TODO ) GETTING AN ERROR WHERE IF THERES NO BLANK ROW AT END, IT WILL DISREGARD THE LAST LINE
         # EVEN IF I HAS VALID DATA
@@ -199,7 +204,7 @@ class MainWindow(QMainWindow):
                 else:
                     print("INSERTING TABLE DATA!", rowData)
                     print("Updating table at row:", rowIndex)
-                    db.addTableRow(self.nameOfCurrentTable, rowData)
+                    self.database.addTableRow(self.nameOfCurrentTable, rowData)
 
         # Delete rows, if exist
         print(self.indexOfDeletedRowsSet)
@@ -207,13 +212,14 @@ class MainWindow(QMainWindow):
             # Now we must remove the rows user does not want anymore
             # Try to delete the item from the table by primary key
             for rowIndex in self.indexOfDeletedRowsSet:
-                db.deleteTableRow(self.nameOfCurrentTable, rowIndex)
+                self.database.deleteTableRow(self.nameOfCurrentTable, rowIndex)
 
-        db.closeDatabase()
+        self.database.closeDatabase()
         self.indexOfAddedRowsSet.clear()
         self.indexOfModifiedRowsSet.clear()
         self.indexOfDeletedRowsSet.clear()
         self.ui.buttonBox_wordList.setEnabled(False)
+
 
     def reloadTableList(self, reset_checked=False):
         print("REFRESHING TABLE LIST")
@@ -221,8 +227,7 @@ class MainWindow(QMainWindow):
             self.ui.checkBox_starredOnly.setChecked(False)
             self.ui.checkBox_shuffle.setChecked(False)
 
-        db = SqlTools(self.DATABASE_PATH)
-        tableList = db.getTableList()
+        tableList = self.database.getTableList()
         tableDict = {}
 
         try:
@@ -232,8 +237,7 @@ class MainWindow(QMainWindow):
             print("ValueError: sqlite_sequence not in database.")
 
         for table_name in tableList:
-            tableDict.update({table_name:db.getLastTimeStudied(table_name)})
-        db.closeDatabase()
+            tableDict.update({table_name:self.database.getLastTimeStudied(table_name)})
         print(tableDict)
 
         tableList = [key for (key, value) in sorted(tableDict.items(), key=lambda t: t[1])]
@@ -269,9 +273,7 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
 
             self.ui.label_selectedDeck.setText(index.data())
-            db = SqlTools(self.DATABASE_PATH)
-            result = db.getTableData(self.nameOfCurrentTable)
-            db.closeDatabase()
+            result = self.database.getTableData(self.nameOfCurrentTable)
             for row_number, row_data in enumerate(result):
                 self.ui.wordTable.insertRow(row_number)
                 print("Row number: ", row_number)
@@ -298,9 +300,7 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
         print("reverting changes")
 
-        db = SqlTools(self.DATABASE_PATH)
-        result = db.getTableData(self.nameOfCurrentTable)
-        db.closeDatabase()
+        result = self.database.getTableData(self.nameOfCurrentTable)
 
         for row_number, row_data in enumerate(result):
             print("Row number: ", row_number)
@@ -441,10 +441,8 @@ class MainWindow(QMainWindow):
     def loadStudySet(self, shuffle=False):
         self.wordDeck.cardNum = 0
 
-        db = SqlTools(self.DATABASE_PATH)
-        result = db.getTableData(self.nameOfCurrentTable)
+        result = self.database.getTableData(self.nameOfCurrentTable)
         #db.setLastTimeStudied(self.nameOfCurrentTable)
-        db.closeDatabase()
         #We have a tuple, now lets make a list of VocabWord objects
         if len(result) != 0:
             self.wordDeck.studyList = [VocabWord(*t) for t in result]
@@ -492,9 +490,7 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.reset()
         self.ui.wordTable.blockSignals(True)                    # Prevent a bug where cell changes would occur on table loading
         if self.ui.checkBox_starredOnly.checkState() == QtCore.Qt.CheckState.Checked:
-            db = SqlTools(self.DATABASE_PATH)
-            result = db.getStarredTableData(self.nameOfCurrentTable)
-            db.closeDatabase()
+            result = self.database.getStarredTableData(self.nameOfCurrentTable)
             for row_number, row_data in enumerate(result):
                 print("Row number: ", row_number)
                 self.ui.wordTable.insertRow(row_number)
@@ -536,14 +532,30 @@ class MainWindow(QMainWindow):
         elif self.ui.checkBox_starredOnly.isChecked() == False:
             self.reloadWordTable()
 
+
+    def loadDeckList(self):
+        self.ui.deckList.clear()
+        listOfDecks = self.database.getDecks()
+        for i in listOfDecks:
+            # if i != 'sqlite_sequence':
+            self.ui.deckList.addItem(i[0])
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
-    win.reloadTableList()
-    win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
-    print(win.nameOfCurrentTable)
-    win.loadWordTable(0)
-    win.reloadWordTable()
+    win.loadDeckList()
 
+
+
+    #win.reloadTableList()
+    # win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
+    # print(win.nameOfCurrentTable)
+    # win.loadWordTable(0)
+    # win.reloadWordTable()
+
+
+
+    #win.database.closeDatabase()
     sys.exit(app.exec_())

@@ -16,11 +16,9 @@ class DeckNamePrompt(QtWidgets.QDialog):
     def acceptInput(self):
         table_name = self.DNPD.lineEdit.text()
         print("Creating table: ", table_name)
-        db = SqlTools(self.mainWindow.DATABASE_PATH)
-        db.createDeckTable(table_name)
+        self.mainWindow.database.insertDeck(table_name)
 
-        initialRowData = ['1', '0', "", "", "", '0', '0']
-        db.addTableRow(table_name, initialRowData)
-        db.setLastTimeStudied(table_name, date_time="min")
-        db.closeDatabase()
-        self.mainWindow.reloadTableList()
+        #initialRowData = ['1', '0', "", "", "", '0', '0']
+        #self.mainWindow.database.addTableRow(table_name, initialRowData)
+        #self.mainWindow.database.setLastTimeStudied(table_name, date_time="min")
+        #self.mainWindow.reloadTableList()

@@ -21,73 +21,120 @@ class SqlTools():
         #print("something")
         self.db.close()
 
-    # TODO NEED TO CHECK IMPORTED DATA BEFORE INSERTING TO TABLE.
-    #   CURRENTLY ORDERES ARE DIFFERENT SO CHECKING BY POSITION DOESNT WORK
-    def insertManyFromList(self, table_name, vocab_list):
-        '''This function will insert a list's values and input them into a SQL database'''
-
-        command = "INSERT INTO " + "[" + table_name + "] " + " (VOCABULARY, DEFINITION, PRONUNCIATION," \
-                                                             " CORRECT, ATTEMPTED, STARRED) VALUES (?,?,?,?,?,?)"
-        print(vocab_list)
-
-        for i in vocab_list:
-            if len(i) != 6:
-                vocab_list.pop(i)
-        self.db.executemany(command, vocab_list)
-        self.db.commit()
-        self.setLastTimeStudied(table_name, date_time="min")
-
-    def createDeckTable(self, table_name):
-        command = ("CREATE TABLE IF NOT EXISTS [" + str(table_name) + "] "
-                   "(CARDNUM INTEGER PRIMARY KEY AUTOINCREMENT,"
-                   "STARRED BOOL,"
-                   "VOCABULARY TEXT,"
-                   "DEFINITION TEXT,"
-                   "PRONUNCIATION TEXT,"
-                   "CORRECT INT,"
-                   "ATTEMPTED INT,"
-                   "LASTTIMESTUDIED DATE);")
-        # Extend table to include
+    def createCardsTable(self):
+        command =  ("CREATE TABLE IF NOT EXISTS CARDS "
+                    "(CARD_ID INTEGER PRIMARY KEY AUTOINCREMENT,"   # Card Identification number
+                    "DECK_ID TEXT NOT NULL,"                        # Deck name of cards being studied
+                    "VOCABULARY TEXT,"                              # Vocabulary in secondary language
+                    "DEFINITION TEXT,"                              # Definition in primary language
+                    "PRONUNCIATION TEXT,"                            # Pronunciation of secondary language
+                    "IS_STARRED BOOLEAN,"
+                    "FOREIGN KEY(DECK_ID) REFERENCES DECK(DECK_ID));")                            # Flag for word
         self.db.execute(command)
         self.db.commit()
 
-
-        print("table ", table_name, " created!")
-
-    def createSessionTable(self, table_name):
-        command = ("CREATE TABLE IF NOT EXISTS [" + str(table_name) + "] (ACCURACY INT, TIMESPENT DATE);")
-        pass
-
-    def dropTable(self,table_name):
-        command = "DROP TABLE " +"[" + table_name +"]"+ ";"
+    def createDeckTable(self):
+        command = ("CREATE TABLE IF NOT EXISTS DECKS "
+                   "(DECK_ID TEXT PRIMARY KEY);")
         self.db.execute(command)
         self.db.commit()
 
-    def modifyTableRows(self, table_name, row_data, row_index):
-        if self.validateRow(row_data, num_rows=7):
-            print("Table edit: ", row_data, " has been validated.")
-            print("UPDATING TABLE DATA!", row_data)
-            print("Updating table at card Num:", row_index)
-            command = "UPDATE [" + table_name + "] SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
-                                                            "CORRECT=?, ATTEMPTED=? WHERE CARDNUM= " + str(row_data.pop(0))
-            print(command)
-            self.db.execute(command, row_data)
-            self.db.commit()
-            print("Cardnum:", row_data[0], "has been modified.")
-
-    def addTableRow(self, table_name, row_data):
-        self.validateRow(row_data)
-
-        command = "INSERT INTO " + "[" + table_name + "] " + " (STARRED, VOCABULARY, DEFINITION, PRONUNCIATION," \
-                                                             " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?);"
-        print(command)
-        self.db.execute(command, row_data[1:])
-        self.db.commit()
-
-    def deleteTableRow(self, table_name, row_index):
-        command = "DELETE FROM " + "[" + table_name + "]" + " WHERE CARDNUM = " + row_index
+    def createSessionsTable(self):
+        command = ("CREATE TABLE IF NOT EXISTS SESSIONS"
+                   "(START_TIME DATE PRIMARY KEY,"
+                   "DECK_ID TEXT, "
+                   "FOREIGN KEY(DECK_ID) REFERENCES DECK(DECK_ID));")
         self.db.execute(command)
         self.db.commit()
+
+    def createStatisticsTable(self):
+        command = ("CREATE TABLE IF NOT EXISTS STATISTICS"
+                   "(CARD_ID INTEGER,"
+                   "START_TIME DATE,"
+                   "TIMES_CORRECT INTEGER,"
+                   "TIMES_ATTEMPTED INTEGER,"
+                   "FOREIGN KEY(CARD_ID) REFERENCES CARDS(CARD_ID),"
+                   "FOREIGN KEY(START_TIME) REFERENCES SESSIONS(START_TIME));")
+        self.db.execute(command)
+        self.db.commit()
+
+    def insertCard(self, rows):
+        '''tuple: (DECK_ID, VOCABULARY, DEFINITION, PRONUNCIATION)'''
+        command = "INSERT INTO CARDS VALUES(DECK_ID=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, IS_STARRED=FALSE);"
+        self.db.execute(command, rows)
+        self.db.commit()
+
+    def insertDeck(self, deck_name):
+        t = (deck_name, )
+        command = ("INSERT INTO DECKS VALUES(?);")
+        self.db.execute(command, t)
+        self.db.commit()
+
+    def insertManyCards(self, tuple_List):
+        '''List:Tuple: [(DECK_ID, VOCABULARY, DEFINITION, PRONUNCIATION, IS_STARRED), ...]'''
+        command = "INSERT INTO CARDS (DECK_ID, VOCABULARY, DEFINITION, PRONUNCIATION, IS_STARRED) VALUES (?,?,?,?,?)"
+        self.db.executemany(command, tuple_List)
+        self.db.commit()
+
+    def insertSession(self, rows):
+        '''tuple: (DECK_ID)'''
+        command = "INSERT INTO SESSIONS VALUES((SELECT strftime('%s','now')), DECK_ID=?)"
+        self.db.execute(command, rows)
+        self.db.commit()
+
+    def insertStatistic(self, row):
+        '''tuple: (CARD_ID, START_TIME, TIMES_CORRECT, TIMES_ATTEMPTED)'''
+        command = "INSERT INTO STATISTICS VALUES(CARD_ID=?, START_TIME=?, TIMES_CORRECT=?, TIMES_ATTEMPTED=?);"
+        self.db.execute(command, row)
+        self.db.commit()
+
+    def deleteDeck(self, deck_name):
+        '''tuple: (deck_name)'''
+        command = "DELETE FROM STATISTICS WHERE (DECK_ID=?)"
+        self.db.execute(command, deck_name)
+        command = "DELETE FROM SESSIONS WHERE (DECK_ID=?)"
+        self.db.execute(command, deck_name)
+        command = "DELETE FROM CARDS WHERE (DECK_ID=?)"
+        self.db.execute(command, deck_name)
+        self.db.commit()
+
+    def modifyCardData(self, row, deck_name, card_num):
+        command = ("UPDATE CARDS SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, IS_STARRED=? "
+                   "WHERE DECK_ID= "+ deck_name + "AND CARD_ID="+card_num+";")
+        self.db.execute(command, row)
+        self.db.commit()
+
+    ##################################
+    # def dropTable(self,table_name):
+    #     command = "DROP TABLE " +"[" + table_name +"]"+ ";"
+    #     self.db.execute(command)
+    #     self.db.commit()
+
+    # def modifyTableRows(self, table_name, row_data, row_index):
+    #     if self.validateRow(row_data, num_rows=7):
+    #         print("Table edit: ", row_data, " has been validated.")
+    #         print("UPDATING TABLE DATA!", row_data)
+    #         print("Updating table at card Num:", row_index)
+    #         command = "UPDATE [" + table_name + "] SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
+    #                                                         "CORRECT=?, ATTEMPTED=? WHERE CARDNUM= " + str(row_data.pop(0))
+    #         print(command)
+    #         self.db.execute(command, row_data)
+    #         self.db.commit()
+    #         print("Cardnum:", row_data[0], "has been modified.")
+
+    # def addTableRow(self, table_name, row_data):
+    #     self.validateRow(row_data)
+    #
+    #     command = "INSERT INTO " + "[" + table_name + "] " + " (STARRED, VOCABULARY, DEFINITION, PRONUNCIATION," \
+    #                                                          " CORRECT, ATTEMPTED) VALUES (?,?,?,?,?,?);"
+    #     print(command)
+    #     self.db.execute(command, row_data[1:])
+    #     self.db.commit()
+    #
+    # def deleteTableRow(self, table_name, row_index):
+    #     command = "DELETE FROM " + "[" + table_name + "]" + " WHERE CARDNUM = " + row_index
+    #     self.db.execute(command)
+    #     self.db.commit()
 
     def validateRow(self, row_data, num_rows=7):
         '''This function will check the data types of a list to make sure 1, 5, 6 are integers'''
@@ -199,7 +246,6 @@ class SqlTools():
         result = cur.fetchall()
         return result
 
-
     def setLastTimeStudied(self, table_name, date_time="now"):
         if date_time == "min":
             min = datetime.datetime.min
@@ -216,7 +262,6 @@ class SqlTools():
             self.db.commit()
 
     def getLastTimeStudied(self, table_name):
-        print("TB", table_name)
         cur = self.db.execute("SELECT LASTTIMESTUDIED FROM [" + table_name + "];")
         result = cur.fetchone()
 
@@ -226,3 +271,9 @@ class SqlTools():
             result = '0'
         print(result)
         return result
+
+    def getDecks(self):
+        command = ("SELECT * FROM DECKS;")
+        self.cur.execute(command)
+        listOfDecks = self.cur.fetchall()
+        return listOfDecks
