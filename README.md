@@ -1,5 +1,5 @@
 # CJK-Trainer
-A program geared towards native English speakers to facilitate language vocabulary building. However, I want this to be as modular as possible, so that any language can be studied using this software.
+A program to facilitate language vocabulary building. However, I want this to be as modular as possible, so that any language can be studied using this software.
 
 ![alt text](https://i.imgur.com/7hdBY8a.png)
 
@@ -22,14 +22,6 @@ It may be necessary to modify defined file paths in the code, since it may use a
 Python3
 SQLite3
 Pyside2
-
-
-
-# Developer Notes
-The following keywords are in place and will have a general meaning throughout this program:
-Vocab - The vocabulary word being learned, is a foreign word to user
-Pronun - Pronunciation of the word (foreign), if applicable (ie. pinyin, romanji, etc.)
-Definition - Native definition of vocabulary word in user's native language.
 
 
 # Licensing
