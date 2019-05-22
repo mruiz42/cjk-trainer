@@ -253,7 +253,7 @@ class SqlTools():
     def getTableData(self, table_name):
         '''This function will return a list of tuples representing the rows and columns of the table'''
         t = (table_name, )
-        command = "SELECT * FROM CARDS WHERE DECK_ID=?"
+        command = "SELECT CARD_ID, IS_STARRED, VOCABULARY, DEFINITION, PRONUNCIATION FROM CARDS WHERE DECK_ID=?"
         cur = self.db.execute(command, t)
         result = cur.fetchall()
         return result
@@ -279,13 +279,14 @@ class SqlTools():
             self.db.commit()
 
     def getLastTimeStudied(self, table_name):
-        cur = self.db.execute("SELECT LASTTIMESTUDIED FROM [" + table_name + "];")
-        result = cur.fetchone()
-
-        try:
-            result = result[0]
-        except TypeError:
-            result = '0'
-        print(result)
-        return result
+        pass
+        # cur = self.db.execute("SELECT LASTTIMESTUDIED FROM [" + table_name + "];")
+        # result = cur.fetchone()
+        #
+        # try:
+        #     result = result[0]
+        # except TypeError:
+        #     result = '0'
+        # print(result)
+        # return result
 

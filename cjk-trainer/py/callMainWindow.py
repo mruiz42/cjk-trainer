@@ -81,16 +81,16 @@ class MainWindow(QMainWindow):
         newListTableAction.triggered.connect(self.openNewTableDialog)
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
         # I changed this stuff to initialize to standard size
-        self.ui.wordTable.setColumnCount(4)
+        self.ui.wordTable.setColumnCount(5)
         self.ui.wordTable.setRowCount(0)
         # Added Header Labels
         # {:>7}{:>15.2f}{:>11.2f}".format
-        self.ui.wordTable.setHorizontalHeaderLabels(
-            ['Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
-        self.ui.wordTable.setColumnWidth(0, 48)
-        self.ui.wordTable.setColumnWidth(1, 300)
+        self.ui.wordTable.setHorizontalHeaderLabels(['Card No', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
+        self.ui.wordTable.setColumnHidden(0, True)
+        self.ui.wordTable.setColumnWidth(1, 48)
         self.ui.wordTable.setColumnWidth(2, 300)
         self.ui.wordTable.setColumnWidth(3, 300)
+        self.ui.wordTable.setColumnWidth(4, 300)
 
         self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         # Added Modified - be careful
@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
             print("SENDING MODIFIED ENTRIES TO DATABASE")
             for rowIndex in self.indexOfModifiedCardsSet:
                 rowData = []
-                for j in range(0, self.ui.wordTable.columnCount()):
+                for j in range(1, self.ui.wordTable.columnCount()):
                     print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
                     rowData.append(self.ui.wordTable.item(rowIndex, j).text())
                 print(rowData)
@@ -199,7 +199,7 @@ class MainWindow(QMainWindow):
         for rowIndex in self.indexOfAddedCardsSet:
             rowData = []
             rowData.append(self.nameOfCurrentDeck)
-            rowData.append(self.ui.wordTable.cellWidget(rowIndex,0).isChecked())
+            rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
             for j in range(1, self.ui.wordTable.columnCount()):
                 print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
                 rowData.append(self.ui.wordTable.item(rowIndex, j).text())
@@ -226,6 +226,8 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.setEnabled(False)
         pass
 
+
+# TODO SOMETHING WRONG HERE : (
     def reloadTableList(self, reset_checked=False):
         print("REFRESHING TABLE LIST")
         if reset_checked==True:
@@ -284,10 +286,7 @@ class MainWindow(QMainWindow):
                 print("Row number: ", row_number)
                 for column_number, data in enumerate(row_data):
                     print("Row data: ", row_data[column_number])
-                    if column_number == 0:
-                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                    else:
-                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
@@ -358,17 +357,18 @@ class MainWindow(QMainWindow):
         if self.ui.wordTable.rowCount() == 0:
             self.ui.wordTable.setRowCount(1)
             cell_widget = self.createStarCellWidget()
-            self.ui.wordTable.setCellWidget(0, 0, cell_widget)
+            self.ui.wordTable.setCellWidget(0, 1, cell_widget)
             self.indexOfAddedCardsSet.add(0)
             self.ui.wordTable.setCurrentCell(0,1)
         else:
             cell_widget = self.createStarCellWidget()
             self.ui.wordTable.insertRow(self.ui.wordTable.rowCount())
-            self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 0, cell_widget)
+            self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 1, cell_widget)
             self.indexOfAddedCardsSet.add(self.ui.wordTable.rowCount()-1)
             print("Inserting row..", self.ui.wordTable.rowCount()-1)
 
-    def createStarCellWidget(self):
+    def createStarCellWidget(self, bool=0):
+
         print("Creating ⭐ cell widget")
         chk_bx = QCheckBox()
         chk_bx.setStyleSheet("QCheckBox::indicator { width: 32px; height: 32px}"
