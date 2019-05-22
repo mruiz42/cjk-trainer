@@ -169,18 +169,22 @@ class MainWindow(QMainWindow):
         # print("save table")
         self.indexOfModifiedCardsSet = self.indexOfModifiedCardsSet - self.indexOfDeletedCardsSet
         self.indexOfModifiedCardsSet = self.indexOfModifiedCardsSet - self.indexOfAddedCardsSet
-        print("modified rows:", self.indexOfModifiedCardsSet, "added rows", self.indexOfAddedCardsSet, "Del rows: ", self.indexOfDeletedCardsSet)
+        print("modified rows:", self.indexOfModifiedCardsSet, "added rows", self.indexOfAddedCardsSet,
+              "Del rows: ", self.indexOfDeletedCardsSet)
         # # Update modified rows, if exist
         if len(self.indexOfModifiedCardsSet) != 0:
             print("SENDING MODIFIED ENTRIES TO DATABASE")
             for rowIndex in self.indexOfModifiedCardsSet:
                 rowData = []
                 for j in range(1, self.ui.wordTable.columnCount()):
-                    print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
-                    rowData.append(self.ui.wordTable.item(rowIndex, j).text())
-                print(rowData)
-                # Update the database
-                self.database.modifyTableRows(self.nameOfCurrentDeck, rowData, rowIndex)
+                    if j == 1:
+                        rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
+                    else:
+                        print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
+                        print("RI", rowIndex, "j", j)
+                        rowData.append(self.ui.wordTable.item(rowIndex, j).text())
+                rowData.append(self.ui.wordTable.item(rowIndex, 0).text())
+                self.database.modifyTableRows(rowData, rowIndex)
         # # Add rows, if exist
         # # TODO ) GETTING AN ERROR WHERE IF THERES NO BLANK ROW AT END, IT WILL DISREGARD THE LAST LINE
         # # EVEN IF I HAS VALID DATA
@@ -215,6 +219,7 @@ class MainWindow(QMainWindow):
         # Delete rows, if exist
         print(self.indexOfDeletedCardsSet)
         if len(self.indexOfDeletedCardsSet) != 0:
+            print("DELETING SELECTED ROWS INTO DATABASE")
             # Now we must remove the rows user does not want anymore
             # Try to delete the item from the table by primary key
             for rowIndex in self.indexOfDeletedCardsSet:
@@ -346,6 +351,7 @@ class MainWindow(QMainWindow):
         self.loadWordTable(self.ui.deckList.currentIndex())
         contextMenuDeckView = QtWidgets.QMenu("contextMenu")
         addAction = contextMenuDeckView.addAction("Add Table")
+        updateAction = contextMenuDeckView.addAction("Update Table")
         deleteAction = contextMenuDeckView.addAction("Delete Table")
         action = contextMenuDeckView.exec_(self.ui.deckList.mapToGlobal(position))
         if action == addAction:
@@ -386,8 +392,16 @@ class MainWindow(QMainWindow):
         lay_out.addWidget(chk_bx)
         lay_out.setAlignment(QtCore.Qt.AlignCenter)
         lay_out.setContentsMargins(0,0,0,0)
+        chk_bx.stateChanged.connect(self.updateStarredValue)
         return chk_bx
 
+    def updateStarredValue(self):
+        rowData = []
+        rowIndex = self.ui.wordTable.currentRow()
+        rowData.append(self.ui.wordTable.cellWidget(rowIndex, 1).isChecked())
+        rowData.append(self.ui.wordTable.item(rowIndex, 0).text())
+        print(rowData)
+        self.database.setStarred(rowData)
     def updateTableRow(self):
         print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
         self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())

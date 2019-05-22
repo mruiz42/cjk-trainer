@@ -126,17 +126,33 @@ class SqlTools():
     #     self.db.execute(command)
     #     self.db.commit()
 
-    # def modifyTableRows(self, table_name, row_data, row_index):
-    #     if self.validateRow(row_data, num_rows=7):
-    #         print("Table edit: ", row_data, " has been validated.")
-    #         print("UPDATING TABLE DATA!", row_data)
-    #         print("Updating table at card Num:", row_index)
-    #         command = "UPDATE [" + table_name + "] SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
-    #                                                         "CORRECT=?, ATTEMPTED=? WHERE CARDNUM= " + str(row_data.pop(0))
-    #         print(command)
-    #         self.db.execute(command, row_data)
-    #         self.db.commit()
-    #         print("Cardnum:", row_data[0], "has been modified.")
+    def modifyTableRows(self, row_data, row_index):
+        print("UPDATING TABLE DATA! ", row_data, " at index:", row_index)
+        command = ("UPDATE CARDS "
+                   "SET IS_STARRED=?, VOCABULARY=?, DEFINITION=?,"
+                                           " PRONUNCIATION=? "
+                   "WHERE CARD_ID=?")
+        self.db.execute(command,row_data)
+        self.db.commit()
+
+
+
+    def setStarred(self, row_data):
+        '''Must take an iterable of: IS_STARRED, CARD_ID'''
+        command = ("UPDATE CARDS SET IS_STARRED=? "
+                   "WHERE CARD_ID=?")
+        self.db.execute(command, row_data)
+        self.db.commit()
+        # if self.validateRow(row_data, num_rows=7):
+        #     print("Table edit: ", row_data, " has been validated.")
+        #     print("UPDATING TABLE DATA!", row_data)
+        #     print("Updating table at card Num:", row_index)
+        #     command = "UPDATE [" + table_name + "] SET STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, " \
+        #                                                     "CORRECT=?, ATTEMPTED=? WHERE CARDNUM= " + str(row_data.pop(0))
+        #     print(command)
+        #     self.db.execute(command, row_data)
+        #     self.db.commit()
+        #     print("Cardnum:", row_data[0], "has been modified.")
 
     # def addTableRow(self, table_name, row_data):
     #     self.validateRow(row_data)
