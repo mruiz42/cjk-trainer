@@ -11,31 +11,28 @@ class SqlTools():
     def createDatabase(self):
         print("foo")
 
-    # def openDatabase(self, dbname):
-    #     #check if already open
-    #     self.db = sqlite3.connect(dbname)
-    #     self.cur = self.db.cursor()
-    #     return self.cur
-
     def closeDatabase(self):
-        #print("something")
+        print("Database will now close...")
         self.db.close()
 
     def createCardsTable(self):
         command =  ("CREATE TABLE IF NOT EXISTS CARDS "
-                    "(CARD_ID INTEGER PRIMARY KEY AUTOINCREMENT,"   # Card Identification number
-                    "DECK_ID TEXT NOT NULL,"                        # Deck name of cards being studied
-                    "VOCABULARY TEXT,"                              # Vocabulary in secondary language
-                    "DEFINITION TEXT,"                              # Definition in primary language
-                    "PRONUNCIATION TEXT,"                            # Pronunciation of secondary language
+                    "(CARD_ID INTEGER PRIMARY KEY AUTOINCREMENT,"           # Card Identification number
+                    "DECK_ID TEXT NOT NULL,"                                # Deck name of cards being studied
                     "IS_STARRED BOOLEAN,"
-                    "FOREIGN KEY(DECK_ID) REFERENCES DECK(DECK_ID));")                            # Flag for word
+                    "VOCABULARY TEXT,"                                      # Vocabulary in secondary language
+                    "DEFINITION TEXT,"                                      # Definition in primary language
+                    "PRONUNCIATION TEXT,"                                   # Pronunciation of secondary language
+                    "IMAGE_DATA BLOB,"
+                    "FOREIGN KEY(DECK_ID) REFERENCES DECKS(DECK_ID));")     # Flag for word
         self.db.execute(command)
         self.db.commit()
 
     def createDeckTable(self):
         command = ("CREATE TABLE IF NOT EXISTS DECKS "
-                   "(DECK_ID TEXT PRIMARY KEY);")
+                   "(DECK_ID TEXT PRIMARY KEY,"
+                   "VOCABULARY_LANGUAGE TEXT,"
+                   "DEFINITION_LANGUAGE TEXT);")
         self.db.execute(command)
         self.db.commit()
 
@@ -43,30 +40,40 @@ class SqlTools():
         command = ("CREATE TABLE IF NOT EXISTS SESSIONS"
                    "(START_TIME DATE PRIMARY KEY,"
                    "DECK_ID TEXT, "
-                   "FOREIGN KEY(DECK_ID) REFERENCES DECK(DECK_ID));")
+                   "FOREIGN KEY(DECK_ID) REFERENCES DECKS(DECK_ID));")
         self.db.execute(command)
         self.db.commit()
 
     def createStatisticsTable(self):
         command = ("CREATE TABLE IF NOT EXISTS STATISTICS"
                    "(CARD_ID INTEGER,"
+                   "DECK_ID TEXT,"
                    "START_TIME DATE,"
                    "TIMES_CORRECT INTEGER,"
                    "TIMES_ATTEMPTED INTEGER,"
                    "FOREIGN KEY(CARD_ID) REFERENCES CARDS(CARD_ID),"
+                   "FOREIGN KEY(DECK_ID) REFERENCES DECKS(DECK_ID),"
                    "FOREIGN KEY(START_TIME) REFERENCES SESSIONS(START_TIME));")
+        self.db.execute(command)
+        self.db.commit()
+
+    def createLanguagesTable(self):
+        command = ("CREATE TABLE IF NOT EXISTS LANGUAGES"
+                   "(LANGUAGE_NAME TEXT,"
+                   "STARRED BOOLEAN);")
         self.db.execute(command)
         self.db.commit()
 
     def insertCard(self, rows):
         '''tuple: (DECK_ID, VOCABULARY, DEFINITION, PRONUNCIATION)'''
-        command = "INSERT INTO CARDS VALUES(DECK_ID=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, IS_STARRED=FALSE);"
+        # command = "INSERT INTO CARDS VALUES(DECK_ID=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, IS_STARRED=FALSE);"
+        command = "INSERT INTO CARDS (DECK_ID, IS_STARRED, VOCABULARY, DEFINITION, PRONUNCIATION, IMAGE_DATA)VALUES(?,?,?,?,?,NULL)"
         self.db.execute(command, rows)
         self.db.commit()
 
-    def insertDeck(self, deck_name):
-        t = (deck_name, )
-        command = ("INSERT INTO DECKS VALUES(?);")
+    def insertDeck(self, deck_name, vocabulary_language, definition_language):
+        t = (deck_name, vocabulary_language, definition_language)
+        command = ("INSERT INTO DECKS VALUES(?, ?, ?);")
         self.db.execute(command, t)
         self.db.commit()
 
@@ -90,17 +97,26 @@ class SqlTools():
 
     def deleteDeck(self, deck_name):
         '''tuple: (deck_name)'''
+        t = (deck_name, )
         command = "DELETE FROM STATISTICS WHERE (DECK_ID=?)"
-        self.db.execute(command, deck_name)
+        self.db.execute(command, t)
         command = "DELETE FROM SESSIONS WHERE (DECK_ID=?)"
-        self.db.execute(command, deck_name)
+        self.db.execute(command, t)
         command = "DELETE FROM CARDS WHERE (DECK_ID=?)"
-        self.db.execute(command, deck_name)
+        self.db.execute(command, t)
+        command = "DELETE FROM DECKS WHERE (DECK_ID=?)"
+        self.db.execute(command, t)
         self.db.commit()
+
+    def getDecks(self):
+        command = ("SELECT * FROM DECKS;")
+        self.cur.execute(command)
+        listOfDecks = self.cur.fetchall()
+        return listOfDecks
 
     def modifyCardData(self, row, deck_name, card_num):
         command = ("UPDATE CARDS SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, IS_STARRED=? "
-                   "WHERE DECK_ID= "+ deck_name + "AND CARD_ID="+card_num+";")
+                   "WHERE DECK_ID= " + deck_name + "AND CARD_ID="+card_num+";")
         self.db.execute(command, row)
         self.db.commit()
 
@@ -169,7 +185,7 @@ class SqlTools():
     def findVocab(self, hanzi):
         self.cur.execute("SELECT * FROM TEST WHERE HANZI = ?", (hanzi,))
         data= self.cur.fetchall()
-        if len(data)==0:
+        if len(data) == 0:
             print('There is no component named %s'%hanzi)
         else:
             print('Component %s found with rowids %s'%(hanzi,','.join(map(str, next(zip(*data))))))
@@ -231,13 +247,14 @@ class SqlTools():
         for i in result:
             print(i)
             flat_list.append(i[0])
-
         print(flat_list)
         return flat_list
 
     def getTableData(self, table_name):
         '''This function will return a list of tuples representing the rows and columns of the table'''
-        cur = self.db.execute("SELECT * FROM {}".format("[" + table_name + "]"))
+        t = (table_name, )
+        command = "SELECT * FROM CARDS WHERE DECK_ID=?"
+        cur = self.db.execute(command, t)
         result = cur.fetchall()
         return result
 
@@ -272,8 +289,3 @@ class SqlTools():
         print(result)
         return result
 
-    def getDecks(self):
-        command = ("SELECT * FROM DECKS;")
-        self.cur.execute(command)
-        listOfDecks = self.cur.fetchall()
-        return listOfDecks

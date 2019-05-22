@@ -19,10 +19,9 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
 
     def deleteConfirmed(self):
         print("Deleting table: ", self.tableName)
-        db = SqlTools(self.mainWindow.DATABASE_PATH)
-        db.dropTable(self.tableName)
-        db.closeDatabase()
-        self.mainWindow.reloadTableList()
+        self.mainWindow.database.deleteDeck(self.tableName)
+        # self.mainWindow.reloadTableList()
+        self.mainWindow.loadDeckList()
         self.mainWindow.ui.wordTable.clear()
         self.mainWindow.ui.wordTable.setHorizontalHeaderLabels(['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
 
