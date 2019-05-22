@@ -279,15 +279,18 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.clearContents()
             self.ui.wordTable.reset()
             self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-
             self.ui.label_selectedDeck.setText(index.data())
             result = self.database.getTableData(self.nameOfCurrentDeck)
             for row_number, row_data in enumerate(result):
                 self.ui.wordTable.insertRow(row_number)
                 print("Row number: ", row_number)
                 for column_number, data in enumerate(row_data):
-                    print("Row data: ", row_data[column_number])
-                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+                    if column_number == 1:
+                        cell_widget = self.createStarCellWidget(data)
+                        self.ui.wordTable.setCellWidget(row_number, column_number, cell_widget)
+                    else:
+                        print("Row data: ", row_data[column_number])
+                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
@@ -368,14 +371,17 @@ class MainWindow(QMainWindow):
             self.indexOfAddedCardsSet.add(self.ui.wordTable.rowCount()-1)
             print("Inserting row..", self.ui.wordTable.rowCount()-1)
 
-    def createStarCellWidget(self, bool=0):
+    def createStarCellWidget(self, checked=0):
 
         print("Creating ⭐ cell widget")
         chk_bx = QCheckBox()
         chk_bx.setStyleSheet("QCheckBox::indicator { width: 32px; height: 32px}"
                              "QCheckBox::indicator:checked{image: url(../ico/starred.png)}"
                              "QCheckBox::indicator:unchecked{image: url(../ico/unstarred.png)}")
-        chk_bx.setCheckState(QtCore.Qt.CheckState.Unchecked)
+        if checked == 0:
+            chk_bx.setCheckState(QtCore.Qt.CheckState.Unchecked)
+        elif checked == 1:
+            chk_bx.setCheckState(QtCore.Qt.CheckState.Checked)
         lay_out = QHBoxLayout(chk_bx)
         lay_out.addWidget(chk_bx)
         lay_out.setAlignment(QtCore.Qt.AlignCenter)
