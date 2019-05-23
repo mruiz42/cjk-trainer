@@ -25,14 +25,15 @@ def importCSV(file_path):
 
 # TODO MAKE THIS FUNCTION MORE RELIABLE, ACCOUNT FOR USER INCLUDING SPACES IN BETWEEN COMMAS?
 '''This function will return a list of strings to input into database'''
-def importDialogHelper(line_list, delim=","):
+def importDialogHelper(line_list: list, deck_name:str, delim: str = ",") -> list:
     '''
     Pre: line_list: A list of user-inputted csv strings. eg.(['word1,def1', 'word2,def2']
         delim: the delimiter used to separate words (default = ',')
     Post: returns a (SQL compatible) list of user defined words and default values. eg. ['word1','word2','',0,0,0]
     Purpose: Provides a means to take user inputted data and send it to SqlTools
+    :rtype: list
     '''
-    vocab_list = []
+    vocab_list = []                     # The variable being
     validLine = True
     for line in line_list:
         word_split = line.split(delim)
@@ -49,12 +50,12 @@ def importDialogHelper(line_list, delim=","):
             try:
                 print(word_split[0])
             except IndexError:
-                print("Cannot import this line, missing Vocabulary slot!")
+                print("Cannot import this line: missing Vocabulary slot! :(")
                 validLine = False
             try:
                 print(word_split[1])
             except IndexError:
-                print("Cannot import this line, missing Definition slot!")
+                print("Cannot import this line: missing Definition slot! :(")
                 validLine = False
             try:
                 print(word_split[2])
@@ -62,9 +63,9 @@ def importDialogHelper(line_list, delim=","):
                 word_split.append('')
             # if line is acceptable
             if validLine == True:
-                word_split.append('0')
-                word_split.append('0')
-                word_split.append('0')
+                print("Valid line! :)")
+                word_split.insert(0, deck_name)
+                word_split.append(False)
                 vocab_list.append(word_split)
             else:
                 print("Inputted line not valid at line num: ", line_list.index(line), "Line skipped.")

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>176</height>
+    <height>182</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,20 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox_vocabulary"/>
+          <widget class="QComboBox" name="comboBox_vocabulary">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>225</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -68,6 +81,12 @@
          </item>
          <item>
           <widget class="QComboBox" name="comboBox_definition">
+           <property name="maximumSize">
+            <size>
+             <width>225</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="currentText">
             <string/>
            </property>

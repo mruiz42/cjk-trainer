@@ -71,7 +71,7 @@ class SqlTools():
         self.db.execute(command, rows)
         self.db.commit()
 
-    def insertDeck(self, deck_name, vocabulary_language, definition_language):
+    def insertDeck(self, deck_name: str, vocabulary_language: str, definition_language: str):
         t = (deck_name, vocabulary_language, definition_language)
         command = ("INSERT INTO DECKS VALUES(?, ?, ?);")
         self.db.execute(command, t)
@@ -115,8 +115,8 @@ class SqlTools():
         return listOfDecks
 
     def modifyCardData(self, row, deck_name, card_num):
-        command = ("UPDATE CARDS SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?, IS_STARRED=? "
-                   "WHERE DECK_ID= " + deck_name + "AND CARD_ID="+card_num+";")
+        command = ("UPDATE CARDS SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?,"
+                   " IS_STARRED=? WHERE DECK_ID= " + deck_name + "AND CARD_ID="+card_num+";")
         self.db.execute(command, row)
         self.db.commit()
 
@@ -143,6 +143,7 @@ class SqlTools():
                    "WHERE CARD_ID=?")
         self.db.execute(command, row_data)
         self.db.commit()
+
         # if self.validateRow(row_data, num_rows=7):
         #     print("Table edit: ", row_data, " has been validated.")
         #     print("UPDATING TABLE DATA!", row_data)
@@ -216,9 +217,6 @@ class SqlTools():
     #  and it was complaining about 7 values being passed to the command because the hidden cardnum cell was still there
     # TODO CHANGE THIS FOR MULTIPLE LANG SUPPORT
     def CSVtoSQLDatabase(self, csvfile, tablename):
-        '''This function will parse a CSV line where format is as follows:
-        vocabulary word,pronunciation,definition1;definition2;etc.
-        (hanzi),(pinyin),(English defn.)'''
 
         hanzi = ""
         pinyin = ""
