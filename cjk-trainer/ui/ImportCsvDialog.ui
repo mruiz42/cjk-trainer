@@ -34,12 +34,37 @@
          </item>
          <item>
           <property name="text">
-           <string>[Vocabulary][Definition][Pronunciation]</string>
+           <string>[Definition][Vocabulary]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Definition][Vocabulary][Pronunciation]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Definition][Pronunciation][Vocabulary]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Pronunciation][Definition][Vocabulary]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Pronunciation][Vocabulary][Definition]</string>
           </property>
          </item>
          <item>
           <property name="text">
            <string>[Vocabulary][Pronunciation][Definition]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Vocabulary][Definition][Pronunciation]</string>
           </property>
          </item>
         </widget>

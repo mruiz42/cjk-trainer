@@ -21,7 +21,6 @@ class ImportCSVDialog(QtWidgets. QDialog):
         self.icd.lineEdit_tableName.textEdited.connect(self.enableButtonBox)
         self.icd.plainTextEdit_deckName.textChanged.connect(self.enableButtonBox)
         # Member variables
-        self.sep = self.icd.comboBox_separator.currentText()
 
 
     def enableButtonBox(self):
@@ -64,10 +63,13 @@ class ImportCSVDialog(QtWidgets. QDialog):
         vocab_list = self.icd.plainTextEdit_deckName.toPlainText().splitlines()
         vocabularyLang = self.icd.comboBox_vocabulary.currentText()
         definitionLang = self.icd.comboBox_definition.currentText()
+        line_format = self.icd.comboBox_format.currentText()
+        separator = self.icd.comboBox_separator.currentText()
+
         print(vocab_list)
 
         # Parse the file and return a list of vocabulary data
-        word_list = importDialogHelper(vocab_list, table_name, self.sep)
+        word_list = importDialogHelper(vocab_list, table_name, line_format, separator)
 
         for i in word_list:
             print(i)

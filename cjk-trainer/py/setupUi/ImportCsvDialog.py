@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'ImportCsvDialog.ui',
 # licensing of 'ImportCsvDialog.ui' applies.
 #
-# Created: Thu May 23 00:37:07 2019
+# Created: Thu May 23 13:40:33 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,6 +26,11 @@ class Ui_ImportCsvDialog(object):
         self.comboBox_format = QtWidgets.QComboBox(ImportCsvDialog)
         self.comboBox_format.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.comboBox_format.setObjectName("comboBox_format")
+        self.comboBox_format.addItem("")
+        self.comboBox_format.addItem("")
+        self.comboBox_format.addItem("")
+        self.comboBox_format.addItem("")
+        self.comboBox_format.addItem("")
         self.comboBox_format.addItem("")
         self.comboBox_format.addItem("")
         self.comboBox_format.addItem("")
@@ -109,8 +114,13 @@ class Ui_ImportCsvDialog(object):
     def retranslateUi(self, ImportCsvDialog):
         ImportCsvDialog.setWindowTitle(QtWidgets.QApplication.translate("ImportCsvDialog", "Import from CSV", None, -1))
         self.comboBox_format.setItemText(0, QtWidgets.QApplication.translate("ImportCsvDialog", "[Vocabulary][Definition]", None, -1))
-        self.comboBox_format.setItemText(1, QtWidgets.QApplication.translate("ImportCsvDialog", "[Vocabulary][Definition][Pronunciation]", None, -1))
-        self.comboBox_format.setItemText(2, QtWidgets.QApplication.translate("ImportCsvDialog", "[Vocabulary][Pronunciation][Definition]", None, -1))
+        self.comboBox_format.setItemText(1, QtWidgets.QApplication.translate("ImportCsvDialog", "[Definition][Vocabulary]", None, -1))
+        self.comboBox_format.setItemText(2, QtWidgets.QApplication.translate("ImportCsvDialog", "[Definition][Vocabulary][Pronunciation]", None, -1))
+        self.comboBox_format.setItemText(3, QtWidgets.QApplication.translate("ImportCsvDialog", "[Definition][Pronunciation][Vocabulary]", None, -1))
+        self.comboBox_format.setItemText(4, QtWidgets.QApplication.translate("ImportCsvDialog", "[Pronunciation][Definition][Vocabulary]", None, -1))
+        self.comboBox_format.setItemText(5, QtWidgets.QApplication.translate("ImportCsvDialog", "[Pronunciation][Vocabulary][Definition]", None, -1))
+        self.comboBox_format.setItemText(6, QtWidgets.QApplication.translate("ImportCsvDialog", "[Vocabulary][Pronunciation][Definition]", None, -1))
+        self.comboBox_format.setItemText(7, QtWidgets.QApplication.translate("ImportCsvDialog", "[Vocabulary][Definition][Pronunciation]", None, -1))
         self.lineEdit_tableName.setPlaceholderText(QtWidgets.QApplication.translate("ImportCsvDialog", "Name of new deck", None, -1))
         self.label_deckName.setText(QtWidgets.QApplication.translate("ImportCsvDialog", "Deck name", None, -1))
         self.label_format.setText(QtWidgets.QApplication.translate("ImportCsvDialog", "Format", None, -1))
