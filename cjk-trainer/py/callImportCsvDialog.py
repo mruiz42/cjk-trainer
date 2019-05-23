@@ -77,4 +77,4 @@ class ImportCSVDialog(QtWidgets. QDialog):
         db = self.mainWindow.database
         db.insertDeck(table_name, vocabularyLang, definitionLang)
         db.insertManyCards(word_list)
-        self.mainWindow.reloadTableList()
+        self.mainWindow.loadDeckList()

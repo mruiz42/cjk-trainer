@@ -233,40 +233,39 @@ class MainWindow(QMainWindow):
 
 
 # TODO SOMETHING WRONG HERE : (
-    def reloadTableList(self, reset_checked=False):
-        pass
-        # print("REFRESHING TABLE LIST")
-        # if reset_checked==True:
-        #     self.ui.checkBox_starredOnly.setChecked(False)
-        #     self.ui.checkBox_shuffle.setChecked(False)
-        #
-        # tableList = self.database.getTableList()
-        # tableDict = {}
-        #
-        # try:
-        #     print("Attempting to remove: sqlite_sequence from database.")
-        #     tableList.remove('sqlite_sequence')
-        # except ValueError:
-        #     print("ValueError: sqlite_sequence not in database.")
-
-        # for table_name in tableList:
-        #     tableDict.update({table_name:self.database.getLastTimeStudied(table_name)})
-        # print(tableDict)
-        #
-        # tableList = [key for (key, value) in sorted(tableDict.items(), key=lambda t: t[1])]
-        # tableList.reverse()
-        # print(tableList)
-        # if tableList == 0:
-        #     print("Empty table.. Creating a starting point..")
-        #     # TODO CALL CREATE DB FROM SQLTOOLS (MUST BE DEFINED THO)
-        #
-        # self.ui.deckList.clear()
-        #
-        # for i in tableList:
-        #     # if i != 'sqlite_sequence':
-        #     self.ui.deckList.addItem(i)
-        # self.ui.deckList.show()
-        # return tableList
+#     def reloadTableList(self, reset_checked=False):
+#         print("REFRESHING TABLE LIST")
+#         if reset_checked==True:
+#             self.ui.checkBox_starredOnly.setChecked(False)
+#             self.ui.checkBox_shuffle.setChecked(False)
+#
+#         tableList = self.database.getTableList()
+#         tableDict = {}
+#
+#         try:
+#             print("Attempting to remove: sqlite_sequence from database.")
+#             tableList.remove('sqlite_sequence')
+#         except ValueError:
+#             print("ValueError: sqlite_sequence not in database.")
+#
+#         for table_name in tableList:
+#             tableDict.update({table_name:self.database.getLastTimeStudied(table_name)})
+#         print(tableDict)
+#
+#         tableList = [key for (key, value) in sorted(tableDict.items(), key=lambda t: t[1])]
+#         tableList.reverse()
+#         print(tableList)
+#         if tableList == 0:
+#             print("Empty table.. Creating a starting point..")
+#             # TODO CALL CREATE DB FROM SQLTOOLS (MUST BE DEFINED THO)
+#
+#         self.ui.deckList.clear()
+#
+#         for i in tableList:
+#             # if i != 'sqlite_sequence':
+#             self.ui.deckList.addItem(i)
+#         self.ui.deckList.show()
+#         return tableList
 
     def loadWordTable(self, index):
         print(self.ui.wordTable.rowCount())
@@ -411,7 +410,6 @@ class MainWindow(QMainWindow):
         print("Deleting row: ", self.ui.wordTable.currentRow())
 
         cardNumToDel = self.ui.wordTable.item(self.ui.wordTable.currentRow(), 0).text()
-
         self.indexOfDeletedCardsSet.add(cardNumToDel)
         self.ui.wordTable.removeRow(self.ui.wordTable.currentRow())
         self.ui.buttonBox_wordList.setEnabled(True)
@@ -485,7 +483,8 @@ class MainWindow(QMainWindow):
             self.ui.tab_typing.setEnabled(True)
             self.ui.tab_quiz.setEnabled(True)
             self.ui.wordTable.itemChanged.connect(win.enableSave)
-            self.reloadTableList(reset_checked=True)
+            #self.reloadTableList(reset_checked=True)
+            self.loadDeckList()
             #self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentDeck)
 
@@ -545,7 +544,7 @@ class MainWindow(QMainWindow):
                 self.ui.tab_typing.setEnabled(True)
                 self.ui.tab_quiz.setEnabled(True)
                 self.ui.wordTable.itemChanged.connect(win.enableSave)
-                self.reloadTableList()
+                self.loadDeckList()
                 # self.ui.deckList.setCurrentRow(0)
                 print("Loaded :", self.nameOfCurrentDeck)
                 return True

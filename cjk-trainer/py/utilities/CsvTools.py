@@ -43,44 +43,43 @@ def importDialogHelper(line_list: list, deck_name:str, line_format:str, sep: str
     for i in range(0, len(list_order)):
         list_order[i] = conv_dict[list_order[i]]
     vocab_list = []
-    validLine = True
     for line in line_list:
-        word_split = line.split(sep)
-        word_split = [word_split[i]for i in list_order]
-        # Check for empty line
+        validLine = True
         if len(line) == 0:
             print("Empty line.")
-            pass
+            validLine=False
+            continue
         # Check for comment line
         elif line.lstrip()[0] == '#':
             print("Comment line.")
-            pass
+            validLine=False
+            continue
+        word_split = line.split(sep)
+        word_split = [word_split[i]for i in list_order]
         # Check for vocab and definition critical slots
+
+        try:
+            print(word_split[0])
+        except IndexError:
+            print("Cannot import this line: missing Vocabulary slot! :(")
+            validLine = False
+        try:
+            print(word_split[1])
+        except IndexError:
+            print("Cannot import this line: missing Definition slot! :(")
+            validLine = False
+
+        try:
+            print(word_split[2])
+        except IndexError:
+            word_split.append('')
+        # if line is acceptable
+        if validLine == True:
+            print("Valid line! :)")
+            #word_split[1], word_split[2] = word_split[2], word_split[1]
+            word_split.insert(0, deck_name)
+            word_split.append(False)
+            vocab_list.append(word_split)
         else:
-            try:
-                print(word_split[0])
-            except IndexError:
-                print("Cannot import this line: missing Vocabulary slot! :(")
-                validLine = False
-            try:
-                print(word_split[1])
-            except IndexError:
-                print("Cannot import this line: missing Definition slot! :(")
-                validLine = False
-
-            try:
-                print(word_split[2])
-            except IndexError:
-                word_split.append('')
-            # if line is acceptable
-            if validLine == True:
-                print("Valid line! :)")
-                #word_split[1], word_split[2] = word_split[2], word_split[1]
-                word_split.insert(0, deck_name)
-                word_split.append(False)
-                vocab_list.append(word_split)
-            else:
-                print("Inputted line not valid at line num: ", line_list.index(line), "Line skipped.")
-            validLine = True
-
+            print("Inputted line not valid at line num: ", line_list.index(line), "Line skipped.")
     return vocab_list

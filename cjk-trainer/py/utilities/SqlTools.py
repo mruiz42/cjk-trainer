@@ -164,10 +164,10 @@ class SqlTools():
     #     self.db.execute(command, row_data[1:])
     #     self.db.commit()
     #
-    # def deleteTableRow(self, table_name, row_index):
-    #     command = "DELETE FROM " + "[" + table_name + "]" + " WHERE CARDNUM = " + row_index
-    #     self.db.execute(command)
-    #     self.db.commit()
+    def deleteTableRow(self, table_name, row_index):
+        command = "DELETE FROM CARDS WHERE CARD_ID='{}' AND DECK_ID='{}'"
+        self.db.execute(command.format(row_index, table_name))
+        self.db.commit()
 
     def validateRow(self, row_data, num_rows=7):
         '''This function will check the data types of a list to make sure 1, 5, 6 are integers'''
