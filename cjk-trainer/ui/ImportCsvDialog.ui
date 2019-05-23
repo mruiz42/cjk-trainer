@@ -22,6 +22,28 @@
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
+        <widget class="QComboBox" name="comboBox_format">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>[Vocabulary][Definition]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Vocabulary][Definition][Pronunciation]</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>[Vocabulary][Pronunciation][Definition]</string>
+          </property>
+         </item>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QLineEdit" name="lineEdit_tableName">
          <property name="sizePolicy">
@@ -29,6 +51,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
          </property>
          <property name="acceptDrops">
           <bool>false</bool>
@@ -45,6 +70,13 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_format">
+         <property name="text">
+          <string>Format</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
@@ -52,10 +84,39 @@
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="1" column="0">
-      <widget class="QComboBox" name="comboBox_vocabulary"/>
+      <widget class="QComboBox" name="comboBox_vocabulary">
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
+      </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="comboBox_definition"/>
+      <widget class="QComboBox" name="comboBox_definition">
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_vocabulary">
+       <property name="text">
+        <string>Vocabulary</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_definition">
+       <property name="text">
+        <string>Definition</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_separator">
+       <property name="text">
+        <string>Separator</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="2">
       <widget class="QComboBox" name="comboBox_separator">
@@ -64,6 +125,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
        </property>
        <property name="frame">
         <bool>true</bool>
@@ -90,39 +154,21 @@
        </item>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_vocabulary">
-       <property name="text">
-        <string>Vocabulary</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_definition">
-       <property name="text">
-        <string>Definition</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="label_separator">
-       <property name="text">
-        <string>Separator</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
     <widget class="QPlainTextEdit" name="plainTextEdit_deckName">
      <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
      </property>
      <property name="tabChangesFocus">
       <bool>true</bool>
      </property>
      <property name="placeholderText">
-      <string>Vocabulary,Definition,Pronunciation(optional)</string>
+      <string>Vocabulary,Definition</string>
      </property>
     </widget>
    </item>
