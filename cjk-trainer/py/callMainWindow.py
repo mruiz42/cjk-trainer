@@ -412,10 +412,10 @@ class MainWindow(QMainWindow):
 
         cardNumToDel = self.ui.wordTable.item(self.ui.wordTable.currentRow(), 0).text()
 
-        self.indexOfDeletedRowsSet.add(cardNumToDel)
+        self.indexOfDeletedCardsSet.add(cardNumToDel)
         self.ui.wordTable.removeRow(self.ui.wordTable.currentRow())
         self.ui.buttonBox_wordList.setEnabled(True)
-        print(self.indexOfDeletedRowsSet)
+        print(self.indexOfDeletedCardsSet)
 
     def openNewTableDialog(self):
         self.w = DeckNamePrompt(self)
