@@ -4,7 +4,7 @@ A program to facilitate language vocabulary building. However, I want this to be
 ![alt text](https://i.imgur.com/7hdBY8a.png)
 
 ![alt text](https://i.imgur.com/tzed8c5.png)
-
+ou can make your backend in Python/Django/DjangoRestFramework, and then use React Native to make a android mobile app.
 ![alt text](https://i.imgur.com/NckF65m.png)
 Previously based on PyQt5, transitioned to PySide2 as it is now the officially supported python binding for the  qt framework.
 
@@ -23,6 +23,13 @@ Python3
 SQLite3
 Pyside2
 
+# Release Plan
+> 1.0 Fully functioning
+> 0.9 UI enhancements/bug squashing
+> 0.8 Implement graphic handling to cards
+> 0.7 Statistics module working
+> 0.6 Game modules fully functional 
+> 0.5 Data IO functioning between user interaction (cards table) and database
 
 # Licensing
 MIT License
