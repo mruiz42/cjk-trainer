@@ -1,5 +1,5 @@
 from VocabWord import VocabWord
-
+import csv
 def importCSV(file_path):
     #def delimiterCommaToParenthesis_Pronun:
     #inFile_Path = input("Enter path to input file:")
@@ -36,28 +36,41 @@ def importDialogHelper(line_list: list, deck_name:str, line_format:str, sep: str
     '''
     # First read the line format and determine which fields we actually need and in what order
     hasPronun = False
+    excludedList = []
     line_format = line_format.strip("][")
     line_format = line_format.replace("][", ",")
     list_order = line_format.split(",")
+    numExpectedSep = line_format.count(",")
     conv_dict = {"Vocabulary":0, "Definition":1, "Pronunciation":2}
+
     for i in range(0, len(list_order)):
         list_order[i] = conv_dict[list_order[i]]
     vocab_list = []
+
     for line in line_list:
+        numSep = line.count(sep)
         validLine = True
         if len(line) == 0:
             print("Empty line.")
             validLine=False
+            excludedList.append(line)
             continue
+
         # Check for comment line
-        elif line.lstrip()[0] == '#':
+        if line.lstrip()[0]  == '#':
             print("Comment line.")
+            excludedList.append(line)
             validLine=False
+            continue
+
+        if numSep != numExpectedSep:
+            print("Expected: ", numExpectedSep, ", but found: ", numSep, " separators!")
+            validLine = False
+            excludedList.append(line)
             continue
         word_split = line.split(sep)
         word_split = [word_split[i]for i in list_order]
         # Check for vocab and definition critical slots
-
         try:
             print(word_split[0])
         except IndexError:
@@ -82,4 +95,5 @@ def importDialogHelper(line_list: list, deck_name:str, line_format:str, sep: str
             vocab_list.append(word_split)
         else:
             print("Inputted line not valid at line num: ", line_list.index(line), "Line skipped.")
+    print(excludedList)
     return vocab_list

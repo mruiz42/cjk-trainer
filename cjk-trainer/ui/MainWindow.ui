@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1287</width>
     <height>720</height>
    </rect>
   </property>
@@ -509,11 +509,11 @@
               <attribute name="horizontalHeaderCascadingSectionResizes">
                <bool>false</bool>
               </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>130</number>
-              </attribute>
               <attribute name="horizontalHeaderMinimumSectionSize">
                <number>56</number>
+              </attribute>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>130</number>
               </attribute>
               <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
                <bool>true</bool>
@@ -524,11 +524,11 @@
               <attribute name="verticalHeaderVisible">
                <bool>false</bool>
               </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>42</number>
-              </attribute>
               <attribute name="verticalHeaderMinimumSectionSize">
                <number>20</number>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>42</number>
               </attribute>
               <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                <bool>true</bool>
@@ -1238,7 +1238,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1287</width>
      <height>30</height>
     </rect>
    </property>
@@ -1266,11 +1266,27 @@
     <addaction name="actionPreferences"/>
     <addaction name="actionBackup_Database"/>
     <addaction name="actionRestore_Database"/>
-    <addaction name="actionExport_to_CSV"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Statistics"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionToggle_Pronunciation"/>
+   </widget>
+   <widget class="QMenu" name="menuDeck">
+    <property name="title">
+     <string>Deck</string>
+    </property>
+    <addaction name="actionEdit_deck"/>
+    <addaction name="actionAdd_empty_deck"/>
+    <addaction name="actionImport_from_CSV"/>
+    <addaction name="actionExport_to_CSV"/>
+   </widget>
    <addaction name="menu_file"/>
+   <addaction name="menuDeck"/>
+   <addaction name="menuView"/>
    <addaction name="menuSettings"/>
    <addaction name="menu_help"/>
   </widget>
@@ -1357,6 +1373,32 @@
   <action name="actionRestore_Database">
    <property name="text">
     <string>Restore Database</string>
+   </property>
+  </action>
+  <action name="actionToggle_Pronunciation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Pronunciation</string>
+   </property>
+  </action>
+  <action name="actionImport_from_CSV">
+   <property name="text">
+    <string>Import from CSV...</string>
+   </property>
+  </action>
+  <action name="actionEdit_deck">
+   <property name="text">
+    <string>Edit deck</string>
+   </property>
+  </action>
+  <action name="actionAdd_empty_deck">
+   <property name="text">
+    <string>Add empty deck</string>
    </property>
   </action>
  </widget>

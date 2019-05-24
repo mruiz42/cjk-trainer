@@ -16,7 +16,7 @@ class VocabWordDeck:
         print("Shuffled study set")
         print(self.studyList)
         shuffle(self.studyList)
-        self.mainWindow.reloadWordLabels()
+        #self.mainWindow.reloadWordLabels()
 
     def setStudyList(self, new_list):
         self.studyList = new_list

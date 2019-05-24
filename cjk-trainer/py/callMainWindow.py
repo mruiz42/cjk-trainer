@@ -108,7 +108,7 @@ class MainWindow(QMainWindow):
 
 
 
-
+        self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
         self.indexOfAddedCardsSet.add(0)
         self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
@@ -116,11 +116,10 @@ class MainWindow(QMainWindow):
     def shuffleButtonAction(self):
 
         state = self.ui.checkBox_shuffle.checkState()
-        print(state)
         if state == QtCore.Qt.CheckState.Checked:
             self.ui.wordTable.clear()
-            self.ui.wordTable.setHorizontalHeaderLabels(
-                ['Index', '*', 'Vocabulary', 'Definition', 'Pronunciation', 'Correct', 'Attempted', 'Date Studied'])
+            # self.ui.wordTable.setHorizontalHeaderLabels(
+            #     ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
             self.wordDeck.shuffleStudySet()
             lineNo = 0
             for i in self.wordDeck.studyList:
@@ -142,19 +141,17 @@ class MainWindow(QMainWindow):
                     #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                     # else:
                     #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-
-
         else:
             self.reloadWordTable()
-
 
 
     def loadExercises(self):
         self.typingExercise = VocabWordDeck()
 
-    # TODO Im pretty sure there is a logic flaw here, should rethink this
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
+        self.ui.checkBox_shuffle.setDisabled(True)
+        self.ui.checkBox_starredOnly.setDisabled(True)
         self.ui.buttonBox_wordList.setEnabled(True)
         if self.ui.wordTable.currentRow() not in self.indexOfModifiedCardsSet:
             if self.ui.wordTable.rowCount() == 0:
@@ -164,7 +161,6 @@ class MainWindow(QMainWindow):
                 self.indexOfModifiedCardsSet.add(self.ui.wordTable.currentRow())
                 print("Modified index:", self.ui.wordTable.currentRow())
 
-    # TODO DOESNT CONSISTENTLY WORK, NEED TO WORK OUT LOGIC BUGS
     def saveTable(self):
         # print("save table")
         self.indexOfModifiedCardsSet = self.indexOfModifiedCardsSet - self.indexOfDeletedCardsSet
@@ -204,7 +200,7 @@ class MainWindow(QMainWindow):
             rowData = []
             rowData.append(self.nameOfCurrentDeck)
             rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
-            for j in range(1, self.ui.wordTable.columnCount()):
+            for j in range(2, self.ui.wordTable.columnCount()):
                 print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
                 rowData.append(self.ui.wordTable.item(rowIndex, j).text())
             print(rowIndex, j, rowData)
@@ -229,43 +225,8 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedCardsSet.clear()
         self.indexOfDeletedCardsSet.clear()
         self.ui.buttonBox_wordList.setEnabled(False)
-        pass
-
-
-# TODO SOMETHING WRONG HERE : (
-#     def reloadTableList(self, reset_checked=False):
-#         print("REFRESHING TABLE LIST")
-#         if reset_checked==True:
-#             self.ui.checkBox_starredOnly.setChecked(False)
-#             self.ui.checkBox_shuffle.setChecked(False)
-#
-#         tableList = self.database.getTableList()
-#         tableDict = {}
-#
-#         try:
-#             print("Attempting to remove: sqlite_sequence from database.")
-#             tableList.remove('sqlite_sequence')
-#         except ValueError:
-#             print("ValueError: sqlite_sequence not in database.")
-#
-#         for table_name in tableList:
-#             tableDict.update({table_name:self.database.getLastTimeStudied(table_name)})
-#         print(tableDict)
-#
-#         tableList = [key for (key, value) in sorted(tableDict.items(), key=lambda t: t[1])]
-#         tableList.reverse()
-#         print(tableList)
-#         if tableList == 0:
-#             print("Empty table.. Creating a starting point..")
-#             # TODO CALL CREATE DB FROM SQLTOOLS (MUST BE DEFINED THO)
-#
-#         self.ui.deckList.clear()
-#
-#         for i in tableList:
-#             # if i != 'sqlite_sequence':
-#             self.ui.deckList.addItem(i)
-#         self.ui.deckList.show()
-#         return tableList
+        self.ui.checkBox_shuffle.setEnabled(True)
+        self.ui.checkBox_starredOnly.setEnabled(True)
 
     def loadWordTable(self, index):
         print(self.ui.wordTable.rowCount())
@@ -287,13 +248,13 @@ class MainWindow(QMainWindow):
             result = self.database.getTableData(self.nameOfCurrentDeck)
             for row_number, row_data in enumerate(result):
                 self.ui.wordTable.insertRow(row_number)
-                print("Row number: ", row_number)
+                #print("Row number: ", row_number)
                 for column_number, data in enumerate(row_data):
                     if column_number == 1:
                         cell_widget = self.createStarCellWidget(data)
                         self.ui.wordTable.setCellWidget(row_number, column_number, cell_widget)
                     else:
-                        print("Row data: ", row_data[column_number])
+                        #print("Row data: ", row_data[column_number])
                         self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
@@ -325,12 +286,9 @@ class MainWindow(QMainWindow):
                     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.checkBox_shuffle.setEnabled(True)
+        self.ui.checkBox_starredOnly.setEnabled(True)
         self.ui.buttonBox_wordList.setEnabled(False)
-
-    # TODO FINISH QTABLEWIDGET LOGIC WILL NEED SOME REVISIONS TO PRIOR SQL QUERIES
-    #   BECAUSE CARD NUMBERS ARE UNACCOUNT FOR DURING THESE TYPES OF INSERTS
-    #   IF WE HAVE A DATA STRUCTURE TO WORK WITH ON EVERY DECK LOAD, WE CAN FIND
-    #   THE CORRECT CARD NUM
 
     ########### CONTEXT MENU STUFF ###############
     def requestWordTableContextMenu(self, position):
@@ -378,7 +336,7 @@ class MainWindow(QMainWindow):
 
     def createStarCellWidget(self, checked=0):
 
-        print("Creating ⭐ cell widget")
+        #print("Creating ⭐ cell widget")
         chk_bx = QCheckBox()
         chk_bx.setStyleSheet("QCheckBox::indicator { width: 32px; height: 32px}"
                              "QCheckBox::indicator:checked{image: url(../ico/starred.png)}"
@@ -387,10 +345,10 @@ class MainWindow(QMainWindow):
             chk_bx.setCheckState(QtCore.Qt.CheckState.Unchecked)
         elif checked == 1:
             chk_bx.setCheckState(QtCore.Qt.CheckState.Checked)
-        lay_out = QHBoxLayout(chk_bx)
-        lay_out.addWidget(chk_bx)
-        lay_out.setAlignment(QtCore.Qt.AlignCenter)
-        lay_out.setContentsMargins(0,0,0,0)
+        #lay_out = QHBoxLayout(chk_bx)
+        #lay_out.addWidget(chk_bx)
+        #lay_out.setAlignment(QtCore.Qt.AlignCenter)
+        #lay_out.setContentsMargins(0,0,0,0)
         chk_bx.stateChanged.connect(self.updateStarredValue)
         return chk_bx
 
@@ -401,6 +359,7 @@ class MainWindow(QMainWindow):
         rowData.append(self.ui.wordTable.item(rowIndex, 0).text())
         print(rowData)
         self.database.setStarred(rowData)
+
     def updateTableRow(self):
         print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
         self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
@@ -463,7 +422,7 @@ class MainWindow(QMainWindow):
         win.ui.progressBar_quiz.reset()
         win.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
 
-    def loadStudySet(self, shuffle=False):
+    def loadStudySet(self, shuffle:bool=False):
         self.wordDeck.cardNum = 0
 
         result = self.database.getTableData(self.nameOfCurrentDeck)
@@ -503,6 +462,13 @@ class MainWindow(QMainWindow):
 
     def breakdownSummary(self):
         print(self.wordDeck.cardNum, len(self.wordDeck.studyList) - 1)
+
+
+    def showPronunciationColumnAction(self):
+        if self.ui.actionToggle_Pronunciation.isChecked():
+            self.ui.wordTable.showColumn(4)
+        else:
+            self.ui.wordTable.hideColumn(4)
 
     def starredButtonAction(self):
 
