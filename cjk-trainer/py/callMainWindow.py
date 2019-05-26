@@ -116,6 +116,7 @@ class MainWindow(QMainWindow):
     def shuffleButtonAction(self):
 
         state = self.ui.checkBox_shuffle.checkState()
+        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
         if state == QtCore.Qt.CheckState.Checked:
             self.ui.wordTable.clear()
             # self.ui.wordTable.setHorizontalHeaderLabels(
@@ -143,8 +144,10 @@ class MainWindow(QMainWindow):
                     #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
                     # else:
                     #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+            self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+            self.ui.wordTable.itemChanged.connect(self.enableSave)
         else:
-            self.loadWordTable()
+            self.loadWordTable(self.indexOfCurrentTable)
 
 
     def loadExercises(self):
@@ -434,6 +437,7 @@ class MainWindow(QMainWindow):
         result = self.database.getTableData(self.nameOfCurrentDeck)
         #db.setLastTimeStudied(self.nameOfCurrentTable)
         #We have a tuple, now lets make a list of VocabWord objects
+        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
         if len(result) != 0:
             self.wordDeck.studyList = [VocabWord(*t) for t in result]
             #self.wordDeck.shuffleStudySet()
