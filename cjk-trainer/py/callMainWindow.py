@@ -123,13 +123,15 @@ class MainWindow(QMainWindow):
             self.wordDeck.shuffleStudySet()
             lineNo = 0
             for i in self.wordDeck.studyList:
+                cell_widget = self.createStarCellWidget(i.isStarred)
                 self.ui.wordTable.insertRow(lineNo)
-                self.ui.wordTable.setItem(lineNo, 1, QtWidgets.QTableWidgetItem(str(i.isStarred)))
+                # self.ui.wordTable.setItem(lineNo, 1, QtWidgets.QTableWidgetItem(str(i.isStarred)))
+                self.ui.wordTable.setCellWidget(lineNo, 1, cell_widget)
                 self.ui.wordTable.setItem(lineNo, 2, QtWidgets.QTableWidgetItem(str(i.vocabulary)))
                 self.ui.wordTable.setItem(lineNo, 3, QtWidgets.QTableWidgetItem(str(i.definition)))
                 self.ui.wordTable.setItem(lineNo, 4, QtWidgets.QTableWidgetItem(str(i.pronunciation)))
-                self.ui.wordTable.setItem(lineNo, 5, QtWidgets.QTableWidgetItem(str(i.timesCorrect)))
-                self.ui.wordTable.setItem(lineNo, 6, QtWidgets.QTableWidgetItem(str(i.timesAttempted)))
+                # self.ui.wordTable.setItem(lineNo, 5, QtWidgets.QTableWidgetItem(str(i.timesCorrect)))
+                # self.ui.wordTable.setItem(lineNo, 6, QtWidgets.QTableWidgetItem(str(i.timesAttempted)))
 
                 lineNo += 1
                 #self.ui.wordTable.setItem(i, 0).QtWidgets.QTableWidgetItem(str(data))
@@ -142,7 +144,7 @@ class MainWindow(QMainWindow):
                     # else:
                     #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
         else:
-            self.reloadWordTable()
+            self.loadWordTable()
 
 
     def loadExercises(self):
@@ -229,7 +231,8 @@ class MainWindow(QMainWindow):
         self.ui.checkBox_starredOnly.setEnabled(True)
 
     def deckListClicked(self, index:QtCore.QModelIndex):
-        print("What")
+        self.ui.checkBox_shuffle.setChecked(False)
+        self.ui.checkBox_starredOnly.setChecked(False)
         self.indexOfCurrentTable = index
         self.nameOfCurrentDeck = index.data()
         self.loadWordTable(self.indexOfCurrentTable.row())
