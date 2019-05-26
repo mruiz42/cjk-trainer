@@ -267,11 +267,13 @@ class SqlTools():
         '''This function will return a list of tuples representing the rows and columns of the table'''
         command = "SELECT CARD_ID, IS_STARRED, VOCABULARY, DEFINITION, PRONUNCIATION " \
                   "FROM CARDS " \
-                  "WHERE DECK_ID=? AND IS_STARRED=?"
+                  "WHERE DECK_ID=?"
         if getStarred == True:
-            t = (table_name, str(1))
+            command += " AND IS_STARRED=?"
+            t = (table_name, getStarred)
         else:
-            t = (table_name, str(0))
+            t = (table_name, )
+
 
         cur = self.db.execute(command, t)
         result = cur.fetchall()

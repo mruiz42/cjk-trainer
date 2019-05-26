@@ -61,17 +61,17 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_notSure_Skip.clicked.connect(self.typingExercise.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
         self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
-        self.ui.pushButton_wordList_select.clicked.connect(self.loadStudySet)
+        self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
         self.ui.wordTable.installEventFilter(self)
         # Added - Prevent user from dragging list view objs
         self.ui.deckList.setDragEnabled(False)
-        self.ui.deckList.clicked.connect(self.loadWordTable)
+        self.ui.deckList.clicked.connect(self.deckListClicked)
         self.ui.deckList.customContextMenuRequested.connect(self.requestDeckViewContextMenu)
         # Added - Connect
-        self.ui.pushButton_wordList_select.clicked.connect(self.loadWordTable)        #Added - toolButton menu
+        self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)        #Added - toolButton menu
         self.ui.toolButton_add.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         addMenu = QtWidgets.QMenu("addMenu", self.ui.toolButton_add)
         newListTableAction = addMenu.addAction("Add new deck")
@@ -228,34 +228,37 @@ class MainWindow(QMainWindow):
         self.ui.checkBox_shuffle.setEnabled(True)
         self.ui.checkBox_starredOnly.setEnabled(True)
 
-    def loadWordTable(self, index):
-        print(self.ui.wordTable.rowCount())
+    def deckListClicked(self, index:QtCore.QModelIndex):
+        print("What")
+        self.indexOfCurrentTable = index
+        self.nameOfCurrentDeck = index.data()
+        self.loadWordTable(self.indexOfCurrentTable.row())
+        self.ui.label_selectedDeck.setText(index.data())
+
+
+    def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
+        print(self.ui.wordTable.rowCount(), "wtf", type(index))
         #self.ui.checkBox_starredOnly.setChecked(False)
-        if index == self.indexOfCurrentTable or index == False:  # I guess sometimes its false :S
-            print("nothing to do")
-        else:
-            self.indexOfCurrentTable = index
-            self.nameOfCurrentDeck = index.data()
-            self.indexOfDeletedCardsSet.clear()
-            self.indexOfModifiedRowsSet.clear()
-            self.indexOfAddedRowsSet.clear()
-            self.ui.wordTable.setSortingEnabled(False)
-            self.ui.wordTable.setRowCount(0)
-            self.ui.wordTable.clearContents()
-            self.ui.wordTable.reset()
-            self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-            self.ui.label_selectedDeck.setText(index.data())
-            result = self.database.getTableData(self.nameOfCurrentDeck)
-            for row_number, row_data in enumerate(result):
-                self.ui.wordTable.insertRow(row_number)
-                #print("Row number: ", row_number)
-                for column_number, data in enumerate(row_data):
-                    if column_number == 1:
-                        cell_widget = self.createStarCellWidget(data)
-                        self.ui.wordTable.setCellWidget(row_number, column_number, cell_widget)
-                    else:
-                        #print("Row data: ", row_data[column_number])
-                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+
+        self.indexOfDeletedCardsSet.clear()
+        self.indexOfModifiedRowsSet.clear()
+        self.indexOfAddedRowsSet.clear()
+        self.ui.wordTable.setSortingEnabled(False)
+        self.ui.wordTable.setRowCount(0)
+        self.ui.wordTable.clearContents()
+        self.ui.wordTable.reset()
+        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+        result = self.database.getTableData(self.nameOfCurrentDeck, starredOnly)
+        for row_number, row_data in enumerate(result):
+            self.ui.wordTable.insertRow(row_number)
+            #print("Row number: ", row_number)
+            for column_number, data in enumerate(row_data):
+                if column_number == 1:
+                    cell_widget = self.createStarCellWidget(data)
+                    self.ui.wordTable.setCellWidget(row_number, column_number, cell_widget)
+                else:
+                    #print("Row data: ", row_data[column_number])
+                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
@@ -422,7 +425,7 @@ class MainWindow(QMainWindow):
         win.ui.progressBar_quiz.reset()
         win.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
 
-    def loadStudySet(self, shuffle:bool=False):
+    def loadStudySet(self, shuffle:bool=False, starredOnly:bool=False):
         self.wordDeck.cardNum = 0
 
         result = self.database.getTableData(self.nameOfCurrentDeck)
@@ -457,8 +460,6 @@ class MainWindow(QMainWindow):
         win.ui.label_flashWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
         win.ui.label_quizWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
 
-    def loadStarredStudySet(self):
-        pass
 
     def breakdownSummary(self):
         print(self.wordDeck.cardNum, len(self.wordDeck.studyList) - 1)
@@ -471,7 +472,9 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.hideColumn(4)
 
     def starredButtonAction(self):
-        self.loadWordTable()
+        starredState = self.ui.checkBox_starredOnly.isChecked()
+        shuffleState = self.ui.checkBox_shuffle.isChecked()
+        self.loadWordTable(self.indexOfCurrentTable, shuffleState, starredState)
 
     def loadDeckList(self):
         self.ui.deckList.clear()
