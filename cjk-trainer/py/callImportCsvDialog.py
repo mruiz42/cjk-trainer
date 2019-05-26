@@ -10,8 +10,8 @@ class ImportCSVDialog(QtWidgets. QDialog):
         self.mainWindow = mainWindow
         self.icd.setupUi(self)
         self.comboBox_changeEvent()
-        self.languages = ["", "Chinese (Simplified)", "Chinese (Traditional)", "Spanish", "English", "Hindi", "Arabic",
-                          "Portuguese", "Russian", "Japanese", "Punjabi", "German", "Javanese", "Malay", "Telugu",
+        self.languages = ["", "Chinese (Simplified)", "Chinese (Traditional)", "Chinese (Pinyin)", "Spanish", "English", "Hindi", "Arabic",
+                          "Portuguese", "Russian", "Japanese", "Japanese (Romanji)", "Punjabi", "German", "Javanese", "Malay", "Telugu",
                           "Vietnamese", "Korean", "French", "Turkish", "Italian", "Thai", "Persian", "Polish",
                           "Romanian", "Dutch", "Czech", "Swedish"]
         self.icd.comboBox_definition.addItems(sorted(self.languages))

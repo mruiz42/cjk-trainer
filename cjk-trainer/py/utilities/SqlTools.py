@@ -129,8 +129,7 @@ class SqlTools():
     def modifyTableRows(self, row_data, row_index):
         print("UPDATING TABLE DATA! ", row_data, " at index:", row_index)
         command = ("UPDATE CARDS "
-                   "SET IS_STARRED=?, VOCABULARY=?, DEFINITION=?,"
-                                           " PRONUNCIATION=? "
+                   "SET IS_STARRED=?, VOCABULARY=?, DEFINITION=?, PRONUNCIATION=? "
                    "WHERE CARD_ID=?")
         self.db.execute(command,row_data)
         self.db.commit()
@@ -264,16 +263,17 @@ class SqlTools():
         print(flat_list)
         return flat_list
 
-    def getTableData(self, table_name):
+    def getTableData(self, table_name:str, getStarred:bool=False):
         '''This function will return a list of tuples representing the rows and columns of the table'''
-        t = (table_name, )
-        command = "SELECT CARD_ID, IS_STARRED, VOCABULARY, DEFINITION, PRONUNCIATION FROM CARDS WHERE DECK_ID=?"
-        cur = self.db.execute(command, t)
-        result = cur.fetchall()
-        return result
+        command = "SELECT CARD_ID, IS_STARRED, VOCABULARY, DEFINITION, PRONUNCIATION " \
+                  "FROM CARDS " \
+                  "WHERE DECK_ID=? AND IS_STARRED=?"
+        if getStarred == True:
+            t = (table_name, str(1))
+        else:
+            t = (table_name, str(0))
 
-    def getStarredTableData(self, table_name):
-        cur = self.db.execute("SELECT * FROM {}".format("[" + table_name + "] WHERE STARRED = 1"))
+        cur = self.db.execute(command, t)
         result = cur.fetchall()
         return result
 

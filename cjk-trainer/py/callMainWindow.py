@@ -40,8 +40,8 @@ class MainWindow(QMainWindow):
         self.database.createSessionsTable()
         self.database.createStatisticsTable()
 
-        self.indexOfAddedCardsSet = set()        # Index of queued card ids to be added from wordTable
-        self.indexOfModifiedCardsSet = set()     # Index of queued card ids to be modified from wordTable
+        self.indexOfAddedRowsSet = set()        # Index of queued card ids to be added from wordTable
+        self.indexOfModifiedRowsSet = set()     # Index of queued card ids to be modified from wordTable
         self.indexOfDeletedCardsSet = set()      # Index of queued card ids to be deleted from wordTable
 
         self.indexOfCurrentTable = 0            # Index of current table in the deckList
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
 
 
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
-        self.indexOfAddedCardsSet.add(0)
+        self.indexOfAddedRowsSet.add(0)
         self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
 
@@ -153,24 +153,24 @@ class MainWindow(QMainWindow):
         self.ui.checkBox_shuffle.setDisabled(True)
         self.ui.checkBox_starredOnly.setDisabled(True)
         self.ui.buttonBox_wordList.setEnabled(True)
-        if self.ui.wordTable.currentRow() not in self.indexOfModifiedCardsSet:
+        if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
             if self.ui.wordTable.rowCount() == 0:
-                self.indexOfModifiedCardsSet.add(0)
+                self.indexOfModifiedRowsSet.add(0)
                 print("Modified index:", self.ui.wordTable.currentRow())
             elif self.ui.wordTable.currentRow() >= 0:
-                self.indexOfModifiedCardsSet.add(self.ui.wordTable.currentRow())
+                self.indexOfModifiedRowsSet.add(self.ui.wordTable.currentRow())
                 print("Modified index:", self.ui.wordTable.currentRow())
 
     def saveTable(self):
         # print("save table")
-        self.indexOfModifiedCardsSet = self.indexOfModifiedCardsSet - self.indexOfDeletedCardsSet
-        self.indexOfModifiedCardsSet = self.indexOfModifiedCardsSet - self.indexOfAddedCardsSet
-        print("modified rows:", self.indexOfModifiedCardsSet, "added rows", self.indexOfAddedCardsSet,
+        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedCardsSet
+        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
+        print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet,
               "Del rows: ", self.indexOfDeletedCardsSet)
         # # Update modified rows, if exist
-        if len(self.indexOfModifiedCardsSet) != 0:
+        if len(self.indexOfModifiedRowsSet) != 0:
             print("SENDING MODIFIED ENTRIES TO DATABASE")
-            for rowIndex in self.indexOfModifiedCardsSet:
+            for rowIndex in self.indexOfModifiedRowsSet:
                 rowData = []
                 for j in range(1, self.ui.wordTable.columnCount()):
                     if j == 1:
@@ -196,7 +196,7 @@ class MainWindow(QMainWindow):
         #             print("last row seems good")
             # Begin reading added rows
         print("SENDING INSERTED ROWS INTO DATABASE")
-        for rowIndex in self.indexOfAddedCardsSet:
+        for rowIndex in self.indexOfAddedRowsSet:
             rowData = []
             rowData.append(self.nameOfCurrentDeck)
             rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
@@ -221,8 +221,8 @@ class MainWindow(QMainWindow):
             for rowIndex in self.indexOfDeletedCardsSet:
                 self.database.deleteTableRow(self.nameOfCurrentDeck, rowIndex)
 
-        self.indexOfAddedCardsSet.clear()
-        self.indexOfModifiedCardsSet.clear()
+        self.indexOfAddedRowsSet.clear()
+        self.indexOfModifiedRowsSet.clear()
         self.indexOfDeletedCardsSet.clear()
         self.ui.buttonBox_wordList.setEnabled(False)
         self.ui.checkBox_shuffle.setEnabled(True)
@@ -237,8 +237,8 @@ class MainWindow(QMainWindow):
             self.indexOfCurrentTable = index
             self.nameOfCurrentDeck = index.data()
             self.indexOfDeletedCardsSet.clear()
-            self.indexOfModifiedCardsSet.clear()
-            self.indexOfAddedCardsSet.clear()
+            self.indexOfModifiedRowsSet.clear()
+            self.indexOfAddedRowsSet.clear()
             self.ui.wordTable.setSortingEnabled(False)
             self.ui.wordTable.setRowCount(0)
             self.ui.wordTable.clearContents()
@@ -264,8 +264,8 @@ class MainWindow(QMainWindow):
 
     def reloadWordTable(self):
         self.indexOfDeletedCardsSet.clear()
-        self.indexOfModifiedCardsSet.clear()
-        self.indexOfAddedCardsSet.clear()
+        self.indexOfModifiedRowsSet.clear()
+        self.indexOfAddedRowsSet.clear()
         self.ui.wordTable.setSortingEnabled(False)
         self.ui.wordTable.setRowCount(0)
         self.ui.wordTable.clearContents()
@@ -325,13 +325,13 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.setRowCount(1)
             cell_widget = self.createStarCellWidget()
             self.ui.wordTable.setCellWidget(0, 1, cell_widget)
-            self.indexOfAddedCardsSet.add(0)
+            self.indexOfAddedRowsSet.add(0)
             self.ui.wordTable.setCurrentCell(0,1)
         else:
             cell_widget = self.createStarCellWidget()
             self.ui.wordTable.insertRow(self.ui.wordTable.rowCount())
             self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 1, cell_widget)
-            self.indexOfAddedCardsSet.add(self.ui.wordTable.rowCount()-1)
+            self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount() - 1)
             print("Inserting row..", self.ui.wordTable.rowCount()-1)
 
     def createStarCellWidget(self, checked=0):
@@ -471,59 +471,7 @@ class MainWindow(QMainWindow):
             self.ui.wordTable.hideColumn(4)
 
     def starredButtonAction(self):
-
-        self.typingExercise.studyList = []
-        self.indexOfDeletedRowsSet.clear()
-        self.indexOfModifiedRowsSet.clear()
-        self.indexOfAddedRowsSet.clear()
-        self.ui.wordTable.setSortingEnabled(False)
-        self.ui.wordTable.setRowCount(0)
-        self.ui.wordTable.clearContents()
-        self.ui.wordTable.reset()
-        self.ui.wordTable.blockSignals(True)                    # Prevent a bug where cell changes would occur on table loading
-        if self.ui.checkBox_starredOnly.checkState() == QtCore.Qt.CheckState.Checked:
-            result = self.database.getStarredTableData(self.nameOfCurrentDeck)
-            for row_number, row_data in enumerate(result):
-                print("Row number: ", row_number)
-                self.ui.wordTable.insertRow(row_number)
-                for column_number, data in enumerate(row_data):
-                    print("Row data: ", row_data[column_number])
-                    if column_number == 0:
-                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                    else:
-                        self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-
-            if len(result) != 0:
-                self.wordDeck.studyList = [VocabWord(*t) for t in result]
-
-                for i in range(10, len(self.wordDeck.studyList), 10):
-                    self.summaryIndexList.append(i)
-                    # print(i)
-
-                print(self.wordDeck.studyList)
-                self.resetProgressBars()
-                # win.ui.label_typingWord.setText(self.exercise.studyList[self.cardNum].vocabulary)
-                # win.ui.label_flashWord.setText(self.studyList[self.cardNum].vocabulary)
-                # win.ui.label_quizWord.setText(self.studyList[self.cardNum].vocabulary)
-                self.reloadWordLabels()
-                self.ui.tab_flashcards.setEnabled(True)
-                self.ui.tab_typing.setEnabled(True)
-                self.ui.tab_quiz.setEnabled(True)
-                self.ui.wordTable.itemChanged.connect(win.enableSave)
-                self.loadDeckList()
-                # self.ui.deckList.setCurrentRow(0)
-                print("Loaded :", self.nameOfCurrentDeck)
-                return True
-            else:
-                print("Cannot load an empty table!")
-                return False
-
-            self.ui.wordTable.blockSignals(False)       # Prevent a bug where cell changes would occur on table loading
-            self.ui.buttonBox_wordList.setEnabled(False)
-            self.loadStudySet()
-        elif self.ui.checkBox_starredOnly.isChecked() == False:
-            self.reloadWordTable()
-
+        self.loadWordTable()
 
     def loadDeckList(self):
         self.ui.deckList.clear()
