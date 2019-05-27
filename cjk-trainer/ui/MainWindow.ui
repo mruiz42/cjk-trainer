@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1287</width>
-    <height>720</height>
+    <width>1249</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,12 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>900</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
@@ -61,7 +67,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>900</width>
           <height>0</height>
          </size>
         </property>
@@ -96,355 +102,407 @@
          <attribute name="title">
           <string>Word List</string>
          </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="4">
            <layout class="QVBoxLayout" name="verticalLayout_5">
-            <property name="spacing">
-             <number>10</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
-              <item>
-               <spacer name="horizontalSpacer_12">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Minimum</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_deckList">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>35</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>41</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Deck List</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_11">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Minimum</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QListWidget" name="deckList">
+             <widget class="QLabel" name="label_avgScore">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="font">
-               <font>
-                <pointsize>10</pointsize>
-               </font>
+              <property name="text">
+               <string>Avg. Score: %0</string>
               </property>
-              <property name="contextMenuPolicy">
-               <enum>Qt::CustomContextMenu</enum>
-              </property>
-              <property name="dragDropMode">
-               <enum>QAbstractItemView::DragOnly</enum>
-              </property>
-              <property name="defaultDropAction">
-               <enum>Qt::IgnoreAction</enum>
-              </property>
-              <property name="alternatingRowColors">
-               <bool>true</bool>
-              </property>
-              <property name="movement">
-               <enum>QListView::Free</enum>
-              </property>
-              <property name="resizeMode">
-               <enum>QListView::Adjust</enum>
-              </property>
-              <item>
-               <property name="text">
-                <string>test</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>
-             <layout class="QGridLayout" name="gridLayout">
-              <property name="verticalSpacing">
-               <number>6</number>
+             <widget class="QLabel" name="label_lastStudied">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <item row="0" column="0">
-               <widget class="QToolButton" name="toolButton_add">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>120</width>
-                  <height>32</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Add Deck</string>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <property name="popupMode">
-                 <enum>QToolButton::MenuButtonPopup</enum>
-                </property>
-                <property name="toolButtonStyle">
-                 <enum>Qt::ToolButtonIconOnly</enum>
-                </property>
-                <property name="arrowType">
-                 <enum>Qt::NoArrow</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QPushButton" name="pushButton_wordList_select">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>120</width>
-                  <height>32</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Select Deck</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+              <property name="text">
+               <string>Last Studied: Never</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_12">
-            <property name="spacing">
-             <number>8</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>2</number>
-            </property>
+          <item row="0" column="0" colspan="3">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_14">
-                <property name="spacing">
-                 <number>1</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="label_lastStudied">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Last Studied: Never</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_avgScore">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Avg. Score: %0</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_10">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Minimum</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_13">
-                <property name="spacing">
-                 <number>1</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="label_selectedDeck">
-                  <property name="minimumSize">
-                   <size>
-                    <width>34</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Selected Deck: </string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_13">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Minimum</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout">
-                <property name="spacing">
-                 <number>1</number>
-                </property>
-                <item>
-                 <widget class="QLineEdit" name="lineEdit_searchQuery">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>120</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>180</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="placeholderText">
-                   <string>Search for a word</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_search">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>64</width>
-                    <height>32</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Search</string>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>16</width>
-                    <height>16</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
+             <spacer name="horizontalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
-             <widget class="QTableWidget" name="wordTable">
+             <widget class="QLabel" name="label_deckList">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>35</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>41</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Deck List</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_12">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="4" column="0" colspan="3">
+           <widget class="QListWidget" name="deckList">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="contextMenuPolicy">
+             <enum>Qt::CustomContextMenu</enum>
+            </property>
+            <property name="autoScrollMargin">
+             <number>16</number>
+            </property>
+            <property name="dragDropMode">
+             <enum>QAbstractItemView::DragOnly</enum>
+            </property>
+            <property name="defaultDropAction">
+             <enum>Qt::IgnoreAction</enum>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="movement">
+             <enum>QListView::Free</enum>
+            </property>
+            <property name="resizeMode">
+             <enum>QListView::Adjust</enum>
+            </property>
+            <item>
+             <property name="text">
+              <string>test</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="6" column="10">
+           <widget class="QDialogButtonBox" name="buttonBox_wordList">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="baseSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="standardButtons">
+             <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+            </property>
+            <property name="centerButtons">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="4">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QPushButton" name="pushButton_shuffleDeck">
+              <property name="text">
+               <string>Shuffle Deck</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_starredOnly">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="text">
+               <string>Study Starred Only</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="4" column="4" rowspan="2" colspan="7">
+           <widget class="QTableWidget" name="wordTable">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Noto Sans CJK HK Thin</family>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="contextMenuPolicy">
+             <enum>Qt::CustomContextMenu</enum>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="textElideMode">
+             <enum>Qt::ElideRight</enum>
+            </property>
+            <property name="showGrid">
+             <bool>true</bool>
+            </property>
+            <property name="gridStyle">
+             <enum>Qt::DotLine</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <property name="rowCount">
+             <number>10</number>
+            </property>
+            <property name="columnCount">
+             <number>7</number>
+            </property>
+            <attribute name="horizontalHeaderCascadingSectionResizes">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderMinimumSectionSize">
+             <number>56</number>
+            </attribute>
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>130</number>
+            </attribute>
+            <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderMinimumSectionSize">
+             <number>20</number>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>42</number>
+            </attribute>
+            <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderStretchLastSection">
+             <bool>false</bool>
+            </attribute>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <column/>
+            <column/>
+            <column/>
+            <column/>
+            <column/>
+            <column/>
+            <column/>
+           </widget>
+          </item>
+          <item row="0" column="10">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item>
+             <spacer name="horizontalSpacer_10">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_searchQuery">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>120</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>180</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>Search for a word</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_search">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>64</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Search</string>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>16</width>
+                <height>16</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="8">
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QLabel" name="label_selectedDeck">
+              <property name="minimumSize">
+               <size>
+                <width>34</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Selected Deck: </string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="6" column="0" colspan="3">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QToolButton" name="toolButton_add">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -455,176 +513,53 @@
                 <height>0</height>
                </size>
               </property>
-              <property name="font">
-               <font>
-                <family>Noto Sans CJK HK Thin</family>
-                <pointsize>11</pointsize>
-               </font>
+              <property name="maximumSize">
+               <size>
+                <width>120</width>
+                <height>32</height>
+               </size>
               </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
+              <property name="text">
+               <string>Add Deck</string>
               </property>
-              <property name="contextMenuPolicy">
-               <enum>Qt::CustomContextMenu</enum>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <property name="sizeAdjustPolicy">
-               <enum>QAbstractScrollArea::AdjustToContents</enum>
-              </property>
-              <property name="editTriggers">
-               <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
-              </property>
-              <property name="alternatingRowColors">
-               <bool>true</bool>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::SingleSelection</enum>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <property name="textElideMode">
-               <enum>Qt::ElideRight</enum>
-              </property>
-              <property name="showGrid">
-               <bool>true</bool>
-              </property>
-              <property name="gridStyle">
-               <enum>Qt::DotLine</enum>
-              </property>
-              <property name="sortingEnabled">
-               <bool>true</bool>
-              </property>
-              <property name="rowCount">
-               <number>10</number>
-              </property>
-              <property name="columnCount">
-               <number>7</number>
-              </property>
-              <attribute name="horizontalHeaderCascadingSectionResizes">
+              <property name="checkable">
                <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderMinimumSectionSize">
-               <number>56</number>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>130</number>
-              </attribute>
-              <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>20</number>
-              </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>42</number>
-              </attribute>
-              <attribute name="verticalHeaderShowSortIndicator" stdset="0">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderStretchLastSection">
-               <bool>false</bool>
-              </attribute>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
+              </property>
+              <property name="popupMode">
+               <enum>QToolButton::MenuButtonPopup</enum>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonIconOnly</enum>
+              </property>
+              <property name="arrowType">
+               <enum>Qt::NoArrow</enum>
+              </property>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_16">
-              <item>
-               <widget class="QCheckBox" name="checkBox_starredOnly">
-                <property name="layoutDirection">
-                 <enum>Qt::LeftToRight</enum>
-                </property>
-                <property name="text">
-                 <string>Study Starred Only</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_shuffle">
-                <property name="text">
-                 <string>Study Shuffled</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QDialogButtonBox" name="buttonBox_wordList">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>32</height>
-                 </size>
-                </property>
-                <property name="baseSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="standardButtons">
-                 <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
-                </property>
-                <property name="centerButtons">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QPushButton" name="pushButton_wordList_select">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>120</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Select Deck</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -1238,7 +1173,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1287</width>
+     <width>1249</width>
      <height>30</height>
     </rect>
    </property>

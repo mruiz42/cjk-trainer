@@ -104,45 +104,31 @@ class MainWindow(QMainWindow):
         eater = KeyPressEater(self, self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
         self.ui.checkBox_starredOnly.stateChanged.connect(self.starredButtonAction)
-        self.ui.checkBox_shuffle.stateChanged.connect(self.shuffleButtonAction)
+        self.ui.pushButton_shuffleDeck.clicked.connect(self.shuffleButtonAction)
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
         self.indexOfAddedRowsSet.add(0)
         self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
 
     def shuffleButtonAction(self):
-
-        state = self.ui.checkBox_shuffle.checkState()
-        if state == QtCore.Qt.CheckState.Checked:
-            self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-            self.ui.wordTable.clearContents()
-            self.wordDeck.shuffleStudySet()
-            lineNo = 0
-            for i in self.wordDeck.studyList:
-                cell_widget = self.createStarCellWidget(i.isStarred)
-                # self.ui.wordTable.setItem(lineNo, 1, QtWidgets.QTableWidgetItem(str(i.isStarred)))
-                self.ui.wordTable.setCellWidget(lineNo, 1, cell_widget)
-                self.ui.wordTable.setItem(lineNo, 2, QtWidgets.QTableWidgetItem(str(i.vocabulary)))
-                self.ui.wordTable.setItem(lineNo, 3, QtWidgets.QTableWidgetItem(str(i.definition)))
-                self.ui.wordTable.setItem(lineNo, 4, QtWidgets.QTableWidgetItem(str(i.pronunciation)))
-                # self.ui.wordTable.setItem(lineNo, 5, QtWidgets.QTableWidgetItem(str(i.timesCorrect)))
-                # self.ui.wordTable.setItem(lineNo, 6, QtWidgets.QTableWidgetItem(str(i.timesAttempted)))
-
-                lineNo += 1
-                #self.ui.wordTable.setItem(i, 0).QtWidgets.QTableWidgetItem(str(data))
-                #self.ui.wordTable.insertRow(i)
-
-                    #print("Row data: ", j[colNo])
-
-                    # if column_number == 0:
-                    #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                    # else:
-                    #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-            self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-            self.ui.wordTable.itemChanged.connect(self.enableSave)
-            self.reloadWordLabels()
-        else:
-            self.loadWordTable(self.indexOfCurrentTable)
+        starredState = self.ui.checkBox_starredOnly.checkState()
+        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.wordTable.clearContents()
+        self.wordDeck.shuffleStudySet()
+        lineNo = 0
+        for i in self.wordDeck.studyList:
+            cell_widget = self.createStarCellWidget(i.isStarred)
+            # self.ui.wordTable.setItem(lineNo, 1, QtWidgets.QTableWidgetItem(str(i.isStarred)))
+            self.ui.wordTable.setCellWidget(lineNo, 1, cell_widget)
+            self.ui.wordTable.setItem(lineNo, 2, QtWidgets.QTableWidgetItem(str(i.vocabulary)))
+            self.ui.wordTable.setItem(lineNo, 3, QtWidgets.QTableWidgetItem(str(i.definition)))
+            self.ui.wordTable.setItem(lineNo, 4, QtWidgets.QTableWidgetItem(str(i.pronunciation)))
+            # self.ui.wordTable.setItem(lineNo, 5, QtWidgets.QTableWidgetItem(str(i.timesCorrect)))
+            # self.ui.wordTable.setItem(lineNo, 6, QtWidgets.QTableWidgetItem(str(i.timesAttempted)))
+            lineNo += 1
+        self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        self.ui.wordTable.itemChanged.connect(self.enableSave)
+        self.reloadWordLabels()
 
 
     def loadExercises(self):
@@ -150,7 +136,6 @@ class MainWindow(QMainWindow):
 
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
-        self.ui.checkBox_shuffle.setDisabled(True)
         self.ui.checkBox_starredOnly.setDisabled(True)
         self.ui.buttonBox_wordList.setEnabled(True)
         if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
@@ -225,14 +210,12 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedRowsSet.clear()
         self.indexOfDeletedCardsSet.clear()
         self.ui.buttonBox_wordList.setEnabled(False)
-        self.ui.checkBox_shuffle.setEnabled(True)
         self.ui.checkBox_starredOnly.setEnabled(True)
 
     def deckListClicked(self, index:QtCore.QModelIndex):
         if index.row() == self.indexOfCurrentTable:
             print("Nothing to do")
         else:
-            self.ui.checkBox_shuffle.setChecked(False)
             self.ui.checkBox_starredOnly.setChecked(False)
             self.indexOfCurrentTable = index.row()
             self.nameOfCurrentDeck = index.data()
@@ -291,7 +274,6 @@ class MainWindow(QMainWindow):
                     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.ui.checkBox_shuffle.setEnabled(True)
         self.ui.checkBox_starredOnly.setEnabled(True)
         self.ui.buttonBox_wordList.setEnabled(False)
 
@@ -474,8 +456,7 @@ class MainWindow(QMainWindow):
 
     def starredButtonAction(self):
         starredState = self.ui.checkBox_starredOnly.isChecked()
-        shuffleState = self.ui.checkBox_shuffle.isChecked()
-        self.loadWordTable(self.indexOfCurrentTable, shuffleState, starredState)
+        self.loadWordTable(self.indexOfCurrentTable, starredOnly=starredState)
         self.reloadWordLabels()
 
     def loadDeckList(self):
