@@ -113,16 +113,13 @@ class MainWindow(QMainWindow):
     def shuffleButtonAction(self):
 
         state = self.ui.checkBox_shuffle.checkState()
-        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
         if state == QtCore.Qt.CheckState.Checked:
-            self.ui.wordTable.clear()
-            self.ui.wordTable.setHorizontalHeaderLabels(
-                ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
+            self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+            self.ui.wordTable.clearContents()
             self.wordDeck.shuffleStudySet()
             lineNo = 0
             for i in self.wordDeck.studyList:
                 cell_widget = self.createStarCellWidget(i.isStarred)
-                self.ui.wordTable.insertRow(lineNo)
                 # self.ui.wordTable.setItem(lineNo, 1, QtWidgets.QTableWidgetItem(str(i.isStarred)))
                 self.ui.wordTable.setCellWidget(lineNo, 1, cell_widget)
                 self.ui.wordTable.setItem(lineNo, 2, QtWidgets.QTableWidgetItem(str(i.vocabulary)))
@@ -242,11 +239,9 @@ class MainWindow(QMainWindow):
             self.loadWordTable(self.indexOfCurrentTable)
             self.ui.label_selectedDeck.setText(index.data())
 
-
     def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
         print(self.ui.wordTable.rowCount(), "wtf", type(index))
         #self.ui.checkBox_starredOnly.setChecked(False)
-
         self.indexOfDeletedCardsSet.clear()
         self.indexOfModifiedRowsSet.clear()
         self.indexOfAddedRowsSet.clear()
