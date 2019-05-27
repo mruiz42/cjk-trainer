@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.indexOfModifiedRowsSet = set()     # Index of queued card ids to be modified from wordTable
         self.indexOfDeletedCardsSet = set()      # Index of queued card ids to be deleted from wordTable
 
-        self.indexOfCurrentTable = 0            # Index of current table in the deckList
+        self.indexOfCurrentTable = -1            # Index of current table in the deckList
         self.indexOfCurrentTab = 0              # Index of current tab in the tabBar
         self.nameOfCurrentDeck = ""            # Name of current table_name for the SQL TableName
         self.wordDeck = VocabWordDeck(self)     # Storage container for vocabWord objects
@@ -105,9 +105,6 @@ class MainWindow(QMainWindow):
         self.ui.tabBar.installEventFilter(eater)
         self.ui.checkBox_starredOnly.stateChanged.connect(self.starredButtonAction)
         self.ui.checkBox_shuffle.stateChanged.connect(self.shuffleButtonAction)
-
-
-
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
         self.indexOfAddedRowsSet.add(0)
         self.ui.wordTable.setCurrentCell(0, 1)
@@ -119,8 +116,8 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
         if state == QtCore.Qt.CheckState.Checked:
             self.ui.wordTable.clear()
-            # self.ui.wordTable.setHorizontalHeaderLabels(
-            #     ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
+            self.ui.wordTable.setHorizontalHeaderLabels(
+                ['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
             self.wordDeck.shuffleStudySet()
             lineNo = 0
             for i in self.wordDeck.studyList:
@@ -146,6 +143,7 @@ class MainWindow(QMainWindow):
                     #     self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
             self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
             self.ui.wordTable.itemChanged.connect(self.enableSave)
+            self.reloadWordLabels()
         else:
             self.loadWordTable(self.indexOfCurrentTable)
 
@@ -234,12 +232,15 @@ class MainWindow(QMainWindow):
         self.ui.checkBox_starredOnly.setEnabled(True)
 
     def deckListClicked(self, index:QtCore.QModelIndex):
-        self.ui.checkBox_shuffle.setChecked(False)
-        self.ui.checkBox_starredOnly.setChecked(False)
-        self.indexOfCurrentTable = index
-        self.nameOfCurrentDeck = index.data()
-        self.loadWordTable(self.indexOfCurrentTable.row())
-        self.ui.label_selectedDeck.setText(index.data())
+        if index.row() == self.indexOfCurrentTable:
+            print("Nothing to do")
+        else:
+            self.ui.checkBox_shuffle.setChecked(False)
+            self.ui.checkBox_starredOnly.setChecked(False)
+            self.indexOfCurrentTable = index.row()
+            self.nameOfCurrentDeck = index.data()
+            self.loadWordTable(self.indexOfCurrentTable)
+            self.ui.label_selectedDeck.setText(index.data())
 
 
     def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
@@ -269,7 +270,7 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
         self.ui.buttonBox_wordList.setEnabled(False)
-        self.loadStudySet()
+        self.loadStudySet(result)
 
     def reloadWordTable(self):
         self.indexOfDeletedCardsSet.clear()
@@ -423,7 +424,6 @@ class MainWindow(QMainWindow):
         win.ui.pushButton_enter.setText("Enter")
 
     def resetProgressBars(self):
-
         win.ui.progressBar_typing.reset()
         win.ui.progressBar_typing.setRange(0, len(self.wordDeck.studyList))
         win.ui.progressBar_flashcards.reset()
@@ -431,13 +431,13 @@ class MainWindow(QMainWindow):
         win.ui.progressBar_quiz.reset()
         win.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
 
-    def loadStudySet(self, shuffle:bool=False, starredOnly:bool=False):
+    def loadStudySet(self, result:tuple):
         self.wordDeck.cardNum = 0
-
-        result = self.database.getTableData(self.nameOfCurrentDeck)
+        #result = self.database.getTableData(self.nameOfCurrentDeck, starredOnly)
         #db.setLastTimeStudied(self.nameOfCurrentTable)
         #We have a tuple, now lets make a list of VocabWord objects
         self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+
         if len(result) != 0:
             self.wordDeck.studyList = [VocabWord(*t) for t in result]
             #self.wordDeck.shuffleStudySet()
@@ -456,7 +456,6 @@ class MainWindow(QMainWindow):
             self.loadDeckList()
             #self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentDeck)
-
             return True
         else:
             print("Cannot load an empty table!")
@@ -482,6 +481,7 @@ class MainWindow(QMainWindow):
         starredState = self.ui.checkBox_starredOnly.isChecked()
         shuffleState = self.ui.checkBox_shuffle.isChecked()
         self.loadWordTable(self.indexOfCurrentTable, shuffleState, starredState)
+        self.reloadWordLabels()
 
     def loadDeckList(self):
         self.ui.deckList.clear()
