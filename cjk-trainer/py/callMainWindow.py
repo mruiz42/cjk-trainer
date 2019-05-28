@@ -413,9 +413,9 @@ class MainWindow(QMainWindow):
         #result = self.database.getTableData(self.nameOfCurrentDeck, starredOnly)
         #db.setLastTimeStudied(self.nameOfCurrentTable)
         #We have a tuple, now lets make a list of VocabWord objects
-        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
 
         if len(result) != 0:
+
             self.wordDeck.studyList = [VocabWord(*t) for t in result]
             #self.wordDeck.shuffleStudySet()
 
