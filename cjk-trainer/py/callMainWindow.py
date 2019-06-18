@@ -1,4 +1,6 @@
 from PySide2.QtWidgets import *
+from PySide2.QtSql import *
+
 from setupUi.MainWindow import *
 from utilities.KeyPressEater import *
 from callDeckNamePrompt import *
@@ -11,6 +13,7 @@ from VocabWordDeck import *
 from TypingExercise import *
 from FlashcardExercise import *
 from QuizExercise import *
+
 from PySide2.QtCore import *
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
@@ -34,11 +37,15 @@ class MainWindow(QMainWindow):
         # Member attributes
         self.DATABASE_PATH = '../data/vocab2.db'
         self.database = SqlTools(self.DATABASE_PATH)
+        self.db = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
+        self.db.setDatabaseName("../data/vocab2.db")
+        self.db.open()
+        self.model = QSqlQueryModel()
         # Check if tables exist
-        self.database.createDeckTable()
-        self.database.createCardsTable()
-        self.database.createSessionsTable()
-        self.database.createStatisticsTable()
+        # self.database.createDeckTable()
+        # self.database.createCardsTable()
+        # self.database.createSessionsTable()
+        # self.database.createStatisticsTable()
 
         self.indexOfAddedRowsSet = set()        # Index of queued card ids to be added from wordTable
         self.indexOfModifiedRowsSet = set()     # Index of queued card ids to be modified from wordTable
@@ -54,6 +61,13 @@ class MainWindow(QMainWindow):
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+
+
+
+
+
+
         self.ui.progressBar_typing.reset()
         self.ui.progressBar_flashcards.reset()
         self.ui.progressBar_quiz.reset()
@@ -65,7 +79,7 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
-        self.ui.wordTable.installEventFilter(self)
+        # self.ui.wordTable.installEventFilter(self)
         # Added - Prevent user from dragging list view objs
         self.ui.deckList.setDragEnabled(False)
         self.ui.deckList.clicked.connect(self.deckListClicked)
@@ -81,18 +95,18 @@ class MainWindow(QMainWindow):
         newListTableAction.triggered.connect(self.openNewTableDialog)
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
         # I changed this stuff to initialize to standard size
-        self.ui.wordTable.setColumnCount(5)
-        self.ui.wordTable.setRowCount(0)
+        # self.ui.wordTable.setColumnCount(5)
+        # self.ui.wordTable.setRowCount(0)
         # Added Header Labels
         # {:>7}{:>15.2f}{:>11.2f}".format
-        self.ui.wordTable.setHorizontalHeaderLabels(['Card No', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
-        self.ui.wordTable.setColumnHidden(0, True)
-        self.ui.wordTable.setColumnWidth(1, 48)
-        self.ui.wordTable.setColumnWidth(2, 300)
-        self.ui.wordTable.setColumnWidth(3, 300)
-        self.ui.wordTable.setColumnWidth(4, 300)
+        # self.ui.wordTable.setHorizontalHeaderLabels(['Card No', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
+        # self.ui.wordTable.setColumnHidden(0, True)
+        # self.ui.wordTable.setColumnWidth(1, 48)
+        # self.ui.wordTable.setColumnWidth(2, 300)
+        # self.ui.wordTable.setColumnWidth(3, 300)
+        # self.ui.wordTable.setColumnWidth(4, 300)
 
-        self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
+        # self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
         self.ui.buttonBox_wordList.setCenterButtons(False)
@@ -107,7 +121,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_shuffleDeck.clicked.connect(self.shuffleButtonAction)
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
         self.indexOfAddedRowsSet.add(0)
-        self.ui.wordTable.setCurrentCell(0, 1)
+        # self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
 
     def shuffleButtonAction(self):
@@ -223,32 +237,37 @@ class MainWindow(QMainWindow):
             self.ui.label_selectedDeck.setText(index.data())
 
     def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
-        print(self.ui.wordTable.rowCount(), "wtf", type(index))
-        #self.ui.checkBox_starredOnly.setChecked(False)
-        self.indexOfDeletedCardsSet.clear()
-        self.indexOfModifiedRowsSet.clear()
-        self.indexOfAddedRowsSet.clear()
-        self.ui.wordTable.setSortingEnabled(False)
-        self.ui.wordTable.setRowCount(0)
-        self.ui.wordTable.clearContents()
-        self.ui.wordTable.reset()
-        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-        result = self.database.getTableData(self.nameOfCurrentDeck, starredOnly)
-        for row_number, row_data in enumerate(result):
-            self.ui.wordTable.insertRow(row_number)
-            #print("Row number: ", row_number)
-            for column_number, data in enumerate(row_data):
-                if column_number == 1:
-                    cell_widget = self.createStarCellWidget(data)
-                    self.ui.wordTable.setCellWidget(row_number, column_number, cell_widget)
-                else:
-                    #print("Row data: ", row_data[column_number])
-                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
 
-        self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.ui.wordTable.itemChanged.connect(self.enableSave)
-        self.ui.buttonBox_wordList.setEnabled(False)
-        self.loadStudySet(result)
+        # print(self.ui.wordTable.rowCount(), "wtf", type(index))
+        # #self.ui.checkBox_starredOnly.setChecked(False)
+        # self.indexOfDeletedCardsSet.clear()
+        # self.indexOfModifiedRowsSet.clear()
+        # self.indexOfAddedRowsSet.clear()
+        # self.ui.wordTable.setSortingEnabled(False)
+        # self.ui.wordTable.setRowCount(0)
+        # self.ui.wordTable.clearContents()
+        # self.ui.wordTable.reset()
+        # self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+        # result = self.database.getTableData(self.nameOfCurrentDeck, starredOnly)
+        # for row_number, row_data in enumerate(result):
+        #     self.ui.wordTable.insertRow(row_number)
+        #     #print("Row number: ", row_number)
+        #     for column_number, data in enumerate(row_data):
+        #         if column_number == 1:
+        #             cell_widget = self.createStarCellWidget(data)
+        #             self.ui.wordTable.setCellWidget(row_number, column_number, cell_widget)
+        #         else:
+        #             #print("Row data: ", row_data[column_number])
+        #             self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        #
+        # self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        # self.ui.wordTable.itemChanged.connect(self.enableSave)
+        # self.ui.buttonBox_wordList.setEnabled(False)
+        # self.loadStudySet(result)
+        currentIndex = self.ui.deckList.currentIndex()
+        command = "SELECT * FROM CARDS WHERE DECK_ID=\"{}\"".format(self.nameOfCurrentDeck)
+        self.model.setQuery(command, self.db)
+        self.ui.tableView.setModel(self.model)
 
     def reloadWordTable(self):
         self.indexOfDeletedCardsSet.clear()
@@ -465,7 +484,6 @@ class MainWindow(QMainWindow):
         for i in listOfDecks:
             # if i != 'sqlite_sequence':
             self.ui.deckList.addItem(i[0])
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
