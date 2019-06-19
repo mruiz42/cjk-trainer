@@ -183,7 +183,7 @@ class MainWindow(QMainWindow):
         #                 rowData.append(self.ui.wordTable.item(rowIndex, j).text())
         #         rowData.append(self.ui.wordTable.item(rowIndex, 0).text())
         #         self.database.modifyTableRows(rowData, rowIndex)
-        # # Add rows, if exist
+        # # Add rows, if existself.model.submit()
         # # TODO ) GETTING AN ERROR WHERE IF THERES NO BLANK ROW AT END, IT WILL DISREGARD THE LAST LINE
         # # EVEN IF I HAS VALID DATA
         # if len(self.indexOfAddedCardsSet) != 0:
