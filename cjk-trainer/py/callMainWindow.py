@@ -40,7 +40,9 @@ class MainWindow(QMainWindow):
         self.db = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
         self.db.setDatabaseName("../data/vocab2.db")
         self.db.open()
-        self.model = QSqlQueryModel()
+        self.model = QSqlTableModel(db=self.db)
+        self.model.setEditStrategy(QSqlTableModel.EditStrategy.OnManualSubmit)
+        self.model.dataChanged.connect(self.enableSave)
         # Check if tables exist
         # self.database.createDeckTable()
         # self.database.createCardsTable()
@@ -150,36 +152,37 @@ class MainWindow(QMainWindow):
 
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
-        self.ui.checkBox_starredOnly.setDisabled(True)
+        # self.ui.checkBox_starredOnly.setDisabled(True)
         self.ui.buttonBox_wordList.setEnabled(True)
-        if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
-            if self.ui.wordTable.rowCount() == 0:
-                self.indexOfModifiedRowsSet.add(0)
-                print("Modified index:", self.ui.wordTable.currentRow())
-            elif self.ui.wordTable.currentRow() >= 0:
-                self.indexOfModifiedRowsSet.add(self.ui.wordTable.currentRow())
-                print("Modified index:", self.ui.wordTable.currentRow())
+        # if self.ui.wordTable.currentRow() not in self.indexOfModifiedRowsSet:
+        #     if self.ui.wordTable.rowCount() == 0:
+        #         self.indexOfModifiedRowsSet.add(0)
+        #         print("Modified index:", self.ui.wordTable.currentRow())
+        #     elif self.ui.wordTable.currentRow() >= 0:
+        #         self.indexOfModifiedRowsSet.add(self.ui.wordTable.currentRow())
+        #         print("Modified index:", self.ui.wordTable.currentRow())
 
     def saveTable(self):
+        self.model.submitAll()
         # print("save table")
-        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedCardsSet
-        self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
-        print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet,
-              "Del rows: ", self.indexOfDeletedCardsSet)
-        # # Update modified rows, if exist
-        if len(self.indexOfModifiedRowsSet) != 0:
-            print("SENDING MODIFIED ENTRIES TO DATABASE")
-            for rowIndex in self.indexOfModifiedRowsSet:
-                rowData = []
-                for j in range(1, self.ui.wordTable.columnCount()):
-                    if j == 1:
-                        rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
-                    else:
-                        print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
-                        print("RI", rowIndex, "j", j)
-                        rowData.append(self.ui.wordTable.item(rowIndex, j).text())
-                rowData.append(self.ui.wordTable.item(rowIndex, 0).text())
-                self.database.modifyTableRows(rowData, rowIndex)
+        # self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfDeletedCardsSet
+        # self.indexOfModifiedRowsSet = self.indexOfModifiedRowsSet - self.indexOfAddedRowsSet
+        # print("modified rows:", self.indexOfModifiedRowsSet, "added rows", self.indexOfAddedRowsSet,
+        #       "Del rows: ", self.indexOfDeletedCardsSet)
+        # # # Update modified rows, if exist
+        # if len(self.indexOfModifiedRowsSet) != 0:
+        #     print("SENDING MODIFIED ENTRIES TO DATABASE")
+        #     for rowIndex in self.indexOfModifiedRowsSet:
+        #         rowData = []
+        #         for j in range(1, self.ui.wordTable.columnCount()):
+        #             if j == 1:
+        #                 rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
+        #             else:
+        #                 print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
+        #                 print("RI", rowIndex, "j", j)
+        #                 rowData.append(self.ui.wordTable.item(rowIndex, j).text())
+        #         rowData.append(self.ui.wordTable.item(rowIndex, 0).text())
+        #         self.database.modifyTableRows(rowData, rowIndex)
         # # Add rows, if exist
         # # TODO ) GETTING AN ERROR WHERE IF THERES NO BLANK ROW AT END, IT WILL DISREGARD THE LAST LINE
         # # EVEN IF I HAS VALID DATA
@@ -194,37 +197,37 @@ class MainWindow(QMainWindow):
         #         except KeyError:
         #             print("last row seems good")
             # Begin reading added rows
-        print("SENDING INSERTED ROWS INTO DATABASE")
-        for rowIndex in self.indexOfAddedRowsSet:
-            rowData = []
-            rowData.append(self.nameOfCurrentDeck)
-            rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
-            for j in range(2, self.ui.wordTable.columnCount()):
-                print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
-                rowData.append(self.ui.wordTable.item(rowIndex, j).text())
-            print(rowIndex, j, rowData)
-            if rowData[1] == '' or rowData[2] == '':
-                print(rowData)
-                print("Empty critical slot found, refusing insert into table")
-            else:
-                print("INSERTING TABLE DATA!", rowData)
-                print("Updating table at row:", rowIndex)
-                #self.database.addTableRow(self.nameOfCurrentTable, rowData)
-                self.database.insertCard(rowData)
-        # Delete rows, if exist
-        print(self.indexOfDeletedCardsSet)
-        if len(self.indexOfDeletedCardsSet) != 0:
-            print("DELETING SELECTED ROWS INTO DATABASE")
-            # Now we must remove the rows user does not want anymore
-            # Try to delete the item from the table by primary key
-            for rowIndex in self.indexOfDeletedCardsSet:
-                self.database.deleteTableRow(self.nameOfCurrentDeck, rowIndex)
-
-        self.indexOfAddedRowsSet.clear()
-        self.indexOfModifiedRowsSet.clear()
-        self.indexOfDeletedCardsSet.clear()
-        self.ui.buttonBox_wordList.setEnabled(False)
-        self.ui.checkBox_starredOnly.setEnabled(True)
+        # print("SENDING INSERTED ROWS INTO DATABASE")
+        # for rowIndex in self.indexOfAddedRowsSet:
+        #     rowData = []
+        #     rowData.append(self.nameOfCurrentDeck)
+        #     rowData.append(self.ui.wordTable.cellWidget(rowIndex,1).isChecked())
+        #     for j in range(2, self.ui.wordTable.columnCount()):
+        #         print(j, "Table data", self.ui.wordTable.item(rowIndex, j).text())
+        #         rowData.append(self.ui.wordTable.item(rowIndex, j).text())
+        #     print(rowIndex, j, rowData)
+        #     if rowData[1] == '' or rowData[2] == '':
+        #         print(rowData)
+        #         print("Empty critical slot found, refusing insert into table")
+        #     else:
+        #         print("INSERTING TABLE DATA!", rowData)
+        #         print("Updating table at row:", rowIndex)
+        #         #self.database.addTableRow(self.nameOfCurrentTable, rowData)
+        #         self.database.insertCard(rowData)
+        # # Delete rows, if exist
+        # print(self.indexOfDeletedCardsSet)
+        # if len(self.indexOfDeletedCardsSet) != 0:
+        #     print("DELETING SELECTED ROWS INTO DATABASE")
+        #     # Now we must remove the rows user does not want anymore
+        #     # Try to delete the item from the table by primary key
+        #     for rowIndex in self.indexOfDeletedCardsSet:
+        #         self.database.deleteTableRow(self.nameOfCurrentDeck, rowIndex)
+        #
+        # self.indexOfAddedRowsSet.clear()
+        # self.indexOfModifiedRowsSet.clear()
+        # self.indexOfDeletedCardsSet.clear()
+        # self.ui.buttonBox_wordList.setEnabled(False)
+        # self.ui.checkBox_starredOnly.setEnabled(True)
 
     def deckListClicked(self, index:QtCore.QModelIndex):
         if index.row() == self.indexOfCurrentTable:
@@ -265,36 +268,48 @@ class MainWindow(QMainWindow):
         # self.ui.buttonBox_wordList.setEnabled(False)
         # self.loadStudySet(result)
         currentIndex = self.ui.deckList.currentIndex()
-        command = "SELECT * FROM CARDS WHERE DECK_ID=\"{}\"".format(self.nameOfCurrentDeck)
-        self.model.setQuery(command, self.db)
+        command = "SELECT IS_STARRED, VOCABULARY, DEFINITION, PRONUNCIATION" \
+                  " FROM CARDS " \
+                  "WHERE DECK_ID=\"{}\"".format(self.nameOfCurrentDeck)
+        self.model.setTable("CARDS")
+        self.model.setFilter("DECK_ID=\"{}\"".format(self.nameOfCurrentDeck))
+        self.ui.tableView.hideColumn(0)
+        self.ui.tableView.hideColumn(1)
+
+        #self.model.filter()
+        self.model.select()
         self.ui.tableView.setModel(self.model)
+        self.ui.tableView.hideColumn(0)
+        self.ui.tableView.hideColumn(1)
+
 
     def reloadWordTable(self):
-        self.indexOfDeletedCardsSet.clear()
-        self.indexOfModifiedRowsSet.clear()
-        self.indexOfAddedRowsSet.clear()
-        self.ui.wordTable.setSortingEnabled(False)
-        self.ui.wordTable.setRowCount(0)
-        self.ui.wordTable.clearContents()
-        self.ui.wordTable.reset()
-        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-        print("reverting changes")
-
-        result = self.database.getTableData(self.nameOfCurrentDeck)
-
-        for row_number, row_data in enumerate(result):
-            print("Row number: ", row_number)
-            self.ui.wordTable.insertRow(row_number)
-            for column_number, data in enumerate(row_data):
-                print("Row data: ", row_data[column_number])
-                if column_number == 0:
-                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-                else:
-                    self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
-
-        self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.ui.checkBox_starredOnly.setEnabled(True)
-        self.ui.buttonBox_wordList.setEnabled(False)
+        self.model.revertAll()
+        # self.indexOfDeletedCardsSet.clear()
+        # self.indexOfModifiedRowsSet.clear()
+        # self.indexOfAddedRowsSet.clear()
+        # self.ui.wordTable.setSortingEnabled(False)
+        # self.ui.wordTable.setRowCount(0)
+        # self.ui.wordTable.clearContents()
+        # self.ui.wordTable.reset()
+        # self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
+        # print("reverting changes")
+        #
+        # result = self.database.getTableData(self.nameOfCurrentDeck)
+        #
+        # for row_number, row_data in enumerate(result):
+        #     print("Row number: ", row_number)
+        #     self.ui.wordTable.insertRow(row_number)
+        #     for column_number, data in enumerate(row_data):
+        #         print("Row data: ", row_data[column_number])
+        #         if column_number == 0:
+        #             self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        #         else:
+        #             self.ui.wordTable.setItem(row_number, column_number, QtWidgets.QTableWidgetItem(str(data)))
+        #
+        # self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
+        # self.ui.checkBox_starredOnly.setEnabled(True)
+        # self.ui.buttonBox_wordList.setEnabled(False)
 
     ########### CONTEXT MENU STUFF ###############
     def requestWordTableContextMenu(self, position):
