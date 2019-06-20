@@ -61,7 +61,6 @@ class Ui_DeckNamePromptDialog(object):
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
-
         self.retranslateUi(DeckNamePromptDialog)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), DeckNamePromptDialog.accept)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), DeckNamePromptDialog.reject)

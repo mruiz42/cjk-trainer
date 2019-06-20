@@ -48,7 +48,8 @@ class MainWindow(QMainWindow):
         # self.database.createCardsTable()
         # self.database.createSessionsTable()
         # self.database.createStatisticsTable()
-
+        self.definitionLanguage = ""
+        self.vocabularyLanguage = ""
         self.indexOfAddedRowsSet = set()        # Index of queued card ids to be added from wordTable
         self.indexOfModifiedRowsSet = set()     # Index of queued card ids to be modified from wordTable
         self.indexOfDeletedCardsSet = set()      # Index of queued card ids to be deleted from wordTable
@@ -65,10 +66,8 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
 
-
-
-
-
+        self.ui.deckList.pressed.connect(self.deckListClicked)
+        self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
 
         self.ui.progressBar_typing.reset()
         self.ui.progressBar_flashcards.reset()
@@ -84,7 +83,6 @@ class MainWindow(QMainWindow):
         # self.ui.wordTable.installEventFilter(self)
         # Added - Prevent user from dragging list view objs
         self.ui.deckList.setDragEnabled(False)
-        self.ui.deckList.clicked.connect(self.deckListClicked)
         self.ui.deckList.customContextMenuRequested.connect(self.requestDeckViewContextMenu)
         # Added - Connect
         self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)        #Added - toolButton menu
@@ -93,8 +91,8 @@ class MainWindow(QMainWindow):
         newListTableAction = addMenu.addAction("Add new deck")
         importCSVAction = addMenu.addAction("Import CSV")
         self.ui.toolButton_add.setMenu(addMenu)
-        self.ui.toolButton_add.clicked.connect(self.openNewTableDialog)
-        newListTableAction.triggered.connect(self.openNewTableDialog)
+        self.ui.toolButton_add.clicked.connect(lambda: self.openNewTableDialog("create"))
+        newListTableAction.triggered.connect(lambda: self.openNewTableDialog("create"))
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
         # I changed this stuff to initialize to standard size
         # self.ui.wordTable.setColumnCount(5)
@@ -125,6 +123,11 @@ class MainWindow(QMainWindow):
         self.indexOfAddedRowsSet.add(0)
         # self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
+
+    def printHi(self):
+        item = self.ui.deckList.currentItem()
+        item.ItemIsEditable(True)
+        self.ui.deckList.editItem(item)
 
     def shuffleButtonAction(self):
         starredState = self.ui.checkBox_starredOnly.checkState()
@@ -328,9 +331,9 @@ class MainWindow(QMainWindow):
     def requestDeckViewContextMenu(self, position):
         self.loadWordTable(self.ui.deckList.currentIndex())
         contextMenuDeckView = QtWidgets.QMenu("contextMenu")
-        addAction = contextMenuDeckView.addAction("Add Table")
-        updateAction = contextMenuDeckView.addAction("Update Table")
-        deleteAction = contextMenuDeckView.addAction("Delete Table")
+        updateAction = contextMenuDeckView.addAction("Modify Deck")
+        addAction = contextMenuDeckView.addAction("Add New Deck")
+        deleteAction = contextMenuDeckView.addAction("Delete Deck")
         action = contextMenuDeckView.exec_(self.ui.deckList.mapToGlobal(position))
         if action == addAction:
             print("Creating a new deck..")
@@ -339,6 +342,8 @@ class MainWindow(QMainWindow):
             print("Deleting selected deck..")
             print("Are you sure you want to do this?")
             self.openDropTableDialog()
+        elif action == updateAction:
+            self.openNewTableDialog(type="modify")
 
     def insertTableRow(self):
 
@@ -395,9 +400,20 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.setEnabled(True)
         print(self.indexOfDeletedCardsSet)
 
-    def openNewTableDialog(self):
-        self.w = DeckNamePrompt(self)
-        self.w.show()
+    def openNewTableDialog(self, type:str="create"):
+        if type == "create":
+            self.w = DeckNamePrompt(self)
+            self.w.DNPD.buttonBox.accepted.connect(self.w.createDeck)
+            self.w.show()
+        elif type == "modify":
+            self.w = DeckNamePrompt(self)
+            self.w.setWindowTitle("Modify Deck")
+            langList = self.database.getCurrentLanguages(self.nameOfCurrentDeck)
+            self.w.DNPD.lineEdit_enterDeckName.setText(self.nameOfCurrentDeck)
+            self.w.DNPD.comboBox_vocabulary.setCurrentText(langList[0])
+            self.w.DNPD.comboBox_definition.setCurrentText(langList[1])
+            self.w.DNPD.buttonBox.accepted.connect(self.w.modifyDeck)
+            self.w.show()
 
     def openDropTableDialog(self):
         self.w = ConfirmDeleteTable(self)
@@ -427,7 +443,6 @@ class MainWindow(QMainWindow):
                 if self.ui.wordTable.currentColumn() == 1:
                     self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() - 1, 4)
                     self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
-
             return False
         return super(MainWindow, self).eventFilter(source, event)
 
@@ -444,9 +459,6 @@ class MainWindow(QMainWindow):
 
     def loadStudySet(self, result:tuple):
         self.wordDeck.cardNum = 0
-        #result = self.database.getTableData(self.nameOfCurrentDeck, starredOnly)
-        #db.setLastTimeStudied(self.nameOfCurrentTable)
-        #We have a tuple, now lets make a list of VocabWord objects
 
         if len(result) != 0:
 
@@ -499,6 +511,7 @@ class MainWindow(QMainWindow):
         for i in listOfDecks:
             # if i != 'sqlite_sequence':
             self.ui.deckList.addItem(i[0])
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

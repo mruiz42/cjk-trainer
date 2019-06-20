@@ -114,6 +114,11 @@ class SqlTools():
         listOfDecks = self.cur.fetchall()
         return listOfDecks
 
+    def getCurrentLanguages(self, deck_name):
+        command = ("SELECT VOCABULARY_LANGUAGE, DEFINITION_LANGUAGE FROM DECKS WHERE DECK_ID=\"{}\"").format(deck_name)
+        self.cur.execute(command)
+        languages = self.cur.fetchone()
+        return languages
     def modifyCardData(self, row, deck_name, card_num):
         command = ("UPDATE CARDS SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?,"
                    " IS_STARRED=? WHERE DECK_ID= " + deck_name + "AND CARD_ID="+card_num+";")
@@ -305,4 +310,16 @@ class SqlTools():
         #     result = '0'
         # print(result)
         # return result
+
+    def executeModify(self,new_deck_id:str, new_vocab_lang:str, new_def_lang:str, old_deck_id:str):
+
+        command = "UPDATE DECKS " \
+                  "SET DECK_ID=\"{}\", VOCABULARY_LANGUAGE=\"{}\", DEFINITION_LANGUAGE=\"{}\" " \
+                  "WHERE DECK_ID=\"{}\"".format(new_deck_id, new_vocab_lang, new_def_lang, old_deck_id)
+        self.db.execute(command)
+        command = "UPDATE CARDS " \
+                  "SET DECK_ID=\"{}\" " \
+                  "WHERE DECK_ID=\"{}\"".format(new_deck_id, old_deck_id)
+        self.db.execute(command)
+        self.db.commit()
 
