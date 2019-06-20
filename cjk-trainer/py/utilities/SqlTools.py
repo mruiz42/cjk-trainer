@@ -119,6 +119,7 @@ class SqlTools():
         self.cur.execute(command)
         languages = self.cur.fetchone()
         return languages
+
     def modifyCardData(self, row, deck_name, card_num):
         command = ("UPDATE CARDS SET VOCABULARY=?, DEFINITION=?, PRONUNCIATION=?,"
                    " IS_STARRED=? WHERE DECK_ID= " + deck_name + "AND CARD_ID="+card_num+";")
