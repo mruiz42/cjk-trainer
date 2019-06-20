@@ -93,19 +93,8 @@ class MainWindow(QMainWindow):
         self.ui.toolButton_add.clicked.connect(lambda: self.openNewTableDialog("create"))
         newListTableAction.triggered.connect(lambda: self.openNewTableDialog("create"))
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
-        # I changed this stuff to initialize to standard size
-        # self.ui.wordTable.setColumnCount(5)
-        # self.ui.wordTable.setRowCount(0)
-        # Added Header Labels
-        # {:>7}{:>15.2f}{:>11.2f}".format
-        # self.ui.wordTable.setHorizontalHeaderLabels(['Card No', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
-        # self.ui.wordTable.setColumnHidden(0, True)
-        # self.ui.wordTable.setColumnWidth(1, 48)
-        # self.ui.wordTable.setColumnWidth(2, 300)
-        # self.ui.wordTable.setColumnWidth(3, 300)
-        # self.ui.wordTable.setColumnWidth(4, 300)
 
-        # self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
+        self.ui.tableView.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
         self.ui.buttonBox_wordList.setCenterButtons(False)
@@ -123,8 +112,6 @@ class MainWindow(QMainWindow):
         # self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
 
-    def printHi(self):
-        pass
     def shuffleButtonAction(self):
         starredState = self.ui.checkBox_starredOnly.checkState()
         self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
@@ -149,10 +136,12 @@ class MainWindow(QMainWindow):
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
         self.ui.buttonBox_wordList.setEnabled(True)
+        self.ui.tableView.setSortingEnabled(False)
 
     def saveTable(self):
         self.model.submitAll()
         self.ui.buttonBox_wordList.setDisabled(True)
+        self.ui.tableView.setSortingEnabled(True)
 
 
     def deckListClicked(self, index:QtCore.QModelIndex):
@@ -170,10 +159,7 @@ class MainWindow(QMainWindow):
             self.ui.tableView.setColumnWidth(4, 200)
             self.ui.tableView.setColumnWidth(5, 200)
             self.ui.buttonBox_wordList.setDisabled(True)
-
-
-
-
+            self.ui.tableView.setSortingEnabled(True)
 
     def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
         self.model.setTable("CARDS")
@@ -200,7 +186,7 @@ class MainWindow(QMainWindow):
         insertAction = contextMenu.addAction("Insert Row")
         updateAction = contextMenu.addAction("Update Row")
         deleteAction = contextMenu.addAction("Delete Row")
-        action = contextMenu.exec_(self.ui.wordTable.mapToGlobal(position))
+        action = contextMenu.exec_(self.ui.tableView.mapToGlobal(position))
         if action == insertAction:
             self.insertTableRow()
         elif action == updateAction:
@@ -226,18 +212,19 @@ class MainWindow(QMainWindow):
             self.openNewTableDialog(type="modify")
 
     def insertTableRow(self):
-        if self.ui.wordTable.rowCount() == 0:
-            self.ui.wordTable.setRowCount(1)
-            cell_widget = self.createStarCellWidget()
-            self.ui.wordTable.setCellWidget(0, 1, cell_widget)
-            self.indexOfAddedRowsSet.add(0)
-            self.ui.wordTable.setCurrentCell(0,1)
-        else:
-            cell_widget = self.createStarCellWidget()
-            self.ui.wordTable.insertRow(self.ui.wordTable.rowCount())
-            self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 1, cell_widget)
-            self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount() - 1)
-            print("Inserting row..", self.ui.wordTable.rowCount()-1)
+        # if self.ui.wordTable.rowCount() == 0:
+        #     self.ui.wordTable.setRowCount(1)
+        #     cell_widget = self.createStarCellWidget()
+        #     self.ui.wordTable.setCellWidget(0, 1, cell_widget)
+        #     self.indexOfAddedRowsSet.add(0)
+        #     self.ui.wordTable.setCurrentCell(0,1)
+        # else:
+        #     cell_widget = self.createStarCellWidget()
+        #     self.ui.wordTable.insertRow(self.ui.wordTable.rowCount())
+        #     self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 1, cell_widget)
+        #     self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount() - 1)
+        #     print("Inserting row..", self.ui.wordTable.rowCount()-1)
+        self.model.insertRowIntoTable()
 
     def updateTableRow(self):
         print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
