@@ -66,6 +66,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+
+        self.n = StarDelegate(self.ui.tableView)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
 
         self.ui.progressBar_typing.reset()
@@ -139,9 +141,16 @@ class MainWindow(QMainWindow):
         self.ui.tableView.setSortingEnabled(False)
 
     def saveTable(self):
-        self.model.submitAll()
+        success = self.model.submitAll()
+        if success:
+            print("Table has been successfully updated!")
+        else:
+            print("Error updating table!")
+            print(self.model.lastError().databaseText())
+            print(self.model.lastError().text())
         self.ui.buttonBox_wordList.setDisabled(True)
         self.ui.tableView.setSortingEnabled(True)
+
 
 
     def deckListClicked(self, index:QtCore.QModelIndex):
@@ -167,10 +176,10 @@ class MainWindow(QMainWindow):
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
 
-        n = StarDelegate(self.ui.tableView)
+
         self.model.select()
         self.model.setHeaderData(2, Qt.Horizontal, "⭐")
-        self.ui.tableView.setItemDelegateForColumn(2, n)
+        self.ui.tableView.setItemDelegateForColumn(2, self.n)
         self.ui.tableView.setModel(self.model)
 
         self.ui.tableView.hideColumn(0)
@@ -179,6 +188,9 @@ class MainWindow(QMainWindow):
 
     def reloadWordTable(self):
         self.model.revertAll()
+        self.ui.buttonBox_wordList.setDisabled(True)
+        print(self.model.lastError().databaseText())
+        print(self.model.lastError().text())
 
     ########### CONTEXT MENU STUFF ###############
     def requestWordTableContextMenu(self, position):
@@ -224,7 +236,14 @@ class MainWindow(QMainWindow):
         #     self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 1, cell_widget)
         #     self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount() - 1)
         #     print("Inserting row..", self.ui.wordTable.rowCount()-1)
-        self.model.insertRowIntoTable()
+        record = self.model.record()
+        field = QSqlField()
+        field.setValue(self.nameOfCurrentDeck)
+        record.insert(1, field)
+        self.model.insertRecord(self.model.rowCount(), record)
+        print(record.count())
+
+
 
     def updateTableRow(self):
         print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
