@@ -32,12 +32,11 @@ class StarDelegate(QStyledItemDelegate):
 
 
         # chk_bx.stateChanged.connect(self.mainWindow.updateStarredValue)
-
         # lay_out = QHBoxLayout(chk_bx)
         # lay_out.addWidget(chk_bx)
         # lay_out.setAlignment(QtCore.Qt.AlignCenter)
         # lay_out.setContentsMargins(0,0,0,0)
-        #chk_bx.stateChanged.connect()
+        # chk_bx.stateChanged.connect()
 
 
 '''         # print("Creating ⭐ cell widget")
