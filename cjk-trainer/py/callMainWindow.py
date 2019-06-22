@@ -66,14 +66,14 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-
+        self.ui.lineEdit_searchQuery.textChanged.connect(self.loadWordTable)
         self.n = StarDelegate(self.ui.tableView)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
 
         self.ui.progressBar_typing.reset()
         self.ui.progressBar_flashcards.reset()
         self.ui.progressBar_quiz.reset()
-        self.ui.pushButton_enter.clicked.connect(self.typingExercise.checkAnswer)
+        self.ui.pushButton_enter.clicked.connect(self.typingExercise.submitAnswer)
         self.ui.pushButton_notSure_Skip.clicked.connect(self.typingExercise.nextWord)
         self.ui.pushButton_notSure_Skip.hide()
         self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
@@ -171,20 +171,36 @@ class MainWindow(QMainWindow):
             self.ui.tableView.setSortingEnabled(True)
 
     def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
+        query = self.ui.lineEdit_searchQuery.text()
         self.model.setTable("CARDS")
-        self.model.setFilter("DECK_ID=\"{}\"".format(self.nameOfCurrentDeck))
+        command = ("DECK_ID=\"{}\""
+                 " AND (DEFINITION LIKE \"%{}%\""
+                 " OR VOCABULARY LIKE \"%{}%\""
+                 " OR PRONUNCIATION LIKE \"%{}%\")").format(self.nameOfCurrentDeck, query, query, query)
+        if starredOnly == True:
+            command += "AND IS_STARRED=TRUE"
+
+        self.model.setFilter(command)
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
-
-
         self.model.select()
         self.model.setHeaderData(2, Qt.Horizontal, "⭐")
         self.ui.tableView.setItemDelegateForColumn(2, self.n)
         self.ui.tableView.setModel(self.model)
-
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
 
+        # load study deck
+        deck = []
+        for row in range(0, self.model.rowCount()):
+            cn = self.model.data(self.model.index(row, 0))
+            star = (self.model.data(self.model.index(row, 2)))
+            vocab = (self.model.data(self.model.index(row, 3)))
+            defin = (self.model.data(self.model.index(row, 4)))
+            pronun = (self.model.data(self.model.index(row, 5)))
+            card = VocabWord(cn, star, vocab, defin, pronun)
+            deck.append(card)
+        self.loadStudySet(deck)
 
     def reloadWordTable(self):
         self.model.revertAll()
@@ -224,27 +240,26 @@ class MainWindow(QMainWindow):
             self.openNewTableDialog(type="modify")
 
     def insertTableRow(self):
-        # if self.ui.wordTable.rowCount() == 0:
-        #     self.ui.wordTable.setRowCount(1)
-        #     cell_widget = self.createStarCellWidget()
-        #     self.ui.wordTable.setCellWidget(0, 1, cell_widget)
-        #     self.indexOfAddedRowsSet.add(0)
-        #     self.ui.wordTable.setCurrentCell(0,1)
-        # else:
-        #     cell_widget = self.createStarCellWidget()
-        #     self.ui.wordTable.insertRow(self.ui.wordTable.rowCount())
-        #     self.ui.wordTable.setCellWidget(self.ui.wordTable.rowCount()-1, 1, cell_widget)
-        #     self.indexOfAddedRowsSet.add(self.ui.wordTable.rowCount() - 1)
-        #     print("Inserting row..", self.ui.wordTable.rowCount()-1)
         record = self.model.record()
-        field0 = QSqlField("DECK_ID")
+        field0 = QSqlField("CARD_ID")
         field1 = QSqlField("DECK_ID")
-        field2 = QSqlField("DECK_ID")
-        field3 = QSqlField("DECK_ID")
-        field4 = QSqlField("DECK_ID")
-        field5 = QSqlField("DECK_ID")
-        field.setValue(self.nameOfCurrentDeck)
-        record.insert(1, field)
+        field2 = QSqlField("IS_STARRED")
+        field3 = QSqlField("VOCABULARY")
+        field4 = QSqlField("DEFINITION")
+        field5 = QSqlField("PRONUNCIATION")
+        field6 = QSqlField("IMAGE_DATA")
+        field1.setValue(self.nameOfCurrentDeck)
+        record.insert(0, field0)
+        record.insert(1, field1)
+        record.insert(2, field2)
+        record.insert(3, field3)
+        record.insert(4, field4)
+        record.insert(5, field5)
+        record.insert(6, field6)
+
+
+
+
         self.model.insertRecord(self.model.rowCount(), record)
         print(record.count())
 
@@ -321,24 +336,20 @@ class MainWindow(QMainWindow):
         win.ui.progressBar_quiz.reset()
         win.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
 
-    def loadStudySet(self, result:tuple):
+    def loadStudySet(self, result:list):
         self.wordDeck.cardNum = 0
 
         if len(result) != 0:
-
-            self.wordDeck.studyList = [VocabWord(*t) for t in result]
+            # self.wordDeck.studyList = [VocabWord(*t) for t in result]
             #self.wordDeck.shuffleStudySet()
-
+            self.wordDeck.setStudyList(result)
             for i in range(10, len(self.wordDeck.studyList), 10):
                 self.wordDeck.summaryIndexList.append(i)
-                #print(i)
-            print("loaded study set: ", self.wordDeck.studyList)
             self.resetProgressBars()
             self.reloadWordLabels()
             self.ui.tab_flashcards.setEnabled(True)
             self.ui.tab_typing.setEnabled(True)
             self.ui.tab_quiz.setEnabled(True)
-            self.ui.wordTable.itemChanged.connect(win.enableSave)
             #self.reloadTableList(reset_checked=True)
             self.loadDeckList()
             #self.ui.deckList.setCurrentRow(0)
