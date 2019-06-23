@@ -15,7 +15,7 @@ from QuizExercise import *
 
 from PySide2.QtCore import *
 from StarDelegate import *
-
+from PySide2 import QtGui
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
@@ -65,7 +65,6 @@ class MainWindow(QMainWindow):
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         self.ui.lineEdit_searchQuery.textChanged.connect(self.loadWordTable)
         self.n = StarDelegate(self.ui.tableView)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
@@ -387,8 +386,30 @@ class MainWindow(QMainWindow):
             # if i != 'sqlite_sequence':
             self.ui.deckList.addItem(i[0])
 
+def setDarkStyleSheet(qApp:QApplication):
+    qApp.setStyle(QStyleFactory.create("Fusion"))
+    darkPalette = QtGui.QPalette()
+    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+    darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
+    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.ToolTipBase, Qt.white)
+    darkPalette.setColor(QtGui.QPalette.ToolTipText, Qt.white)
+    darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
+    darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+    darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+    darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+    darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+    darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+    qApp.setPalette(darkPalette)
+    qApp.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    setDarkStyleSheet(app)
+
+
     win = MainWindow()
     win.show()
     win.loadDeckList()
