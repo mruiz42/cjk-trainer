@@ -1,35 +1,33 @@
 # CJK-Trainer
-A program to facilitate language vocabulary building. However, I want this to be as modular as possible, so that any language can be studied using this software.
+A cross-platform flashcard study program to help learn foreign languages. Works on Windows/Mac/Linux using the qt-framework and python3. 
 
-![alt text](https://i.imgur.com/7hdBY8a.png)
-
-![alt text](https://i.imgur.com/tzed8c5.png)
-ou can make your backend in Python/Django/DjangoRestFramework, and then use React Native to make a android mobile app.
-![alt text](https://i.imgur.com/NckF65m.png)
-Previously based on PyQt5, transitioned to PySide2 as it is now the officially supported python binding for the  qt framework.
-
+Linux Word List (Dark Theme)
+![alt text](https://i.imgur.com/4kPtZYK.png)
+Windows 10 Word List (Dark Theme)
+![alt text](https://i.imgur.com/fseA91t.png)
+Windows 10 Word List (Light Theme)
+![alt text](https://i.imgur.com/ZV3hZyG.png)
+Windows 10 Typing (Dark Theme)
+![alt text](https://i.imgur.com/TGdY0jB.png)
 
 # Install notes
 $ pip install pyside2
-
 $ python3 callMainWindow.py
 
-It may be necessary to modify defined file paths in the code, since it may use a different path directory.
-(currently working on this)
+There are currently no binaries being built, only source code files for now.
 
-
-# Dependencies
+# Runtime Dependencies
 Python3
 SQLite3
 Pyside2
 
 # Release Plan
 > 1.0 Fully functioning
-> 0.9 UI enhancements/bug squashing
-> 0.8 Implement graphic handling to cards
-> 0.7 Statistics module working
-> 0.6 Game modules fully functional 
-> 0.5 Data IO functioning between user interaction (cards table) and database
+> 0.9 UI enhancements/bug squashing 
+> 0.8 Implement image handling to cards
+> 0.7b Statistics module working + binaries available
+> 0.6a Game modules fully functional 
+CURRENT RELEASE -> 0.5a Data IO functioning between user interaction (cards table) and database
 
 # Licensing
 MIT License
