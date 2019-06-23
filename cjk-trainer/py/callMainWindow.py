@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.n = StarDelegate(self.ui.tableView)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
         self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)
-        self.ui.lineEdit_searchQuery.textChanged.connect(self.loadWordTable)
+        self.ui.lineEdit_searchQuery.textChanged.connect(lambda: self.loadWordTable(starredOnly=self.ui.checkBox_starredOnly.isChecked()))
 
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
@@ -139,31 +139,27 @@ class MainWindow(QMainWindow):
 
     def loadWordTable(self, shuffle:bool=False, starredOnly:bool=False):
         query = self.ui.lineEdit_searchQuery.text()
+        deckName = self.ui.deckList.currentItem().text()
         self.model.setTable("CARDS")
         command = ("DECK_ID=\"{}\""
                  " AND (DEFINITION LIKE \"%{}%\""
                  " OR VOCABULARY LIKE \"%{}%\""
-                 " OR PRONUNCIATION LIKE \"%{}%\")").format(self.nameOfCurrentDeck, query, query, query)
+                 " OR PRONUNCIATION LIKE \"%{}%\")").format(deckName, query, query, query)
         if starredOnly:
-            command += "AND IS_STARRED=TRUE "
+            command += "AND IS_STARRED=TRUE"
         if shuffle:
-            command += "ORDER BY RANDOM()"
+            command += " ORDER BY RANDOM()"
             self.ui.tableView.setSortingEnabled(False)
-        print(self.model.selectStatement())
-        print(self.model.filter())
-        print(self.model.orderByClause())
+
         self.model.setFilter(command)
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
+        print(self.model.selectStatement())
         self.model.select()
         self.model.setHeaderData(2, Qt.Horizontal, "⭐")
         if self.model.rowCount() > 0:
             self.ui.tableView.setItemDelegateForColumn(2, self.n)
             self.ui.tableView.setModel(self.model)
-
-
-
-
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
 
@@ -330,7 +326,7 @@ class MainWindow(QMainWindow):
             self.ui.tab_typing.setEnabled(True)
             self.ui.tab_quiz.setEnabled(True)
             #self.reloadTableList(reset_checked=True)
-            self.loadDeckList()
+            #self.loadDeckList()
             #self.ui.deckList.setCurrentRow(0)
             print("Loaded :", self.nameOfCurrentDeck)
             return True
