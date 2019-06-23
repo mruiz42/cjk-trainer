@@ -20,7 +20,6 @@ from PySide2 import QtGui
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
 #Developer notes:
-# TODO SEPARATE "BUILT IN TABLES" (NON MODIFYABLE) & "USER DEFINED TABLES" (MODIFYABLE)
 # TODO 04) MANAGE BUILT IN DATA STRUCTURE TO STORE STUDY SET DATA
 # TODO 06) ADD OPTION FOR SHUFFLE AND SWAP DEFINITION/PRONUNCIATION/VOCABULARY FOR Q/A
 # TODO 07) CHECK IF THERES A BETTER WAY TO DISABLE TABS
@@ -30,8 +29,6 @@ from PySide2 import QtGui
 # TODO 11) ADD EXPORT TO CSV FUNCTION
 # TODO 12) ADD STAR THIS WORD CONTEXT MENU
 # TODO 13) ADD ABILITY TO RESET STATS
-# TODO 14) PARSE FOR PUNCTUATION ON CHECK ANSWER
-#   puncList = [".",";",":","!","?","/","\\",",","#","@","$","&",")","(","\""]
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -51,10 +48,6 @@ class MainWindow(QMainWindow):
         # self.database.createStatisticsTable()
         self.definitionLanguage = ""
         self.vocabularyLanguage = ""
-        self.indexOfAddedRowsSet = set()        # Index of queued card ids to be added from wordTable
-        self.indexOfModifiedRowsSet = set()     # Index of queued card ids to be modified from wordTable
-        self.indexOfDeletedCardsSet = set()      # Index of queued card ids to be deleted from wordTable
-
         self.deckListIndex = -1            # Index of current table in the deckList
         self.indexOfCurrentTab = 0              # Index of current tab in the tabBar
         self.nameOfCurrentDeck = ""            # Name of current table_name for the SQL TableName
@@ -65,18 +58,11 @@ class MainWindow(QMainWindow):
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.lineEdit_searchQuery.textChanged.connect(self.loadWordTable)
         self.n = StarDelegate(self.ui.tableView)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
-
-        self.ui.progressBar_typing.reset()
-        self.ui.progressBar_flashcards.reset()
-        self.ui.progressBar_quiz.reset()
-        self.ui.pushButton_enter.clicked.connect(self.typingExercise.submitAnswer)
-        self.ui.pushButton_notSure_Skip.clicked.connect(self.typingExercise.nextWord)
-        self.ui.pushButton_notSure_Skip.hide()
-        self.ui.lineEdit_answer.textEdited['QString'].connect(self.setTextEnter)
         self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)
+        self.ui.lineEdit_searchQuery.textChanged.connect(self.loadWordTable)
+
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
@@ -109,7 +95,6 @@ class MainWindow(QMainWindow):
         self.ui.checkBox_starredOnly.stateChanged.connect(self.starredButtonAction)
         self.ui.pushButton_shuffleDeck.clicked.connect(self.shuffleButtonAction)
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
-        self.indexOfAddedRowsSet.add(0)
         # self.ui.wordTable.setCurrentCell(0, 1)
         self.show()
 
@@ -129,10 +114,6 @@ class MainWindow(QMainWindow):
         self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
         self.ui.wordTable.itemChanged.connect(self.enableSave)
         self.reloadWordLabels()
-
-
-    def loadExercises(self):
-        self.typingExercise = VocabWordDeck()
 
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
@@ -192,7 +173,7 @@ class MainWindow(QMainWindow):
         # load study deck
         deck = []
         for row in range(0, self.model.rowCount()):
-            cn = self.model.data(self.model.index(row, 0))
+            cn = (self.model.data(self.model.index(row, 0)))
             star = (self.model.data(self.model.index(row, 2)))
             vocab = (self.model.data(self.model.index(row, 3)))
             defin = (self.model.data(self.model.index(row, 4)))
@@ -200,6 +181,9 @@ class MainWindow(QMainWindow):
             card = VocabWord(cn, star, vocab, defin, pronun)
             deck.append(card)
         self.loadStudySet(deck)
+        self.typingExercise.resetUi()
+        self.quizExercise.resetUi()
+        self.flashcardExercise.resetUi()
 
     def reloadWordTable(self):
         self.model.revertAll()
@@ -324,9 +308,6 @@ class MainWindow(QMainWindow):
             return False
         return super(MainWindow, self).eventFilter(source, event)
 
-    def setTextEnter(self):
-        win.ui.pushButton_enter.setText("Enter")
-
     def resetProgressBars(self):
         win.ui.progressBar_typing.reset()
         win.ui.progressBar_typing.setRange(0, len(self.wordDeck.studyList))
@@ -407,7 +388,7 @@ def setDarkStyleSheet(qApp:QApplication):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    setDarkStyleSheet(app)
+    #setDarkStyleSheet(app)
 
 
     win = MainWindow()

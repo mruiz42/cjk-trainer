@@ -10,7 +10,6 @@ class VocabWord:
         self.timesCorrect = tc
         self.dateStudied = ds
     def __str__(self):
-
         return self.vocabulary + "," + self.definition + "," + self.pronunciation +\
                ", c" + str(self.timesCorrect) + ":a" + str(self.timesAttempted)
 

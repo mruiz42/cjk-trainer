@@ -33,7 +33,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../../../../.designer/ico/appicon.png</normaloff>../../../../../../.designer/ico/appicon.png</iconset>
+    <normaloff>../../../../../../../../../.designer/ico/appicon.png</normaloff>../../../../../../../../../.designer/ico/appicon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -495,12 +495,12 @@
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_18">
                 <item>
-                 <widget class="QLabel" name="label_typingAttempted">
+                 <widget class="QLabel" name="label_typingCorrect">
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
                   <property name="text">
-                   <string>Times Attempted:</string>
+                   <string>Times Correct:</string>
                   </property>
                  </widget>
                 </item>
@@ -787,7 +787,7 @@
                <enum>QLayout::SetDefaultConstraint</enum>
               </property>
               <item>
-               <widget class="QPushButton" name="pushButton_know">
+               <widget class="QPushButton" name="pushButton_quizKnow">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -806,7 +806,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_dontKnow">
+               <widget class="QPushButton" name="pushButton_quizDontKnow">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -823,39 +823,6 @@
                  <string>Don't Know</string>
                 </property>
                </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_9">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_15">
-                <item>
-                 <widget class="QCheckBox" name="checkBox_autoPlay">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Autoplay</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </item>
              </layout>
             </item>
