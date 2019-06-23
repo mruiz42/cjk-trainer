@@ -60,7 +60,6 @@ class TypingExercise():
         self.mainWindow.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
         self.mainWindow.ui.pushButton_notSure_Skip.hide()
         self.mainWindow.ui.lineEdit_answer.textEdited['QString'].connect(lambda: self.mainWindow.ui.pushButton_enter.setText("Enter"))
-    #test commit
     def setStatLabels(self):
         cn = self.wordDeck.cardNum
         timesCorrect = self.wordDeck.studyList[cn].timesCorrect
