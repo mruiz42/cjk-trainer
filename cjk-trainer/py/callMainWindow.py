@@ -145,19 +145,29 @@ class MainWindow(QMainWindow):
                  " OR VOCABULARY LIKE \"%{}%\""
                  " OR PRONUNCIATION LIKE \"%{}%\")").format(self.nameOfCurrentDeck, query, query, query)
         if starredOnly:
-            command += "AND IS_STARRED=TRUE"
+            command += "AND IS_STARRED=TRUE "
         if shuffle:
             command += "ORDER BY RANDOM()"
+            self.ui.tableView.setSortingEnabled(False)
         print(self.model.selectStatement())
+        print(self.model.filter())
+        print(self.model.orderByClause())
         self.model.setFilter(command)
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
         self.model.select()
         self.model.setHeaderData(2, Qt.Horizontal, "⭐")
-        self.ui.tableView.setItemDelegateForColumn(2, self.n)
-        self.ui.tableView.setModel(self.model)
+        if self.model.rowCount() > 0:
+            self.ui.tableView.setItemDelegateForColumn(2, self.n)
+            self.ui.tableView.setModel(self.model)
+
+
+
+
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
+
+
 
         # load study deck
         deck = []
@@ -346,7 +356,7 @@ class MainWindow(QMainWindow):
 
     def starredButtonAction(self):
         starredState = self.ui.checkBox_starredOnly.isChecked()
-        self.loadWordTable(self.deckListIndex, starredOnly=starredState)
+        self.loadWordTable(shuffle=False, starredOnly=starredState)
         self.reloadWordLabels()
 
     def loadDeckList(self):

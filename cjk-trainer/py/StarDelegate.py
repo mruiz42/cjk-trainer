@@ -6,6 +6,9 @@ class StarDelegate(QStyledItemDelegate):
         super().__init__(parent)
         self.parent = parent
     def paint(self, painter, option, index):
+        # TODO Bug where enabling delegate creation will use high amount of cpu indefinitely
+        #  Possible infinite loop
+
         chk_bx = self.parent.indexWidget(index)
         if not chk_bx:
             chk_bx = QCheckBox()
@@ -16,10 +19,13 @@ class StarDelegate(QStyledItemDelegate):
             chk_bx.setGeometry(option.rect)
             self.parent.setIndexWidget(index, chk_bx)
             chk_bx.clicked.connect(lambda: self.onClick(index, self.parent.model()))
-        if index.data() == 0:
-            chk_bx.setCheckState(QtCore.Qt.CheckState.Unchecked)
-        elif index.data() == 1:
-            chk_bx.setCheckState(QtCore.Qt.CheckState.Checked)
+
+            if index.data() == 0:
+                chk_bx.setCheckState(QtCore.Qt.CheckState.Unchecked)
+            elif index.data() == 1:
+                chk_bx.setCheckState(QtCore.Qt.CheckState.Checked)
+        else:
+            return
 
     def onClick(self,index, model):
         if index.data() == 0:
