@@ -160,26 +160,27 @@ class MainWindow(QMainWindow):
         self.model.setHeaderData(2, Qt.Horizontal, "⭐")
         if self.model.rowCount() > 0:
             self.ui.tableView.setItemDelegateForColumn(2, self.n)
+            while self.model.canFetchMore():
+                self.model.fetchMore()
+                print(self.model.rowCount())
             self.ui.tableView.setModel(self.model)
-        self.ui.tableView.hideColumn(0)
-        self.ui.tableView.hideColumn(1)
 
-
-
-        # load study deck
-        deck = []
-        for row in range(0, self.model.rowCount()):
-            cn = (self.model.data(self.model.index(row, 0)))
-            star = (self.model.data(self.model.index(row, 2)))
-            vocab = (self.model.data(self.model.index(row, 3)))
-            defin = (self.model.data(self.model.index(row, 4)))
-            pronun = (self.model.data(self.model.index(row, 5)))
-            card = VocabWord(cn, star, vocab, defin, pronun)
-            deck.append(card)
-        self.loadStudySet(deck)
-        self.typingExercise.resetUi()
-        self.quizExercise.resetUi()
-        self.flashcardExercise.resetUi()
+            self.ui.tableView.hideColumn(0)
+            self.ui.tableView.hideColumn(1)
+            # load study deck
+            deck = []
+            for row in range(0, self.model.rowCount()):
+                cn = (self.model.data(self.model.index(row, 0)))
+                star = (self.model.data(self.model.index(row, 2)))
+                vocab = (self.model.data(self.model.index(row, 3)))
+                defin = (self.model.data(self.model.index(row, 4)))
+                pronun = (self.model.data(self.model.index(row, 5)))
+                card = VocabWord(cn, star, vocab, defin, pronun)
+                deck.append(card)
+            self.loadStudySet(deck)
+            self.typingExercise.resetUi()
+            self.quizExercise.resetUi()
+            self.flashcardExercise.resetUi()
 
     def revertWordTable(self):
         self.model.revertAll()
@@ -384,7 +385,7 @@ def setDarkStyleSheet(qApp:QApplication):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    #setDarkStyleSheet(app)
+    setDarkStyleSheet(app)
 
 
     win = MainWindow()
