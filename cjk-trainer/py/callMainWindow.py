@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.setObjectName("buttonBox_wordList")
         # Added buttonBox_wordList bindings
         self.ui.buttonBox_wordList.accepted.connect(self.saveTable)
-        self.ui.buttonBox_wordList.rejected.connect(self.reloadWordTable)
+        self.ui.buttonBox_wordList.rejected.connect(self.revertWordTable)
         # Install tabBar Scroll event filter
         eater = KeyPressEater(self, self.ui.tabBar)
         self.ui.tabBar.installEventFilter(eater)
@@ -100,19 +100,8 @@ class MainWindow(QMainWindow):
 
     def shuffleButtonAction(self):
         starredState = self.ui.checkBox_starredOnly.checkState()
-        self.ui.wordTable.blockSignals(True)  # Prevent a bug where cell changes would occur on table loading
-        self.ui.wordTable.clearContents()
-        self.wordDeck.shuffleStudySet()
-        lineNo = 0
-        for i in self.wordDeck.studyList:
-            cell_widget = self.createStarCellWidget(i.isStarred)
-            self.ui.wordTable.setCellWidget(lineNo, 1, cell_widget)
-            self.ui.wordTable.setItem(lineNo, 2, QtWidgets.QTableWidgetItem(str(i.vocabulary)))
-            self.ui.wordTable.setItem(lineNo, 3, QtWidgets.QTableWidgetItem(str(i.definition)))
-            self.ui.wordTable.setItem(lineNo, 4, QtWidgets.QTableWidgetItem(str(i.pronunciation)))
-            lineNo += 1
-        self.ui.wordTable.blockSignals(False)  # Prevent a bug where cell changes would occur on table loading
-        self.ui.wordTable.itemChanged.connect(self.enableSave)
+        #self.wordDeck.shuffleStudySet()
+        self.loadWordTable(shuffle=True, starredOnly=starredState)
         self.reloadWordLabels()
 
     def enableSave(self):
@@ -131,8 +120,6 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.setDisabled(True)
         self.ui.tableView.setSortingEnabled(True)
 
-
-
     def deckListClicked(self, index:QtCore.QModelIndex):
         print(self.deckListIndex, index.row())
         if index.row() == self.deckListIndex:
@@ -141,7 +128,7 @@ class MainWindow(QMainWindow):
             self.ui.checkBox_starredOnly.setChecked(False)
             self.deckListIndex = index.row()
             self.nameOfCurrentDeck = index.data()
-            self.loadWordTable(self.deckListIndex)
+            self.loadWordTable()
             self.ui.label_selectedDeck.setText(index.data())
             self.ui.tableView.setColumnWidth(2, 30)
             self.ui.tableView.setColumnWidth(3, 200)
@@ -150,16 +137,18 @@ class MainWindow(QMainWindow):
             self.ui.buttonBox_wordList.setDisabled(True)
             self.ui.tableView.setSortingEnabled(True)
 
-    def loadWordTable(self, index:int, shuffle:bool=False, starredOnly:bool=False):
+    def loadWordTable(self, shuffle:bool=False, starredOnly:bool=False):
         query = self.ui.lineEdit_searchQuery.text()
         self.model.setTable("CARDS")
         command = ("DECK_ID=\"{}\""
                  " AND (DEFINITION LIKE \"%{}%\""
                  " OR VOCABULARY LIKE \"%{}%\""
                  " OR PRONUNCIATION LIKE \"%{}%\")").format(self.nameOfCurrentDeck, query, query, query)
-        if starredOnly == True:
+        if starredOnly:
             command += "AND IS_STARRED=TRUE"
-
+        if shuffle:
+            command += "ORDER BY RANDOM()"
+        print(self.model.selectStatement())
         self.model.setFilter(command)
         self.ui.tableView.hideColumn(0)
         self.ui.tableView.hideColumn(1)
@@ -185,7 +174,7 @@ class MainWindow(QMainWindow):
         self.quizExercise.resetUi()
         self.flashcardExercise.resetUi()
 
-    def reloadWordTable(self):
+    def revertWordTable(self):
         self.model.revertAll()
         self.ui.buttonBox_wordList.setDisabled(True)
         print(self.model.lastError().databaseText())
