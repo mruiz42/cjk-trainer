@@ -91,8 +91,15 @@ class TypingExercise():
         self.mainWindow.ui.label_typingWord.setText("Oops! Correct answer is:\n" + answerLabelStr)
         self.mainWindow.ui.pushButton_notSure_Skip.setText("I was right")
         self.mainWindow.ui.pushButton_notSure_Skip.clicked.disconnect()
-        self.mainWindow.ui.pushButton_notSure_Skip.clicked.connect(self.nextWord)
+        self.mainWindow.ui.pushButton_notSure_Skip.clicked.connect(self.wasRight)
         self.mainWindow.ui.lineEdit_answer.setPlaceholderText("Enter the correct answer")
+
+    def wasRight(self):
+        cn = self.wordDeck.cardNum
+        print(self.wordDeck.studyList[cn])
+        self.wordDeck.studyList[cn].timesAttempted -= 1
+        print(self.wordDeck.studyList[cn])
+        self.nextWord()
 
     def unpauseUi(self, answer_list:str):
         userInputList = self.sanitizeInput(self.mainWindow.ui.lineEdit_answer.text())
@@ -100,7 +107,7 @@ class TypingExercise():
             print("ui unpauesd")
             self.mainWindow.ui.pushButton_enter.setText("Enter")
             self.mainWindow.ui.pushButton_enter.setEnabled(True)
-            self.mainWindow.ui.lineEdit_answer.textChanged.disconnect()
+            # self.mainWindow.ui.lineEdit_answer.textChanged.disconnect()
             self.mainWindow.ui.pushButton_enter.clicked.disconnect()
             self.mainWindow.ui.pushButton_enter.clicked.connect(self.nextWord)
         else:
@@ -147,6 +154,11 @@ class TypingExercise():
             self.mainWindow.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
             self.mainWindow.ui.pushButton_enter.clicked.disconnect()
             self.mainWindow.ui.pushButton_enter.clicked.connect(self.submitAnswer)
+            try:
+                self.mainWindow.ui.lineEdit_answer.textChanged.disconnect()
+            except RuntimeError:
+                print("didnt have connection?")
+            self.mainWindow.ui.pushButton_enter.setEnabled(True)
 
 
     def sanitizeInput(self, input_str:str):

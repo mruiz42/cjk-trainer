@@ -122,6 +122,7 @@ class MainWindow(QMainWindow):
 
     def deckListClicked(self, index:QtCore.QModelIndex):
         print(self.deckListIndex, index.row())
+        self.ui.lineEdit_searchQuery.clear()
         if index.row() == self.deckListIndex:
             print("Nothing to do")
         else:
