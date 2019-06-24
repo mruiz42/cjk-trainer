@@ -16,7 +16,7 @@ from QuizExercise import *
 from PySide2.QtCore import *
 from StarDelegate import *
 from PySide2 import QtGui
-
+from PySide2.QtGui import QPalette, QColor
 from PySide2.QtQuick import QQuickView
 from PySide2.QtCore import QUrl
 from PySide2 import QtQml
@@ -392,12 +392,21 @@ if __name__ == "__main__":
     #win.show()
     #win.loadDeckList()
     view = QQuickView()
-
+    container = QWidget.createWindowContainer(view, win)
     view.setSource(QUrl("../ui/view.qml"))
-
-    view.setMinimumHeight(430)
-    view.setMinimumWidth(800)
-    # win.ui.horizontalLayout_2.addWidget(QWidget.createWindowContainer(view, win))
+    view.setClearBeforeRendering(True)
+    container.setMinimumHeight(430)
+    container.setMinimumWidth(800)
+    container.setAutoFillBackground(True)
+    clear = QColor(67,67,0)
+    clear.setAlpha(0)
+    view.setColor(clear)
+    geom = QRect(60, 80, 880, 880)
+    win.ui.horizontalLayout_2.setGeometry(geom)
+    win.ui.horizontalLayout_2.addWidget(container, alignment=Qt.AlignCenter)
+    print(view.Ready)
+    print(view.errors())
+    view.raise_()
     view.show()
 
 
