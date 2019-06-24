@@ -15,14 +15,13 @@ class ConfirmDeleteTable(QtWidgets.QDialog):
 
     def setTableName(self, tableName):
         self.tableName = tableName
-        self.cDTD.label.setText("Are you sure you want to delete the table:\n"+ tableName + "\nTHIS CANNOT BE UNDONE ")
+        self.cDTD.label.setText("Are you sure you want to delete the table:\n"+ tableName + "\nTHIS CANNOT BE UNDONE!")
 
     def deleteConfirmed(self):
         print("Deleting table: ", self.tableName)
         self.mainWindow.database.deleteDeck(self.tableName)
-        # self.mainWindow.reloadTableList()
         self.mainWindow.loadDeckList()
-        self.mainWindow.ui.wordTable.clear()
-        self.mainWindow.ui.wordTable.setHorizontalHeaderLabels(['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
+        #self.mainWindow.ui.wordTable.clear()
+        #self.mainWindow.ui.wordTable.setHorizontalHeaderLabels(['Index', 'Starred', 'Vocabulary', 'Definition', 'Pronunciation'])
 
 

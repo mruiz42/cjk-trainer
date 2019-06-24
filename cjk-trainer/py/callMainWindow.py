@@ -16,6 +16,10 @@ from QuizExercise import *
 from PySide2.QtCore import *
 from StarDelegate import *
 from PySide2 import QtGui
+
+from PySide2.QtQuick import QQuickView
+from PySide2.QtCore import QUrl
+from PySide2 import QtQml
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
@@ -46,6 +50,7 @@ class MainWindow(QMainWindow):
         # self.database.createCardsTable()
         # self.database.createSessionsTable()
         # self.database.createStatisticsTable()
+
         self.definitionLanguage = ""
         self.vocabularyLanguage = ""
         self.deckListIndex = -1            # Index of current table in the deckList
@@ -58,14 +63,20 @@ class MainWindow(QMainWindow):
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+
+
+
+
+        self.ui.tab_flashcards.setEnabled(False)
+        self.ui.tab_typing.setEnabled(False)
+        self.ui.tab_quiz.setEnabled(False)
         self.n = StarDelegate(self.ui.tableView)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
         self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)
         self.ui.lineEdit_searchQuery.textChanged.connect(lambda: self.loadWordTable(starredOnly=self.ui.checkBox_starredOnly.isChecked()))
 
-        self.ui.tab_flashcards.setEnabled(False)
-        self.ui.tab_typing.setEnabled(False)
-        self.ui.tab_quiz.setEnabled(False)
+
         # self.ui.wordTable.installEventFilter(self)
         # Added - Prevent user from dragging list view objs
         self.ui.deckList.setDragEnabled(False)
@@ -95,7 +106,8 @@ class MainWindow(QMainWindow):
         self.ui.checkBox_starredOnly.stateChanged.connect(self.starredButtonAction)
         self.ui.pushButton_shuffleDeck.clicked.connect(self.shuffleButtonAction)
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
-        # self.ui.wordTable.setCurrentCell(0, 1)
+
+        self.loadDeckList()
         self.show()
 
     def shuffleButtonAction(self):
@@ -243,22 +255,6 @@ class MainWindow(QMainWindow):
         self.model.insertRecord(self.model.rowCount(), record)
         print(record.count())
 
-
-
-    def updateTableRow(self):
-        print("Updating row..",self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
-        self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow(), self.ui.wordTable.currentColumn())
-        self.ui.wordTable.editItem(self.ui.wordTable.item(self.ui.wordTable.currentRow(),self.ui.wordTable.currentColumn()))
-
-    def deleteTableRow(self):
-        print("Deleting row: ", self.ui.wordTable.currentRow())
-
-        cardNumToDel = self.ui.wordTable.item(self.ui.wordTable.currentRow(), 0).text()
-        self.indexOfDeletedCardsSet.add(cardNumToDel)
-        self.ui.wordTable.removeRow(self.ui.wordTable.currentRow())
-        self.ui.buttonBox_wordList.setEnabled(True)
-        print(self.indexOfDeletedCardsSet)
-
     def openNewTableDialog(self, type:str="create"):
         if type == "create":
             self.w = DeckNamePrompt(self)
@@ -287,23 +283,24 @@ class MainWindow(QMainWindow):
         #print("entered event filter ")
         #print(event.type())
         # If tab press signaled in wordTable widget
-        if (event.type() == QtCore.QEvent.KeyRelease and source == self.ui.wordTable):
-            if event.key() == QtCore.Qt.Key_Tab:
-                #print(self.ui.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", bself.wordTable.rowCount(), self.wordTable.columnCount()
-
-                if self.ui.wordTable.currentColumn() == 5:
-                    if self.ui.wordTable.currentIndex().row() == self.ui.wordTable.rowCount() - 1:
-                        self.insertTableRow()
-                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 2)
-                    self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
-
-
-            elif event.key() == QtCore.Qt.Key_Backtab:
-                if self.ui.wordTable.currentColumn() == 1:
-                    self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() - 1, 4)
-                    self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
-            return False
-        return super(MainWindow, self).eventFilter(source, event)
+        # if (event.type() == QtCore.QEvent.KeyRelease and source == self.ui.wordTable):
+        #     if event.key() == QtCore.Qt.Key_Tab:
+        #         #print(self.ui.wordTable.currentIndex().row(), self.wordTable.currentIndex().column(), "/", bself.wordTable.rowCount(), self.wordTable.columnCount()
+        #
+        #         if self.ui.wordTable.currentColumn() == 5:
+        #             if self.ui.wordTable.currentIndex().row() == self.ui.wordTable.rowCount() - 1:
+        #                 self.insertTableRow()
+        #             self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() +1, 2)
+        #             self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
+        #
+        #
+        #     elif event.key() == QtCore.Qt.Key_Backtab:
+        #         if self.ui.wordTable.currentColumn() == 1:
+        #             self.ui.wordTable.setCurrentCell(self.ui.wordTable.currentRow() - 1, 4)
+        #             self.ui.wordTable.editItem(self.ui.wordTable.currentItem())
+        #     return False
+        # return super(MainWindow, self).eventFilter(source, event)
+        pass
 
     def resetProgressBars(self):
         win.ui.progressBar_typing.reset()
@@ -387,18 +384,27 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     setDarkStyleSheet(app)
 
-
+    # view = QQuickView()
+    # url = QUrl("../ui/view.qml")
+    # view.setSource(url)
+    # view.show()
     win = MainWindow()
-    win.show()
-    win.loadDeckList()
+    #win.show()
+    #win.loadDeckList()
+    view = QQuickView()
 
+    view.setSource(QUrl("../ui/view.qml"))
+
+    view.setMinimumHeight(430)
+    view.setMinimumWidth(800)
+    # win.ui.horizontalLayout_2.addWidget(QWidget.createWindowContainer(view, win))
+    view.show()
 
 
     #win.reloadTableList()
     # win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
     # print(win.nameOfCurrentTable)
     # win.loadWordTable(0)
-    # win.reloadWordTable()
 
 
 

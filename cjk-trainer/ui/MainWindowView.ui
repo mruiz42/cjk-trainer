@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1249</width>
-    <height>627</height>
+    <width>1239</width>
+    <height>732</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -468,6 +468,13 @@
             </property>
            </widget>
           </item>
+          <item row="5" column="5">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Number of Cards: </string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="tab_typing">
@@ -641,7 +648,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QLabel" name="label_fractionCorrect">
+               <widget class="QLabel" name="label_typingFractionCorrect">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -1033,6 +1040,38 @@
          <attribute name="title">
           <string>Statistics</string>
          </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QComboBox" name="comboBox_sessions">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_removeSession">
+              <property name="text">
+               <string>Delete</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="3">
+           <widget class="QComboBox" name="comboBox_statistics"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QTableView" name="tableView_sessionData"/>
+          </item>
+          <item row="1" column="3">
+           <widget class="QGraphicsView" name="graphicsView_statistics"/>
+          </item>
+         </layout>
         </widget>
        </widget>
       </item>
@@ -1045,7 +1084,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1249</width>
+     <width>1239</width>
      <height>30</height>
     </rect>
    </property>

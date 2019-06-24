@@ -81,7 +81,7 @@ class TypingExercise():
         answerLabelStr = self.wordDeck.studyList[cn].definition
         self.missedWorkDeck.append(self.wordDeck.studyList[cn])
 
-        self.mainWindow.ui.label_fractionCorrect.setText("%" + str(percentLabelStr))
+        self.mainWindow.ui.label_typingFractionCorrect.setText("%" + str(percentLabelStr))
         #self.mainWindow.ui.pushButton_enter.setText("Enter")
 
 
@@ -137,7 +137,7 @@ class TypingExercise():
 
     def nextWord(self):
         self.mainWindow.ui.progressBar_typing.setValue(self.wordDeck.cardNum +1)
-        self.mainWindow.ui.label_fractionCorrect.clear()
+        self.mainWindow.ui.label_typingFractionCorrect.clear()
         print(self.wordDeck.cardNum+1, " of ", len(self.wordDeck.studyList))
         if self.wordDeck.cardNum == len(self.wordDeck.studyList):
             print("END GAME")

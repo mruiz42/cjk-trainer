@@ -40,6 +40,7 @@ class SqlTools():
         command = ("CREATE TABLE IF NOT EXISTS SESSIONS"
                    "(START_TIME DATE PRIMARY KEY,"
                    "DECK_ID TEXT, "
+                   # "SESSION_TYPE TEXT, "
                    "FOREIGN KEY(DECK_ID) REFERENCES DECKS(DECK_ID));")
         self.db.execute(command)
         self.db.commit()
