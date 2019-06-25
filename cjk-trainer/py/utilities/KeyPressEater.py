@@ -1,6 +1,8 @@
 from PySide2.QtCore import QObject, QEvent
 from callChangeTabDialog import *
-
+from TypingExercise import *
+from FlashcardExercise import *
+from QuizExercise import *
 class KeyPressEater(QObject):
     def __init__(self, mainWindow, parent=None):
         if not parent:
@@ -23,7 +25,24 @@ class KeyPressEater(QObject):
                     self.tabDialog.show()
                     return True
                 else:
+                    if self.mainWindow.ui.tabBar.tabAt(event.pos()) == 1:
+                        print("BEGIN NEW SESSION, CREATE TYPING EXERCISE OBJECTS AND ADD DATE TO DATABASE")
+                        self.typingExercise = TypingExercise(self.mainWindow, self.mainWindow.wordDeck)
+                        self.typingExercise.resetUi()
+
+                    elif self.mainWindow.ui.tabBar.tabAt(event.pos()) == 2:
+                        self.flashcardExercise = FlashcardExercise(self.mainWindow, self.mainWindow.wordDeck)
+                        self.flashcardExercise.resetUi()
+
+                        print("BEGIN NEW SESSION, CREATE FLASHCARD EXERCISE OBJECTS AND ADD DATE TO DATABASE")
+
+                    elif self.mainWindow.ui.tabBar.tabAt(event.pos()) == 3:
+                        self.quizExercise = QuizExercise(self.mainWindow, self.mainWindow.wordDeck)  # Object for controlling quiz module
+                        print("BEGIN NEW SESSION, CREATE QUIZ EXERCISE OBJECTS AND ADD DATE TO DATABASE")
+                        self.quizExercise.resetUi()
+
                     self.mainWindow.indexOfCurrentTab = self.mainWindow.ui.tabBar.tabAt(event.pos())
+
                     return False
         else:
             # standard event processing

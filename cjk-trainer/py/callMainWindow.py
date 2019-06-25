@@ -57,9 +57,6 @@ class MainWindow(QMainWindow):
         self.indexOfCurrentTab = 0              # Index of current tab in the tabBar
         self.nameOfCurrentDeck = ""            # Name of current table_name for the SQL TableName
         self.wordDeck = VocabWordDeck(self)     # Storage container for vocabWord objects
-        self.typingExercise = TypingExercise(self, self.wordDeck)           # Object for controlling typing module
-        self.flashcardExercise = FlashcardExercise(self, self.wordDeck)     # Object for controlling flashcard module
-        self.quizExercise = QuizExercise(self, self.wordDeck)               # Object for controlling quiz module
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -190,9 +187,7 @@ class MainWindow(QMainWindow):
                 card = VocabWord(cn, star, vocab, defin, pronun)
                 deck.append(card)
             self.loadStudySet(deck)
-            self.typingExercise.resetUi()
-            self.quizExercise.resetUi()
-            self.flashcardExercise.resetUi()
+
 
     def revertWordTable(self):
         self.model.revertAll()

@@ -1248,6 +1248,30 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>deckList</tabstop>
+  <tabstop>lineEdit_searchQuery</tabstop>
+  <tabstop>pushButton_search</tabstop>
+  <tabstop>tableView</tabstop>
+  <tabstop>toolButton_add</tabstop>
+  <tabstop>pushButton_wordList_select</tabstop>
+  <tabstop>pushButton_shuffleDeck</tabstop>
+  <tabstop>checkBox_starredOnly</tabstop>
+  <tabstop>pushButton_notSure_Skip</tabstop>
+  <tabstop>pushButton_enter</tabstop>
+  <tabstop>lineEdit_answer</tabstop>
+  <tabstop>pushButton_quizKnow</tabstop>
+  <tabstop>pushButton_quizDontKnow</tabstop>
+  <tabstop>pushButton_quizChoice1</tabstop>
+  <tabstop>pushButton_quizChoice2</tabstop>
+  <tabstop>pushButton_quizChoice3</tabstop>
+  <tabstop>pushButton_quizChoice4</tabstop>
+  <tabstop>comboBox_sessions</tabstop>
+  <tabstop>pushButton_removeSession</tabstop>
+  <tabstop>comboBox_statistics</tabstop>
+  <tabstop>tableView_sessionData</tabstop>
+  <tabstop>graphicsView_statistics</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -1261,8 +1285,8 @@
      <y>641</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1320</x>
-     <y>646</y>
+     <x>1219</x>
+     <y>669</y>
     </hint>
    </hints>
   </connection>
