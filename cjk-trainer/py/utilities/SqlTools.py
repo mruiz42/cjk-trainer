@@ -281,7 +281,6 @@ class SqlTools():
         else:
             t = (table_name, )
 
-
         cur = self.db.execute(command, t)
         result = cur.fetchall()
         return result
