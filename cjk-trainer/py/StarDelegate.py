@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import *
 from PySide2 import QtCore
-from SqlTools import *
+from utilities.SqlTools import *
 class StarDelegate(QStyledItemDelegate):
     def __init__(self, parent):
         super().__init__(parent)
