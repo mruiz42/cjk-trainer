@@ -84,9 +84,10 @@ class SqlTools():
         self.db.executemany(command, tuple_List)
         self.db.commit()
 
-    def insertSession(self, rows):
-        '''tuple: (DECK_ID)'''
-        command = "INSERT INTO SESSIONS VALUES((SELECT strftime('%s','now')), DECK_ID=?)"
+    def insertSession(self, rows:tuple):
+        '''tuple: (START_TIME, DECK_ID)'''
+        # command = "INSERT INTO SESSIONS VALUES((SELECT strftime('%s','now')), DECK_ID=?)"
+        command = "INSERT INTO SESSIONS VALUES(START_TIME=?, DECK_ID=?)"
         self.db.execute(command, rows)
         self.db.commit()
 

@@ -1,5 +1,4 @@
 class VocabWord:
-
     def __init__(self, cn, isStarred, v, d, p = "", tc = 0, ta = 0, ds = ""):
         self.cardNum = cn
         self.isStarred = isStarred
@@ -9,7 +8,8 @@ class VocabWord:
         self.timesAttempted = ta
         self.timesCorrect = tc
         self.dateStudied = ds
+
     def __str__(self):
-        return self.vocabulary + "," + self.definition + "," + self.pronunciation +\
+        return str(self.cardNum) + str(self.isStarred) + self.vocabulary + "," + self.definition + "," + self.pronunciation +\
                ", c" + str(self.timesCorrect) + ":a" + str(self.timesAttempted)
 

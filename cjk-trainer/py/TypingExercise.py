@@ -1,16 +1,21 @@
 from VocabWord import *
 from VocabWordDeck import *
+from StarDelegate import *
 from callReview import *
 from datetime import *
+from SqlTools import *
 from PySide2.QtGui import QStandardItemModel, QStandardItem
 class TypingExercise():
     def __init__(self, main_window, word_deck, parent=None):
         super(TypingExercise, self).__init__()
         self.win = main_window
         self.wordDeck = word_deck
-        self.missedWorkDeck = list()
-        self.startTime = datetime.now()
+        self.model = QStandardItemModel()                       # Model used for displaying review session data
+        self.missedWordSet = set()                              # Set used to keep track of all missed words
+        self.reviewSet = set()
+        self.startTime = datetime.datetime.now()
         print("Started session at: ", self.startTime)
+
 
     def resetUi(self):
         #self.mainWindow.ui.progressBar_typing.reset()
@@ -59,6 +64,7 @@ class TypingExercise():
         return False
 
     def submitAnswer(self):
+        currWordData = self.wordDeck.studyList[self.wordDeck.cardNum]
         userInput = self.win.ui.lineEdit_answer.text()
         answer = self.wordDeck.studyList[self.wordDeck.cardNum].definition
         userInputList = self.buildAnswerList(userInput)
@@ -67,11 +73,13 @@ class TypingExercise():
         # Check answer list against user input list
         if self.compareAnswerLists(userInputList, answerList):
             self.proceedUi()
-            print("Current word data: ", self.wordDeck.studyList[self.wordDeck.cardNum])
-
+            print("Current word data: ", currWordData)
+            self.reviewSet.add(currWordData)
         else:
             self.pauseUi(answerList)
-            print("Current word data: ", self.wordDeck.studyList[self.wordDeck.cardNum])
+            print("Current word data: ", currWordData)
+            self.missedWordSet.add(currWordData)
+
 
     def pauseUi(self, answer_list:list):
 
@@ -84,7 +92,6 @@ class TypingExercise():
         self.win.ui.lineEdit_answer.textChanged.connect(lambda: self.unpauseUi(answer_list))
         percentLabelStr = self.wordDeck.calcPercentageCorrect()
         answerLabelStr = self.wordDeck.studyList[cn].definition
-        self.missedWorkDeck.append(self.wordDeck.studyList[cn])
 
         self.win.ui.label_typingFractionCorrect.setText("%" + str(percentLabelStr))
         #self.mainWindow.ui.pushButton_enter.setText("Enter")
@@ -129,10 +136,12 @@ class TypingExercise():
         self.win.ui.label_typingFractionCorrect.setText("%" + str(percent))
         self.win.ui.label_typingWord.setText("Correct!\n" + answer)
         self.win.ui.pushButton_enter.setText("Continue")
+
         if self.wordDeck.cardNum in self.wordDeck.summaryIndexList:
             print("OVERVIEW")
             print("Here are the words most commonly missed:")
-            for i in self.missedWorkDeck:
+            self.intermission()
+            for i in self.missedWordSet:
                 timesMissed = i.timesAttempted - i.timesCorrect
                 print(i, timesMissed)
         self.win.ui.lineEdit_answer.setPlaceholderText("Press Enter to continue")
@@ -144,24 +153,50 @@ class TypingExercise():
         ''' This function will serve as a breakpoint in the typing module where the user can review their progress
         and the program will make a call to save session data into the database. '''
         review = ReviewDialog(self.win)
-        model = QStandardItemModel()
-        for i in self.wordDeck.missedWordList:
+        combinedSet = self.missedWordSet | self.reviewSet
+        self.model.clear()
+        for i in combinedSet:
             # IS_STARRED, WORD, DEFINITION, PRONUN, TC, TM
+            cardNum = QStandardItem(str(i.cardNum))
             timesMissed = i.timesAttempted - i.timesCorrect
-
             isStarred = QStandardItem(str(i.isStarred))
+            isStarred.itemChanged.connect(lambda: self.changeStar(isStarred))
             vocabulary = QStandardItem(i.vocabulary)
             definition = QStandardItem(i.definition)
             pronunciation = QStandardItem(i.pronunciation)
             timesCorrect = QStandardItem(str(i.timesCorrect))
             timesMissed = QStandardItem(str(timesMissed))
-            row = [isStarred, vocabulary, definition, pronunciation, timesCorrect, timesMissed]
+            row = [cardNum, isStarred, vocabulary, definition, pronunciation, timesCorrect, timesMissed]
             print(i.timesAttempted, i.timesCorrect)
-            model.appendRow(row)
-        review.rd.tableView.setModel(model)
+            self.model.appendRow(row)
+        self.n = StarDelegate(review.rd .tableView)
+        headers = ["#", "⭐", "Vocabulary", "Definition", "Pronunciation", "# Correct", "# Missed"]
+        self.model.sort(5)
+        review.rd.tableView.setItemDelegateForColumn(1, self.n)
+        self.model.setHorizontalHeaderLabels(headers)
+        review.rd.tableView.setColumnWidth(0, 40)
+        review.rd.tableView.setModel(self.model)
         review.rd.tableView.sortByColumn(5)
         review.show()
 
+    def changeStar(self, index, isStarred:QStandardItem):
+
+        if isStarred.text() == 0:
+            isStarred.setText(1)
+        elif isStarred.text() == 1:
+            isStarred.setText(0)
+    def updateSession(self):
+        pass
+        # Read from model
+        # for n in range (0, len(self.model.rowCount)):
+        #     if self.model.item(n, 1).text() != :
+        DATABASE_PATH = '../data/vocab2.db'
+        database = SqlTools(self.DATABASE_PATH)
+        combinedSet = self.missedWordSet | self.reviewSet
+        rows = (self.startTime, self.win.nameOfCurrentDeck)
+        database.insertSession(rows)
+
+        database.close()
 
     def nextWord(self):
         self.win.ui.progressBar_typing.setValue(self.wordDeck.cardNum + 1)
@@ -182,7 +217,6 @@ class TypingExercise():
             self.win.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
             self.win.ui.pushButton_enter.clicked.disconnect()
             self.win.ui.pushButton_enter.clicked.connect(self.submitAnswer)
-            self.intermission()
             try:
                 self.win.ui.lineEdit_answer.textChanged.disconnect()
             except RuntimeError:

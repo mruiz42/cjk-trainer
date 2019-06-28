@@ -5,6 +5,7 @@ class StarDelegate(QStyledItemDelegate):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+
     def paint(self, painter, option, index):
         # TODO Bug where enabling delegate creation will use high amount of cpu indefinitely
         #  Possible infinite loop
@@ -28,14 +29,12 @@ class StarDelegate(QStyledItemDelegate):
             return
 
     def onClick(self,index, model):
+        switchedVal = -1
         if index.data() == 0:
             switchedVal = 1
         elif index.data() == 1:
             switchedVal = 0
         model.setData(index, switchedVal)
-
-
-
 
         # chk_bx.stateChanged.connect(self.mainWindow.updateStarredValue)
         # lay_out = QHBoxLayout(chk_bx)
@@ -43,7 +42,6 @@ class StarDelegate(QStyledItemDelegate):
         # lay_out.setAlignment(QtCore.Qt.AlignCenter)
         # lay_out.setContentsMargins(0,0,0,0)
         # chk_bx.stateChanged.connect()
-
 
 '''         # print("Creating ⭐ cell widget")
             chk_bx = QCheckBox()
@@ -60,4 +58,4 @@ class StarDelegate(QStyledItemDelegate):
             # lay_out.setContentsMargins(0,0,0,0)
             chk_bx.stateChanged.connect(self.updateStarredValue)
             return chk_bx
-            '''
+'''
