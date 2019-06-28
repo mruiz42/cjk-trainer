@@ -137,13 +137,7 @@ class TypingExercise():
         self.win.ui.label_typingWord.setText("Correct!\n" + answer)
         self.win.ui.pushButton_enter.setText("Continue")
 
-        if self.wordDeck.cardNum in self.wordDeck.summaryIndexList:
-            print("OVERVIEW")
-            print("Here are the words most commonly missed:")
-            self.intermission()
-            for i in self.missedWordSet:
-                timesMissed = i.timesAttempted - i.timesCorrect
-                print(i, timesMissed)
+
         self.win.ui.lineEdit_answer.setPlaceholderText("Press Enter to continue")
         self.win.ui.lineEdit_answer.setDisabled(True)
         self.win.ui.pushButton_enter.clicked.disconnect()
@@ -160,7 +154,7 @@ class TypingExercise():
             cardNum = QStandardItem(str(i.cardNum))
             timesMissed = i.timesAttempted - i.timesCorrect
             isStarred = QStandardItem(str(i.isStarred))
-            isStarred.itemChanged.connect(lambda: self.changeStar(isStarred))
+            #isStarred.itemChanged.connect(lambda: self.changeStar(isStarred))
             vocabulary = QStandardItem(i.vocabulary)
             definition = QStandardItem(i.definition)
             pronunciation = QStandardItem(i.pronunciation)
@@ -204,24 +198,31 @@ class TypingExercise():
         print(self.wordDeck.cardNum+1, " of ", len(self.wordDeck.studyList))
         if self.wordDeck.cardNum == len(self.wordDeck.studyList):
             print("END GAME")
+            return
+        elif self.wordDeck.cardNum in self.wordDeck.summaryIndexList:
+            print("OVERVIEW")
+            print("Here are the words most commonly missed:")
+            self.intermission()
+            for i in self.missedWordSet:
+                timesMissed = i.timesAttempted - i.timesCorrect
+                print(i, timesMissed)
 
-        else:
-            self.wordDeck.cardNum += 1
-            self.setStatLabels()
-            self.win.ui.lineEdit_answer.setEnabled(True)
-            self.win.ui.pushButton_notSure_Skip.hide()
-            self.win.ui.lineEdit_answer.setFocus()
-            self.win.ui.lineEdit_answer.clear()
-            self.win.ui.lineEdit_answer.setPlaceholderText("Enter your answer")
-            self.win.ui.pushButton_enter.setText("Don't Know")
-            self.win.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
-            self.win.ui.pushButton_enter.clicked.disconnect()
-            self.win.ui.pushButton_enter.clicked.connect(self.submitAnswer)
-            try:
-                self.win.ui.lineEdit_answer.textChanged.disconnect()
-            except RuntimeError:
-                print("didnt have connection?")
-            self.win.ui.pushButton_enter.setEnabled(True)
+        self.wordDeck.cardNum += 1
+        self.setStatLabels()
+        self.win.ui.lineEdit_answer.setEnabled(True)
+        self.win.ui.pushButton_notSure_Skip.hide()
+        self.win.ui.lineEdit_answer.setFocus()
+        self.win.ui.lineEdit_answer.clear()
+        self.win.ui.lineEdit_answer.setPlaceholderText("Enter your answer")
+        self.win.ui.pushButton_enter.setText("Don't Know")
+        self.win.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
+        self.win.ui.pushButton_enter.clicked.disconnect()
+        self.win.ui.pushButton_enter.clicked.connect(self.submitAnswer)
+        try:
+            self.win.ui.lineEdit_answer.textChanged.disconnect()
+        except RuntimeError:
+            print("didnt have connection?")
+        self.win.ui.pushButton_enter.setEnabled(True)
 
 
     def sanitizeInput(self, input_str:str):
