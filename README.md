@@ -11,7 +11,7 @@ Windows 10 Typing (Dark Theme)
 ![alt text](https://i.imgur.com/TGdY0jB.png)
 
 # Install notes
-$ pip install pyside2
+$ pip install pyside2 OR pip -r install pip_requirements.txt
 $ python3 callMainWindow.py
 
 There are currently no binaries being built, only source code files for now.
