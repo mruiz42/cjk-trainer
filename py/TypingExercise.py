@@ -1,9 +1,9 @@
-from VocabWord import *
-from VocabWordDeck import *
-from StarDelegate import *
-from callReview import *
+from py.VocabWord import *
+from py.VocabWordDeck import *
+from py.StarDelegate import *
+from py.callReview import *
 from datetime import *
-from utilities.SqlTools import *
+from py.utilities.SqlTools import *
 from PySide2.QtGui import QStandardItemModel, QStandardItem
 class TypingExercise():
     def __init__(self, main_window, word_deck, parent=None):

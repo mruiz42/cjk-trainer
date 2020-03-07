@@ -1,4 +1,4 @@
-from setupUi.Review import *
+from py.setupUi.Review import *
 from PySide2.QtSql import *
 class ReviewDialog(QtWidgets. QDialog):
 

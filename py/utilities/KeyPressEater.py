@@ -1,8 +1,8 @@
 from PySide2.QtCore import QObject, QEvent
-from callChangeTabDialog import *
-from TypingExercise import *
-from FlashcardExercise import *
-from QuizExercise import *
+from py.callChangeTabDialog import *
+from py.TypingExercise import *
+from py.FlashcardExercise import *
+from py.QuizExercise import *
 class KeyPressEater(QObject):
     def __init__(self, mainWindow, parent=None):
         if not parent:

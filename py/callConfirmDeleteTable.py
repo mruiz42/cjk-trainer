@@ -1,6 +1,6 @@
-from setupUi.MainWindow import *
-from setupUi.ConfirmDeleteTable import *
-from utilities.SqlTools import *
+from py.setupUi.MainWindow import *
+from py.setupUi.ConfirmDeleteTable import *
+from py.utilities.SqlTools import *
 
 
 class ConfirmDeleteTable(QtWidgets.QDialog):

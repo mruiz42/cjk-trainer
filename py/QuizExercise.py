@@ -1,4 +1,4 @@
-from VocabWordDeck import *
+from py.VocabWordDeck import *
 class QuizExercise():
     def __init__(self, main_window, word_deck, parent=None):
         super(QuizExercise, self).__init__()
