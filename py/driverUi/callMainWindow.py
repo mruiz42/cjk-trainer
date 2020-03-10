@@ -1,29 +1,19 @@
-from PySide2.QtWidgets import *
-from PySide2.QtSql import *
-from py.setupUi.MainWindow import *
 from py.utilities.KeyPressEater import *
-from py.callDeckNamePrompt import *
-from py.callGenericDialog import *
-from py.callImportCsvDialog import *
-from py.callConfirmDeleteTable import *
-from py.utilities.SqlTools import *
+from py.driverUi.callDeckNamePrompt import *
+from py.driverUi.callImportCsvDialog import *
+from py.driverUi.callConfirmDeleteTable import *
 from py.VocabWord import *
-from py.VocabWordDeck import *
 from py.TypingExercise import *
-from py.FlashcardExercise import *
 from py.QuizExercise import *
 from py.StarDelegate import *
 
 from PySide2.QtCore import *
-from PySide2 import QtGui
-from PySide2.QtGui import QPalette, QColor
-from PySide2.QtQuick import QQuickView
-from PySide2.QtCore import QUrl
-from PySide2 import QtQml
+
+
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
-#Developer notes:
+### Developer notes:
 # TODO 04) MANAGE BUILT IN DATA STRUCTURE TO STORE STUDY SET DATA
 # TODO 06) ADD OPTION FOR SHUFFLE AND SWAP DEFINITION/PRONUNCIATION/VOCABULARY FOR Q/A
 # TODO 07) CHECK IF THERES A BETTER WAY TO DISABLE TABS
@@ -37,10 +27,10 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # Member attributes
-        self.DATABASE_PATH = '../data/vocab2.db'
+        self.DATABASE_PATH = './data/vocab2.db'
         self.database = SqlTools(self.DATABASE_PATH)
         self.db = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
-        self.db.setDatabaseName("../data/vocab2.db")
+        self.db.setDatabaseName("./data/vocab2.db")
         self.db.open()
         self.model = QSqlTableModel(db=self.db)
         self.model.setEditStrategy(QSqlTableModel.EditStrategy.OnManualSubmit)
@@ -60,10 +50,6 @@ class MainWindow(QMainWindow):
         # UI adjustments
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
-
-
-
 
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
@@ -104,6 +90,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_shuffleDeck.clicked.connect(self.shuffleButtonAction)
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
 
+
         self.loadDeckList()
         self.show()
 
@@ -130,6 +117,7 @@ class MainWindow(QMainWindow):
         self.ui.tableView.setSortingEnabled(True)
 
     def deckListClicked(self, index:QtCore.QModelIndex):
+        #TODO: Attribute Error if I start and press Select Deck without moving selection
         print(self.deckListIndex, index.row())
         self.ui.lineEdit_searchQuery.clear()
         if index.row() == self.deckListIndex:
@@ -298,12 +286,12 @@ class MainWindow(QMainWindow):
         pass
 
     def resetProgressBars(self):
-        win.ui.progressBar_typing.reset()
-        win.ui.progressBar_typing.setRange(0, len(self.wordDeck.studyList))
-        win.ui.progressBar_flashcards.reset()
-        win.ui.progressBar_flashcards.setRange(0, len(self.wordDeck.studyList))
-        win.ui.progressBar_quiz.reset()
-        win.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
+        self.ui.progressBar_typing.reset()
+        self.ui.progressBar_typing.setRange(0, len(self.wordDeck.studyList))
+        self.ui.progressBar_flashcards.reset()
+        self.ui.progressBar_flashcards.setRange(0, len(self.wordDeck.studyList))
+        self.ui.progressBar_quiz.reset()
+        self.ui.progressBar_quiz.setRange(0, len(self.wordDeck.studyList))
 
     def loadStudySet(self, result:list):
         self.wordDeck.cardNum = 0
@@ -329,9 +317,9 @@ class MainWindow(QMainWindow):
             return False
 
     def reloadWordLabels(self):
-        win.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
-        win.ui.label_flashWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
-        win.ui.label_quizWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
+        self.ui.label_typingWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
+        self.ui.label_flashWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
+        self.ui.label_quizWord.setText(self.wordDeck.studyList[self.wordDeck.cardNum].vocabulary)
 
 
     def breakdownSummary(self):
@@ -356,61 +344,3 @@ class MainWindow(QMainWindow):
             # if i != 'sqlite_sequence':
             self.ui.deckList.addItem(i[0])
 
-def setDarkStyleSheet(qApp:QApplication):
-    qApp.setStyle(QStyleFactory.create("Fusion"))
-    darkPalette = QtGui.QPalette()
-    darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
-    darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(25, 25, 25))
-    darkPalette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(53, 53, 53))
-    darkPalette.setColor(QtGui.QPalette.ToolTipBase, Qt.white)
-    darkPalette.setColor(QtGui.QPalette.ToolTipText, Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
-    darkPalette.setColor(QtGui.QPalette.Button, QtGui.QColor(53, 53, 53))
-    darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
-    darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-    darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-    darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-    darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
-    qApp.setPalette(darkPalette)
-    qApp.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }")
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    setDarkStyleSheet(app)
-
-    # view = QQuickView()
-    # url = QUrl("../ui/view.qml")
-    # view.setSource(url)
-    # view.show()
-    win = MainWindow()
-    #win.show()
-    #win.loadDeckList()
-    view = QQuickView()
-    container = QWidget.createWindowContainer(view, win)
-    view.setSource(QUrl("../ui/view.qml"))
-    view.setClearBeforeRendering(True)
-    container.setMinimumHeight(430)
-    container.setMinimumWidth(800)
-    container.setAutoFillBackground(True)
-    clear = QColor(67,67,0)
-    clear.setAlpha(0)
-    view.setColor(clear)
-    geom = QRect(60, 80, 880, 880)
-    win.ui.horizontalLayout_2.setGeometry(geom)
-    win.ui.horizontalLayout_2.addWidget(container, alignment=Qt.AlignCenter)
-    print(view.Ready)
-    print(view.errors())
-    view.raise_()
-    view.show()
-
-
-    #win.reloadTableList()
-    # win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
-    # print(win.nameOfCurrentTable)
-    # win.loadWordTable(0)
-
-
-
-    #win.database.closeDatabase()
-    sys.exit(app.exec_())

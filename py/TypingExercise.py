@@ -1,7 +1,5 @@
-from py.VocabWord import *
-from py.VocabWordDeck import *
 from py.StarDelegate import *
-from py.callReview import *
+from py.driverUi.callReview import *
 from datetime import *
 from py.utilities.SqlTools import *
 from PySide2.QtGui import QStandardItemModel, QStandardItem

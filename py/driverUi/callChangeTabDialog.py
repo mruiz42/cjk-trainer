@@ -1,4 +1,4 @@
-from py.callGenericDialog import *
+from py.driverUi.callGenericDialog import *
 class ChangeTabDialog(GenericDialog):
     def __init__(self, mainWindow, index):
         super(ChangeTabDialog, self).__init__(mainWindow)

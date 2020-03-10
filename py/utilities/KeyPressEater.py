@@ -1,5 +1,5 @@
 from PySide2.QtCore import QObject, QEvent
-from py.callChangeTabDialog import *
+from py.driverUi.callChangeTabDialog import *
 from py.TypingExercise import *
 from py.FlashcardExercise import *
 from py.QuizExercise import *
