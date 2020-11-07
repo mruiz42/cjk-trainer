@@ -24,13 +24,12 @@ from PySide2.QtCore import *
 # TODO 12) ADD STAR THIS WORD CONTEXT MENU
 # TODO 13) ADD ABILITY TO RESET STATS
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, DB_PATH: str):
         super().__init__()
         # Member attributes
-        self.DATABASE_PATH = './data/vocab2.db'
-        self.database = SqlTools(self.DATABASE_PATH)
+        self.database = SqlTools(DB_PATH) # TODO: What to use here? SQLTOOLS or QSQL??
         self.db = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
-        self.db.setDatabaseName("./data/vocab2.db")
+        self.db.setDatabaseName(DB_PATH)
         self.db.open()
         self.model = QSqlTableModel(db=self.db)
         self.model.setEditStrategy(QSqlTableModel.EditStrategy.OnManualSubmit)

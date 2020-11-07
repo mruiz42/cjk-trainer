@@ -1,14 +1,14 @@
 from py.StarDelegate import *
-
 from PySide2.QtCore import *
 from PySide2 import QtGui
 from PySide2.QtGui import QColor
-from py.driverUi.callMainWindow import MainWindow;
-
-
+from py.driverUi.callMainWindow import MainWindow
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
+
+DB_PATH = './data/vocab2.db'
+
 
 def setDarkStyleSheet(qApp:QApplication):
     qApp.setStyle(QStyleFactory.create("Fusion"))
@@ -33,16 +33,15 @@ def setDarkStyleSheet(qApp:QApplication):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     setDarkStyleSheet(app)
-
     # view = QQuickView()
     # url = QUrl("../ui/view.qml")
     # view.setSource(url)
     # view.show()
-    win = MainWindow()
+    win = MainWindow(DB_PATH)
     #win.show()
     #win.loadDeckList()
     # view = QQuickView()
-    # container = QWidget.createWindowContainer(view, win)
+    # container = Q Widget.createWindowContainer(view, win)
     # view.setSource(QUrl("../ui/view.qml"))
     # view.setClearBeforeRendering(True)
     # container.setMinimumHeight(430)
