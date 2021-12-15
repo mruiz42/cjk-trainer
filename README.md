@@ -1,8 +1,8 @@
 # CJK-Trainer
 A cross-platform flashcard study program to help learn foreign languages. Works on Windows/Mac/Linux using the qt-framework and python3. 
 ### NOTE: This project is not being actively maintained.
-I wish I had time to finish this project and it was fun to make but I don't have the time to spend to actively develop
-or maintain it. Pull Requests are welcome, get in touch with me.
+I wish I had time to finish this project and it was fun to make but I don't have the time to actively develop
+or maintain it. Pull Requests are welcome, feel free to contact me.
 # Screenshots
 Linux Word List (Dark Theme)
 ![alt text](https://i.imgur.com/4kPtZYK.png)
