@@ -10,16 +10,26 @@ Windows 10 Word List (Light Theme)
 Windows 10 Typing (Dark Theme)
 ![alt text](https://i.imgur.com/TGdY0jB.png)
 
+# Runtime Dependencies
+* Python3
+* SQLite3
+* Pyside2
+
+# Development Requirements
+* pipenv
+
 # Install notes
-$ pip install pyside2 OR pip -r install pip_requirements.txt
-$ python3 callMainWindow.py
+* `$ pip install pyside2 OR pip -r install pip_requirements.txt`
+* `$ python3 callMainWindow.py`
+<br/>
+OR
+* `pipenv install`
+* `pipenv shell`
 
 There are currently no binaries being built, only source code files for now.
 
-# Runtime Dependencies
-Python3
-SQLite3
-Pyside2
+
+
 
 # Release Plan
 > 1.0 Fully functioning

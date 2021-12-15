@@ -1,16 +1,20 @@
-from py.StarDelegate import *
+
+from src.StarDelegate import *
 from PySide2.QtCore import *
 from PySide2 import QtGui
 from PySide2.QtGui import QColor
-from py.driverUi.callMainWindow import MainWindow
+from src.driverUi.callMainWindow import MainWindow
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
 # self.tabWidget.setTabBar(self.tabBar)
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+load_dotenv(dotenv_path=Path('./development.env'))
+DB_PATH = os.getenv("DB_PATH")
 
-DB_PATH = './data/vocab2.db'
 
-
-def setDarkStyleSheet(qApp:QApplication):
+def setDarkStyleSheet(qApp: QApplication):
     qApp.setStyle(QStyleFactory.create("Fusion"))
     darkPalette = QtGui.QPalette()
     darkPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(53, 53, 53))
@@ -60,7 +64,7 @@ if __name__ == "__main__":
 
 
     #win.reloadTableList()
-    # win.nameOfCurrentTable = win.ui.deckList.item(0).data(0)
+    # win.nameOfCurrentTable = win.ui.deckList.item(0).test_data(0)
     # print(win.nameOfCurrentTable)
     # win.loadWordTable(0)
 
