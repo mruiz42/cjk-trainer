@@ -24,8 +24,9 @@ Windows 10 Typing (Dark Theme)
 # Install notes
 * `$ pip install pyside2 OR pip -r install pip_requirements.txt`
 * `$ python3 callMainWindow.py`
-<br/>
+
 OR
+
 * `pipenv install`
 * `pipenv shell`
 
