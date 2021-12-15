@@ -6,9 +6,8 @@ from src.VocabWord import *
 from src.TypingExercise import *
 from src.QuizExercise import *
 from src.StarDelegate import *
-
-from PySide2.QtCore import *
-
+from PyQt5.QtCore import *
+import os.path
 
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
@@ -28,17 +27,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Member attributes
         self.database = SqlTools(DB_PATH) # TODO: What to use here? SQLTOOLS or QSQL??
-        self.db = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
-        self.db.setDatabaseName(DB_PATH)
-        self.db.open()
-        self.model = QSqlTableModel(db=self.db)
+        self.model = QSqlTableModel(db=self.database.qsql)
         self.model.setEditStrategy(QSqlTableModel.EditStrategy.OnManualSubmit)
         self.model.dataChanged.connect(self.enableSave)
-        # Check if tables exist
-        # self.database.createDeckTable()
-        # self.database.createCardsTable()
-        # self.database.createSessionsTable()
-        # self.database.createStatisticsTable()
 
         self.definitionLanguage = ""
         self.vocabularyLanguage = ""
@@ -53,7 +44,7 @@ class MainWindow(QMainWindow):
         self.ui.tab_flashcards.setEnabled(False)
         self.ui.tab_typing.setEnabled(False)
         self.ui.tab_quiz.setEnabled(False)
-        self.n = StarDelegate(self.ui.tableView)
+        self.n = StarDelegate(self.ui.wordTable)
         self.ui.deckList.itemSelectionChanged.connect(lambda: self.deckListClicked(self.ui.deckList.currentIndex()))
         self.ui.pushButton_wordList_select.clicked.connect(self.deckListClicked)
         self.ui.lineEdit_searchQuery.textChanged.connect(lambda: self.loadWordTable(starredOnly=self.ui.checkBox_starredOnly.isChecked()))
@@ -74,7 +65,7 @@ class MainWindow(QMainWindow):
         newListTableAction.triggered.connect(lambda: self.openNewTableDialog("create"))
         importCSVAction.triggered.connect(self.openImportCSVDialogue)
 
-        self.ui.tableView.customContextMenuRequested.connect(self.requestWordTableContextMenu)
+        self.ui.wordTable.customContextMenuRequested.connect(self.requestWordTableContextMenu)
         # Added Modified - be careful
         self.ui.buttonBox_wordList.button(QtWidgets.QDialogButtonBox.Cancel).setText("Revert")
         self.ui.buttonBox_wordList.setCenterButtons(False)
@@ -83,8 +74,8 @@ class MainWindow(QMainWindow):
         self.ui.buttonBox_wordList.accepted.connect(self.saveTable)
         self.ui.buttonBox_wordList.rejected.connect(self.revertWordTable)
         # Install tabBar Scroll event filter
-        eater = KeyPressEater(self, self.ui.tabBar)
-        self.ui.tabBar.installEventFilter(eater)
+        eater = KeyPressEater(self, self.ui.tabWidget)
+        self.ui.tabWidget.installEventFilter(eater)
         self.ui.checkBox_starredOnly.stateChanged.connect(self.starredButtonAction)
         self.ui.pushButton_shuffleDeck.clicked.connect(self.shuffleButtonAction)
         self.ui.actionToggle_Pronunciation.changed.connect(self.showPronunciationColumnAction)
@@ -102,7 +93,7 @@ class MainWindow(QMainWindow):
     def enableSave(self):
         ''' This function will enable the buttonBox_wordList features to enable table modification'''
         self.ui.buttonBox_wordList.setEnabled(True)
-        self.ui.tableView.setSortingEnabled(False)
+        self.ui.wordTable.setSortingEnabled(False)
 
     def saveTable(self):
         success = self.model.submitAll()
@@ -113,7 +104,7 @@ class MainWindow(QMainWindow):
             print(self.model.lastError().databaseText())
             print(self.model.lastError().text())
         self.ui.buttonBox_wordList.setDisabled(True)
-        self.ui.tableView.setSortingEnabled(True)
+        self.ui.wordTable.setSortingEnabled(True)
 
     def deckListClicked(self, index:QtCore.QModelIndex):
         #TODO: Attribute Error if I start and press Select Deck without moving selection
@@ -127,12 +118,12 @@ class MainWindow(QMainWindow):
             self.nameOfCurrentDeck = index.data()
             self.loadWordTable()
             self.ui.label_selectedDeck.setText(index.data())
-            self.ui.tableView.setColumnWidth(2, 30)
-            self.ui.tableView.setColumnWidth(3, 200)
-            self.ui.tableView.setColumnWidth(4, 200)
-            self.ui.tableView.setColumnWidth(5, 200)
+            self.ui.wordTable.setColumnWidth(2, 30)
+            self.ui.wordTable.setColumnWidth(3, 200)
+            self.ui.wordTable.setColumnWidth(4, 200)
+            self.ui.wordTable.setColumnWidth(5, 200)
             self.ui.buttonBox_wordList.setDisabled(True)
-            self.ui.tableView.setSortingEnabled(True)
+            self.ui.wordTable.setSortingEnabled(True)
 
     def loadWordTable(self, shuffle:bool=False, starredOnly:bool=False):
         query = self.ui.lineEdit_searchQuery.text()
@@ -146,23 +137,23 @@ class MainWindow(QMainWindow):
             command += "AND IS_STARRED=TRUE"
         if shuffle:
             command += " ORDER BY RANDOM()"
-            self.ui.tableView.setSortingEnabled(False)
+            self.ui.wordTable.setSortingEnabled(False)
 
         self.model.setFilter(command)
-        self.ui.tableView.hideColumn(0)
-        self.ui.tableView.hideColumn(1)
+        self.ui.wordTable.hideColumn(0)
+        self.ui.wordTable.hideColumn(1)
         print(self.model.selectStatement())
         self.model.select()
         self.model.setHeaderData(2, Qt.Horizontal, "⭐")
         if self.model.rowCount() > 0:
-            self.ui.tableView.setItemDelegateForColumn(2, self.n)
+            self.ui.wordTable.setItemDelegateForColumn(2, self.n)
             while self.model.canFetchMore():
                 self.model.fetchMore()
                 print(self.model.rowCount())
-            self.ui.tableView.setModel(self.model)
+            self.ui.wordTable.setModel(self.model)
 
-            self.ui.tableView.hideColumn(0)
-            self.ui.tableView.hideColumn(1)
+            self.ui.wordTable.hideColumn(0)
+            self.ui.wordTable.hideColumn(1)
             # load study deck
             deck = []
             for row in range(0, self.model.rowCount()):
@@ -188,7 +179,7 @@ class MainWindow(QMainWindow):
         insertAction = contextMenu.addAction("Insert Row")
         updateAction = contextMenu.addAction("Update Row")
         deleteAction = contextMenu.addAction("Delete Row")
-        action = contextMenu.exec_(self.ui.tableView.mapToGlobal(position))
+        action = contextMenu.exec_(self.ui.wordTable.mapToGlobal(position))
         if action == insertAction:
             self.insertTableRow()
         elif action == updateAction:

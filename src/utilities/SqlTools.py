@@ -1,12 +1,26 @@
 import sqlite3
 import datetime
 import sys
+import os.path
+
+from PyQt5.QtSql import QSqlDatabase
+
 
 class SqlTools():
     def __init__(self, db_path):
+        self.qsql = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
+        self.qsql.setDatabaseName(db_path)
+        dbExists = os.path.exists(db_path)
         print("Opening database:" + db_path)
         self.db = sqlite3.connect(db_path)
         self.cur = self.db.cursor()
+        self.qsql.open()
+        if not (dbExists):
+            self.createDeckTable()
+            self.createCardsTable()
+            self.createSessionsTable()
+            self.createStatisticsTable()
+
 
     def createDatabase(self):
         print("foo")

@@ -4,13 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pyside2 = "*"
 python_dotenv = "*"
+pyqt5 = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.10"
 
 [scripts]
 dev = "python main.py"

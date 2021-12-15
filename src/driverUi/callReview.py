@@ -1,5 +1,5 @@
 from src.setupUi.Review import *
-from PySide2.QtSql import *
+from PyQt5.QtSql import *
 class ReviewDialog(QtWidgets. QDialog):
 
     def __init__(self, mainWindow, parent=None):

@@ -2,7 +2,7 @@ from src.StarDelegate import *
 from src.driverUi.callReview import *
 from datetime import *
 from src.utilities.SqlTools import *
-from PySide2.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 class TypingExercise():
     def __init__(self, main_window, word_deck, parent=None):
         super(TypingExercise, self).__init__()

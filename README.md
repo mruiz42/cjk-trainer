@@ -28,9 +28,6 @@ OR
 
 There are currently no binaries being built, only source code files for now.
 
-
-
-
 # Release Plan
 > 1.0 Fully functioning
 > 0.9 UI enhancements/bug squashing 

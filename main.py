@@ -1,8 +1,12 @@
-
+import PyQt5
 from src.StarDelegate import *
-from PySide2.QtCore import *
-from PySide2 import QtGui
-from PySide2.QtGui import QColor
+# from PySide2.QtCore import *
+# from PySide2 import QtGui
+# from PySide2.QtGui import QColor
+from PyQt5 import QtGui
+from PyQt5.QtCore import *
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import *
 from src.driverUi.callMainWindow import MainWindow
 # ADDED KEYPRESS EATER TAB BAR
 # self.tabBar = QtWidgets.QTabBar()
@@ -11,7 +15,6 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 load_dotenv(dotenv_path=Path('./development.env'))
-DB_PATH = os.getenv("DB_PATH")
 
 
 def setDarkStyleSheet(qApp: QApplication):
@@ -41,6 +44,7 @@ if __name__ == "__main__":
     # url = QUrl("../ui/view.qml")
     # view.setSource(url)
     # view.show()
+    DB_PATH = os.getenv("DB_PATH")
     win = MainWindow(DB_PATH)
     #win.show()
     #win.loadDeckList()

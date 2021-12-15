@@ -1,5 +1,5 @@
 from src.setupUi.DeckNamePrompt import *
-from PySide2 import QtWidgets
+from PyQt5 import QtWidgets
 from src.utilities.SqlTools import *
 
 class DeckNamePrompt(QtWidgets.QDialog):
