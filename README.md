@@ -1,64 +1,33 @@
-# CJK-Trainer
-A cross-platform flashcard study program to help learn foreign languages. Works on Windows/Mac/Linux using the qt-framework and python3. 
-### NOTE: This project is not being actively maintained.
-I wish I had time to finish this project and it was fun to make but I don't have the time to actively develop
-or maintain it. Pull Requests are welcome, feel free to contact me.
-# Screenshots
-Linux Word List (Dark Theme)
-![alt text](https://i.imgur.com/4kPtZYK.png)
-Windows 10 Word List (Dark Theme)
-![alt text](https://i.imgur.com/fseA91t.png)
-Windows 10 Word List (Light Theme)
-![alt text](https://i.imgur.com/ZV3hZyG.png)
-Windows 10 Typing (Dark Theme)
-![alt text](https://i.imgur.com/TGdY0jB.png)
+# CJK Trainer
 
-# Runtime Dependencies
-* Python3
-* SQLite3
-* Pyside2
+A desktop flashcard app for learning Chinese, Japanese and Korean vocabulary, built with Python, PyQt5 and SQLite. Runs on Windows, macOS and Linux.
 
-# Development Requirements
-* pipenv
+> **This is the prototype that became [WordFarm](https://wordfarm.app).** I built CJK Trainer in college (2019–2021) to study vocabulary, kept using it, and kept picturing what it could become. WordFarm is that idea finished: a full-stack web platform with spaced repetition, AI-generated reading practice and a six-language dictionary. This repo is archived and kept for history.
 
-# Install notes
-* `$ pip install pyside2 OR pip -r install pip_requirements.txt`
-* `$ python3 callMainWindow.py`
+![Word list in the dark theme, showing a Chinese deck with definitions and pinyin](screenshots/cjk_trainer_wordList.png)
 
-OR
+## Features
 
-* `pipenv install`
-* `pipenv shell`
+- **Decks:** create, import and browse word lists (HSK 1, kana, kanji, Korean syllables, or your own), with search and starred words
+- **Study modes:** flashcards, typing practice and multiple-choice quiz, with optional "starred only" sessions
+- **Statistics:** per-deck score and last-studied date
+- **Dark and light themes**
 
-There are currently no binaries being built, only source code files for now.
+| Typing | Flashcards |
+| --- | --- |
+| ![Typing practice mode](screenshots/cjk_trainer_typing.png) | ![Flashcard mode](screenshots/cjk_trainer_flashcard.png) |
 
-# Release Plan
-* 1.0 Fully functioning
-* 0.9 UI enhancements/bug squashing
-* 0.8 Implement image handling to cards
-* 0.7b Statistics module working + binaries available
-* 0.6a Game modules fully functional 
-CURRENT RELEASE -> 0.5a Data IO functioning between user interaction (cards table) and database
+## Running it
 
-# Licensing
-MIT License
+Requires Python 3.10 and [pipenv](https://pipenv.pypa.io/).
 
-Copyright (c) 2019 Michael Ruiz
+```bash
+pipenv install
+pipenv run dev      # same as: python main.py
+```
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+The SQLite database path is set in `development.env`.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## License
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+[MIT](LICENSE) © 2019 Michael Ruiz
